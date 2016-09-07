@@ -1,2 +1,3 @@
-# bambora-online-magento-v2.x
-Bambora Online Magento 2 module
+# Bambora Online Magento v2.x
+
+Documentation: http://dev.bambora.com/carts.html#magento2
