@@ -1,0 +1,18 @@
+﻿<?xml version="1.0"?>
+<!--
+/**
+ * Bambora Online 
+ * 
+ * @category    Online Payment Gatway
+ * @package     Bambora_Online_Checkout
+ * @author      Bambora
+ * @copyright   Bambora (http://bambora.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+  <event name="sales_order_payment_place_start">
+    <observer name="Bambora_Online_Sales_Order_Payment_Place_Start"
+              instance="Bambora\Online\Observer\SalesOrderPaymentPlaceStart"/>
+  </event>
+
+</config>

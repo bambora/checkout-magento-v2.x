@@ -1,0 +1,20 @@
+
+{
+  "name": "bambora/payment-magento2",
+  "description": "Magento 2 payment module for Bambora Online",
+  "type": "magento2-module",
+  "version": "0.1.0",
+  "license": [
+    "OSL-3.0"
+  ],
+  "require": {
+    "php": "~5.5.0|~5.6.0|~7.0.0",
+    "magento/framework": "~100.0.4"
+  },
+  "autoload": {
+    "files": [ "registration.php" ],
+    "psr-4": {
+      "Bambora\\Online\\": ""
+    }
+  }
+}

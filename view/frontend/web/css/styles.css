@@ -1,0 +1,37 @@
+﻿/**
+ * Bambora Online 
+ * 
+ * @category    Online Payment Gatway
+ * @package     Bambora_Online_Checkout
+ * @author      Bambora
+ * @copyright   Bambora (http://bambora.com)
+ */
+.bambora_payment_title_icon {
+    display:inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.bambora_payment_title {
+    display: inline-block;
+    vertical-align: middle;
+}
+.bambora_payment_title_text {
+    display: block;
+}
+
+
+.bambora_paymentcards_container {
+    display: block;
+}
+.bambora_paymentcard {
+    display: inline-block;
+    margin-left: -3px;
+    width: 30px;
+}
+.bambora_info_title {
+    font-weight: 600;
+}
+.bambora_info_body {
+    font-style: italic;
+}

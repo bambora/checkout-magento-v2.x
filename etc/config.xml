@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Bambora Online 
+ * 
+ * @category    Online Payment Gatway
+ * @package     Bambora_Online_Checkout
+ * @author      Bambora
+ * @copyright   Bambora (http://bambora.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+  <default>
+    <payment>
+      <bambora_checkout>
+        <active>1</active>
+        <model>Bambora\Online\Model\Method\Checkout</model>
+        <checkout_title>Bambora Online</checkout_title>
+        <paymentwindow_id>1</paymentwindow_id>
+        <instant_capture>0</instant_capture>
+        <window_state>1</window_state>
+        <immediateredirecttoaccept>0</immediateredirecttoaccept>
+        <sort_order>1</sort_order>
+      </bambora_checkout>
+    </payment>
+  </default>
+</config>
