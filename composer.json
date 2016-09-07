@@ -1,6 +1,6 @@
 
 {
-  "name": "bambora/payment-magento2",
+  "name": "bambora/module-payment-magento2",
   "description": "Magento 2 payment module for Bambora Online",
   "type": "magento2-module",
   "license": [
