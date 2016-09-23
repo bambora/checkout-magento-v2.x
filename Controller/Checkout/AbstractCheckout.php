@@ -9,13 +9,10 @@
  */
 namespace Bambora\Online\Controller\Checkout;
 
+use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
+
 abstract class AbstractCheckout extends \Magento\Framework\App\Action\Action
 {
-    /**
-     * @var string
-     */
-    const METHOD_CODE = 'bambora_checkout';
-
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
@@ -47,6 +44,11 @@ abstract class AbstractCheckout extends \Magento\Framework\App\Action\Action
     protected $_paymentHelper;
 
     /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     */
+    protected $_orderSender;
+
+    /**
      * @var \Magento\Sales\Model\Order
      */
     private $_order;
@@ -61,6 +63,7 @@ abstract class AbstractCheckout extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
      * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
      * @param \Magento\Payment\Helper\Data $paymentHelper
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -69,7 +72,8 @@ abstract class AbstractCheckout extends \Magento\Framework\App\Action\Action
         \Bambora\Online\Helper\Data $bamboraHelper,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
-        \Magento\Payment\Helper\Data $paymentHelper
+        \Magento\Payment\Helper\Data $paymentHelper,
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
     ) {
         parent::__construct($context);
         $this->_orderFactory = $orderFactory;
@@ -78,6 +82,7 @@ abstract class AbstractCheckout extends \Magento\Framework\App\Action\Action
         $this->_resultJsonFactory = $resultJsonFactory;
         $this->_bamboraLogger = $bamboraLogger;
         $this->_paymentHelper = $paymentHelper;
+        $this->_orderSender = $orderSender;
     }
 
     /**
@@ -87,7 +92,7 @@ abstract class AbstractCheckout extends \Magento\Framework\App\Action\Action
      */
     protected function _getPaymentMethodInstance()
     {
-        return $this->_paymentHelper->getMethodInstance(self::METHOD_CODE);
+        return $this->_paymentHelper->getMethodInstance(CheckoutPayment::METHOD_CODE);
     }
 
     /**
@@ -107,6 +112,8 @@ abstract class AbstractCheckout extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Get order by IncrementId
+     *
      * @param $incrementId
      * @return \Magento\Sales\Model\Order
      */
@@ -119,5 +126,4 @@ abstract class AbstractCheckout extends \Magento\Framework\App\Action\Action
 
         return $this->_order;
     }
-
 }

@@ -7,17 +7,20 @@
  * @author      Bambora
  * @copyright   Bambora (http://bambora.com)
  */
-namespace Bambora\Online\Block\Info;
+namespace Bambora\Online\Block\Checkout;
 
-class Checkout extends \Magento\Payment\Block\Info
+use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
+
+class Info extends \Magento\Payment\Block\Info
 {
     /**
      * @var string
      */
-    protected $_template = 'Bambora_Online::info/bambora_checkout.phtml';
+    protected $_template = 'Bambora_Online::checkout/info.phtml';
 
     /**
-     * @desc Returns the name defined in the module config
+     * Returns the name defined in the module config
+     * 
      * @return string
      */
     public function getMethodTitle()
@@ -25,9 +28,9 @@ class Checkout extends \Magento\Payment\Block\Info
         $methodTitle = $this->getInfo()->getTitle();
         $checkoutMethod = $this->getInfo()->getMethodInstance();
 
-        if($checkoutMethod->getCode() == \Bambora\Online\Model\Method\Checkout::METHOD_CODE)
+        if($checkoutMethod->getCode() == CheckoutPayment::METHOD_CODE)
         {
-            $customTitle = $checkoutMethod->getCheckoutConfig('checkout_title');
+            $customTitle = $checkoutMethod->getCheckoutConfig('title');
             if(isset($customTitle))
             {
                 $methodTitle = $customTitle;
@@ -38,7 +41,8 @@ class Checkout extends \Magento\Payment\Block\Info
     }
 
     /**
-     * @desc Returns the last transaction id
+     * Returns the last transaction id
+     * 
      * @return string
      */
     public function getTransactionId()
@@ -55,7 +59,8 @@ class Checkout extends \Magento\Payment\Block\Info
     }
 
     /**
-     * @desc Returns the payment type
+     * Returns the payment type
+     * 
      * @return string
      */
     public function getPaymentType()
@@ -76,5 +81,4 @@ class Checkout extends \Magento\Payment\Block\Info
 
         return $result;
     }
-
 }

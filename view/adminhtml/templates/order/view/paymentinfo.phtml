@@ -1,0 +1,89 @@
+﻿<?php 
+/**
+* Bambora Online
+*
+* @category    Online Payment Gatway
+* @package     Bambora_Online_Checkout
+* @author      Bambora
+* @copyright   Bambora (http://bambora.com)
+*/
+
+
+$bamboraTransactionData = $this->getTransactionData();
+if(isset($bamboraTransactionData)) 
+{ ?>
+<table class="bambora_action_container" border="0" width="100%">
+  <tr>
+    <td colspan="2">
+      <p class="bambora_title">
+        <?php echo $block->escapeHtml('Bambora Checkout'); ?>
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td width='150'>
+      <?php echo $block->escapeHtml(__('Transaction ID:') ); ?>
+    </td>
+    <td>
+      <?php echo $bamboraTransactionData['transactionId'];?>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <?php echo $block->escapeHtml(__('Amount:') ); ?>
+    </td>
+    <td>
+      <?php echo $bamboraTransactionData['totalAuthorized'];?>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <?php echo $block->escapeHtml(__('Transaction date:') ); ?>
+    </td>
+    <td>
+      <?php echo $bamboraTransactionData['createdDate'];?>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <?php echo $block->escapeHtml(__('Card type:') ); ?>
+    </td>
+    <td>
+      <?php echo $bamboraTransactionData['paymentTypeName'];?>
+      <?php echo $this->getPaymentLogoUrl($bamboraTransactionData['paymentTypeId']);?>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <?php echo $block->escapeHtml(__('Card number:') ); ?>
+    </td>
+    <td>
+      <?php echo $bamboraTransactionData['primaryAccountNumbers'];?>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <?php echo $block->escapeHtml(__('Transaction fee:') ); ?>
+    </td>
+    <td>
+      <?php echo $bamboraTransactionData['totalFeeAmount'];?>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <?php echo $block->escapeHtml(__('Captured:') ); ?>
+    </td>
+    <td>
+      <?php echo $bamboraTransactionData['totalCaptured'];?>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <?php echo $block->escapeHtml(__('Refunded:') ); ?>
+    </td>
+    <td>
+      <?php echo $bamboraTransactionData['totalCredited'];?>
+    </td>
+  </tr>
+</table>
+<?php ;} ?>

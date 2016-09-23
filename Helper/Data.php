@@ -9,7 +9,6 @@
  */
 namespace Bambora\Online\Helper;
 
-
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
@@ -18,20 +17,38 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_bamboraLogger;
 
     /**
+     * @var \Magento\Framework\Encryption\EncryptorInterface
+     */
+    protected $_encryptor;
+
+    /**
+     * @var \Magento\Framework\Module\ModuleListInterface
+     */
+    protected $_moduleList;
+
+    /**
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     * @param \Magento\Framework\Module\ModuleListInterface $moduleList
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \Bambora\Online\Logger\BamboraLogger $bamboraLogger
+        \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
+        \Magento\Framework\Encryption\EncryptorInterface $encryptor,
+        \Magento\Framework\Module\ModuleListInterface $moduleList
     )
     {
         parent::__construct($context);
         $this->_bamboraLogger = $bamboraLogger;
+        $this->_encryptor = $encryptor;
+        $this->_moduleList = $moduleList;
     }
 
+
     /**
-     * @desc Gives back bambora_checkout configuration values as flag
+     * Gives back bambora_checkout configuration values as flag
+     *
      * @param $field
      * @param null|int $storeId
      * @return mixed
@@ -42,7 +59,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @desc Gives back bambora_checkout configuration values
+     * Gives back bambora_checkout configuration values
+     *
      * @param $field
      * @param null|int $storeId
      * @return mixed
@@ -53,7 +71,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @desc Retrieve information from payment configuration
+     * Retrieve information from payment configuration
+     *
      * @param $field
      * @param $paymentMethodCode
      * @param $storeId
@@ -74,9 +93,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
     }
 
-
     /**
-     * @desc Retrieve a Checkout Api class
+     * Retrieve a Checkout Api class
+     *
      * @param $apiName
      * @return object
      */
@@ -86,6 +105,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $product = $objectManager->create('Bambora\Online\Model\Api\Checkout\\'.$apiName);
 
         return $product;
+    }
+
+    /**
+     * Decrypt data
+     *
+     * @param mixed $data
+     * @return string
+     */
+    public function decryptData($data)
+    {
+        return $this->_encryptor->decrypt(trim($data));
     }
 
     /**
@@ -102,7 +132,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @desc Retrieve the shops local code
+     * Retrieve the shops local code
+     *
      * @return string
      */
     public function getShopLocalCode() {
@@ -113,7 +144,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @desc Convert an amount to minorunits
+     * Convert an amount to minorunits
+     *
      * @param $amount
      * @param $minorUnits
      * @param $defaultMinorUnits = 2
@@ -131,7 +163,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @desc Convert an amount from minorunits
+     * Convert an amount from minorunits
+     *
      * @param $amount
      * @param $minorUnits
      * @param $defaultMinorUnits = 2
@@ -149,7 +182,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @desc Return minorunits based on Currency Code
+     * Return minorunits based on Currency Code
+     *
      * @param $currencyCode
      * @return int
      */
@@ -191,36 +225,36 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             default:
                 return 2;
         }
-
     }
 
     /**
-     * @desc Return if Checkout Api Result is valid
+     * Return if Checkout Api Result is valid
+     *
      * @param $result
      * @return bool
      */
-    public function validateCheckoutApiResult($result, $id)
+    public function validateCheckoutApiResult($result, $id,$isBackoffice, &$message)
     {
-        if(!isset($result))
+        if(!isset($result) || $result === false || !isset($result["meta"]))
         {
-            //Error
-            $this->_bamboraLogger->addCheckoutError($id,"No answer from Bambora");
-
+            //Error without description
+            $message = "No answer from Bambora";
+            $this->_bamboraLogger->addCheckoutError($id, $message);
             return false;
         }
         else if(!$result["meta"]["result"])
         {
             // Error with description
+            $message = $isBackoffice ? $result['meta']['message']['merchant'] : $result['meta']['message']['enduser'];
             $this->_bamboraLogger->addCheckoutError($id,$result['meta']['message']['merchant']);
-
             return false;
         }
-
         return true;
     }
 
     /**
-     * @desc Generate Api key
+     * Generate Api key
+     *
      * @param $storeId
      * @return string
      */
@@ -228,7 +262,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $accesstoken = $this->getBamboraCheckoutConfigData('access_token', $storeId);
         $merchantNumber = $this->getBamboraCheckoutConfigData('merchant_number', $storeId);
-        $secrettoken = $this->getBamboraCheckoutConfigData('secret_token', $storeId);
+        $secrettoken = $this->decryptData($this->getBamboraCheckoutConfigData('secret_token', $storeId));
 
         $combined = $accesstoken . '@' . $merchantNumber .':'. $secrettoken;
         $encodedKey = base64_encode($combined);
@@ -236,4 +270,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $apiKey;
     }
+
+    /**
+     * Returns the version of the module
+     *
+     * @return string
+     */
+    public function getModuleVersion()
+    {
+        return $this->_moduleList->getOne("Bambora_Online")['setup_version'];
+    }
+
+
+    
 }

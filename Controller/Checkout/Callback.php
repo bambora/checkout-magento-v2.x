@@ -14,65 +14,16 @@ use \Magento\Framework\Webapi\Response;
 use \Magento\Sales\Model\Order;
 use \Magento\Sales\Model\Order\Payment\Transaction;
 use Bambora\Online\Model\Api\CheckoutApi;
-use Bambora\Online\Model\Method\Checkout as CheckoutMethod;
 
 class Callback extends AbstractCheckout
 {
-    /**
-     * @var Transaction\BuilderInterface
-     */
-    protected $_transactionBuilder;
-
-    /**
-     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
-     */
-    protected $_orderSender;
-
     /**
      * @var \Magento\Framework\Controller\Result\Json
      */
     private $_callbackResult;
 
-
     /**
-     * Callback constructor.
-     *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Bambora\Online\Helper\Data $bamboraHelper
-     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-     * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
-     * @param \Magento\Payment\Helper\Data $paymentHelper
-     * @param \Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface $transactionBuilder,
-     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
-     */
-    public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Bambora\Online\Helper\Data $bamboraHelper,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
-        \Magento\Payment\Helper\Data $paymentHelper,
-        \Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface $transactionBuilder,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
-    ) {
-        parent::__construct(
-            $context,
-            $orderFactory,
-            $checkoutSession,
-            $bamboraHelper,
-            $resultJsonFactory,
-            $bamboraLogger,
-            $paymentHelper
-         );
-        $this->_transactionBuilder = $transactionBuilder;
-        $this->_orderSender = $orderSender;
-    }
-
-    /**
-     * Callback
+     * Callback Action
      */
     public function execute()
     {
@@ -90,58 +41,67 @@ class Callback extends AbstractCheckout
 
 
     /**
-     * @desc Process the callback from Bambora
+     * Process the callback from Bambora
+     *
      * @return void
      */
     private function processCallback($posted,$transactionInfo)
     {
-
-        $order = $this->_getOrderByIncrementId($posted['orderid']);
-
+        $bamboraTransactionId = $posted['txnid'];
         try
         {
-            if($order->getState() === Order::STATE_PENDING_PAYMENT)
+            $order = $this->_getOrderByIncrementId($posted['orderid']);
+            $payment = $order->getPayment();
+            $pspReference = $payment->getAdditionalInformation('bamboraReference');
+
+            if(!isset($pspReference))
             {
-                $this->_checkoutSession->setLastOrderId($order->getId());
-                $this->_checkoutSession->setLastRealOrderId($order->getIncrementId());
-                $this->_checkoutSession->setLastQuoteId($order->getQuoteId());
-                $this->_checkoutSession->setLastSuccessQuoteId($order->getQuoteId());
+                $payment->setTransactionId($bamboraTransactionId);
 
-                $payment = $order->getPayment();
-                $payment->setTransactionId($posted['txnid']);
+                $instantCapture = $this->_bamboraHelper->getBamboraCheckoutConfigData('instant_capture',$order->getStore()->getId());
+                $shouldCloseTransaction = $instantCapture ? true : false;
+                $payment->setIsTransactionClosed($shouldCloseTransaction);
+                $payment->setAdditionalInformation(array('bamboraReference' => $bamboraTransactionId));
+                $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
 
-                $paymentType = $transactionInfo['transaction']['information']['paymenttypes'][0]['displayname'];
-                $payment->setCcType($paymentType);
 
-                $this->_transactionBuilder->setPayment($payment)
-                ->setOrder($order)
-                ->setTransactionId($payment->getTransactionId())
-                ->build(Transaction::TYPE_AUTH);
 
                 $order->setState(Order::STATE_PROCESSING);
+                $status = $this->_bamboraHelper->getBamboraCheckoutConfigData('order_status',$this->_getOrder()->getStoreId());
+                $order->setStatus($status);
 
-                $message = __("Payment authorization was a success.") . " " . __("Transaction Id:") . " " . $posted['txnid'];
-                $order->addStatusHistoryComment($message, Order::STATE_PROCESSING);
-                $order->setIsNotified(true);
-                $order->save();
+
+                $message = __("Payment authorization was a success.");
+
+                $payment->addTransactionCommentsToOrder($transaction, $message);
+                $paymentType = $transactionInfo['transaction']['information']['paymenttypes'][0]['displayname'];
+                $payment->setCcType($paymentType);
+                $payment->save();
 
                 if (!$order->getEmailSent()) {
                     $this->_orderSender->send($order);
+                    $order->setIsCustomerNotified(true);
                 }
+
+                $order->save();
+                $this->setResult(Response::HTTP_OK, "Callback Success - Order created",$order->getIncrementId());
+            }
+            else
+            {
+                $this->setResult(Response::HTTP_OK, "Callback Success - Order already created",$order->getIncrementId());
             }
 
-            $message = "Callback Success";
-            $this->setResult(Response::HTTP_OK, $message,$order->getIncrementId());
         }
         catch(Exception $ex)
         {
             $message = "Callback Failed - " .$ex->getMessage();
-            $this->setResult(Exception::HTTP_INTERNAL_ERROR, $message,$order->getIncrementId());
+            $this->setResult(Exception::HTTP_INTERNAL_ERROR, $message,$bamboraTransactionId);
         }
     }
 
     /**
-     * @desc Validate the callback
+     * Validate the callback
+     *
      * @return bool
      */
     private function validateCallback($posted, &$transactionInfo)
@@ -213,7 +173,14 @@ class Callback extends AbstractCheckout
 
         return true;
     }
-
+    /**
+     * Set Callback Response
+     *
+     * @param mixed $statusCode
+     * @param mixed $message
+     * @param mixed $id
+     * @return void
+     */
     private function setResult($statusCode,$message,$id)
     {
         $result = $this->_resultJsonFactory->create();
@@ -221,9 +188,7 @@ class Callback extends AbstractCheckout
 
         $result->setData(
             ['id'=>$id,
-            'message'=>$message,
-            'module'=>CheckoutMethod::MODULE_INFO,
-            'version'=>CheckoutMethod::MODULE_VERSION]);
+            'message'=>$message]);
 
         if($statusCode === Response::HTTP_OK)
         {

@@ -12,7 +12,7 @@ namespace Bambora\Online\Controller\Checkout;
 class Assets extends AbstractCheckout
 {
     /**
-     * @desc Assets Action
+     * Assets Action
      */
     public function execute()
     {
@@ -21,7 +21,7 @@ class Assets extends AbstractCheckout
     }
 
     /**
-     * @desc Get an array of paymentcardids the order
+     * Get an array of paymentcardids the order
      * @return array
      */
     public function getPaymentcardIds()

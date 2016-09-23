@@ -19,7 +19,7 @@ define(
     function ($, quote, urlBuilder, storage, errorProcessor, customer, fullScreenLoader) {
         'use strict';
 
-        return function (messageContainer) {
+        return function () {
             var serviceUrl,
                 payload,
                 paymentData = quote.paymentMethod();
@@ -54,22 +54,21 @@ define(
                     var url = window.checkoutConfig.payment[quote.paymentMethod().method].checkoutUrl;
                     $.get(url)
                         .done(function (data) {
-                                data = JSON.parse(data);
-                                if (data !== null && data["meta"]["result"]) {
-                                    $.mage.redirect(data["url"]);
-                                } else {
-                                    $.mage.redirect(window.checkoutConfig.payment[quote.paymentMethod().method].declineUrl);
-                                }
-                                 
+                            data = JSON.parse(data);
+                            if (data == null || !data["meta"]["result"]) {
+                                $.mage.redirect(window.checkoutConfig.payment[quote.paymentMethod().method].declineUrl);
+                            }
+                            $.mage.redirect(data["url"]);
+
                         })
                         .fail(function (response) {
-                            errorProcessor.process(response, messageContainer);
+                            errorProcessor.process(response);
                             fullScreenLoader.stopLoader();
                         });
                 }
             ).fail(
                 function (response) {
-                    errorProcessor.process(response, messageContainer);
+                    errorProcessor.process(response);
                     fullScreenLoader.stopLoader();
                 }
             );

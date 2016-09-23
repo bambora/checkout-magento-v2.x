@@ -15,10 +15,10 @@ class Merchant extends Base
 {
     /**
      * Get the allowed payment types
-     * 
-     * @param string $currency 
-     * @param int|long $amount 
-     * @param string $apiKey 
+     *
+     * @param string $currency
+     * @param int|long $amount
+     * @param string $apiKey
      * @return mixed
      */
     public function getPaymentTypes($currency, $amount, $apiKey)
@@ -32,9 +32,9 @@ class Merchant extends Base
 
     /**
      * Returns a transaction based on the id
-     * 
-     * @param int|long $transactionid 
-     * @param string $apiKey 
+     *
+     * @param int|long $transactionid
+     * @param string $apiKey
      * @return mixed
      */
     public function getTransaction($transactionid, $apiKey)

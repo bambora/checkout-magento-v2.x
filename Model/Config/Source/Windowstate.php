@@ -12,7 +12,8 @@ namespace Bambora\Online\Model\Config\Source;
 class Windowstate implements \Magento\Framework\Option\ArrayInterface
 {
     /**
-     * @desc Checkout Window state
+     * Checkout Window state
+     * 
      * @return array
      */
     public function toOptionArray()

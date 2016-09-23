@@ -13,5 +13,6 @@ class CheckoutApi
 {
     const API_MERCHANT = 'Merchant';
     const API_CHECKOUT = 'Checkout';
+    const API_TRANSACTION = 'Transaction';
     const API_ASSETS = 'Assets';
 }

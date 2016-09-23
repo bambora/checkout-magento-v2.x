@@ -7,15 +7,12 @@
  * @author      Bambora
  * @copyright   Bambora (http://bambora.com)
  */
-namespace Bambora\Online\Model;
+namespace Bambora\Online\Model\Method;
 
-class CheckoutConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
+use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
+
+class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
 {
-    /**
-     * @var string
-     */
-    const METHOD_CODE = 'bambora_checkout';
-
     /**
      * @var \Magento\Payment\Helper\Data
      */
@@ -36,12 +33,12 @@ class CheckoutConfigProvider implements \Magento\Checkout\Model\ConfigProviderIn
      */
     public function getConfig()
     {
-        $checkoutMethod = $this->_paymentHelper->getMethodInstance(self::METHOD_CODE);
+        $checkoutMethod = $this->_paymentHelper->getMethodInstance(CheckoutPayment::METHOD_CODE);
 
         $config = [
             'payment' => [
-                self::METHOD_CODE => [
-                    'paymentTitle' => $checkoutMethod->getCheckoutConfig('checkout_title'),
+                CheckoutPayment::METHOD_CODE => [
+                    'paymentTitle' => $checkoutMethod->getCheckoutConfig('title'),
                     'paymentIconSrc' => $checkoutMethod->getCheckoutIconUrl(),
                     'windowState' => 1, //$checkoutMethod->getBamboraConfig('window_state'), TODO implement overlay
                     'checkoutUrl'=> $checkoutMethod->getCheckoutUrl(),

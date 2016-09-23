@@ -12,10 +12,6 @@ namespace Bambora\Online\Model\Api\Checkout\Models;
 class CheckoutRequest
 {
     /**
-     * @var bool
-     */
-    public $capturemulti;
-    /**
      * @var \Bambora\Online\Model\Api\Checkout\Models\Customer
      */
     public $customer;

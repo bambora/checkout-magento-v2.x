@@ -14,9 +14,10 @@ use Monolog\Logger;
 class BamboraLogger extends Logger
 {
     /**
-     * @desc Add Checkout error to log
-     * @param $id
-     * @param $reason
+     * Add Checkout error to log
+     * 
+     * @param mixed $id
+     * @param mixed $reason
      * @return void
      */
     public function addCheckoutError($id, $reason)
@@ -26,9 +27,10 @@ class BamboraLogger extends Logger
     }
 
     /**
-     * @desc Add Checkout info to log
-     * @param $id
-     * @param $reason
+     * Add Checkout info to log
+     * 
+     * @param mixed $id
+     * @param mixed $reason
      * @return void
      */
     public function addCheckoutInfo($id, $reason)
@@ -36,7 +38,4 @@ class BamboraLogger extends Logger
         $errorMessage = 'ID: ' .$id . ' - ' . $reason;
         $this->addInfo($errorMessage);
     }
-
-
-
 }

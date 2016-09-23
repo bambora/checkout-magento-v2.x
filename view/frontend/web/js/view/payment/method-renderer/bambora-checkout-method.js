@@ -22,29 +22,23 @@ define(
         return Component.extend({
             self: this,
             defaults: {
-                template: 'Bambora_Online/payment/checkout-form'
-            },
-            initObservable: function () {
-                this._super().observe([]);
-                return this;
+                template: 'Bambora_Online/payment/checkout-form',
+                paymentLogos: function () {
+                    var result = ko.observable();
+                    var evaluator = function () {
+                        return $.get(window.checkoutConfig.payment["bambora_checkout"].assetsUrl);
+                    }
+                    ko.computed(function () {
+                        evaluator.call(this).done(result);
+                    });
+                    return result;
+                }()
             },
             getBamboraCheckoutTitle: function () {
                 return window.checkoutConfig.payment["bambora_checkout"].paymentTitle;
             },
             getBamboraCheckoutIconSrc: function () {
                 return window.checkoutConfig.payment["bambora_checkout"].paymentIconSrc;
-            },
-            getBamboraCheckoutPaymentCardIds: function () {
-                var result = ko.observable();
-
-                var evaluator = function () {
-                    return $.get(window.checkoutConfig.payment["bambora_checkout"].assetsUrl);
-                }
-                ko.computed(function () {
-                    evaluator.call(this).done(result);
-                });
-                return result;
-
             },
             /** Redirect to Bambora */
             continueToBamboraCheckout: function () {
@@ -54,7 +48,6 @@ define(
                     setPaymentMethodAction();
                     return false;
                 }
-                return true;
             }
         });
     }

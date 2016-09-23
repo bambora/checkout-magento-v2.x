@@ -10,11 +10,12 @@
 namespace Bambora\Online\Controller\Checkout;
 
 use \Magento\Sales\Model\Order;
+use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
 
 class Checkout extends AbstractCheckout
 {
     /**
-     * @desc Checkout Action
+     * Checkout Action
      */
     public function execute()
     {
@@ -29,30 +30,34 @@ class Checkout extends AbstractCheckout
 
     public function setOrderDetails($order)
     {
-        $order->setState(Order::STATE_PENDING_PAYMENT);
+        $order->setPaymentMethod(CheckoutPayment::METHOD_CODE);
+        $order->setState(Order::STATE_PROCESSING);
+        $status = $this->_bamboraHelper->getBamboraCheckoutConfigData('order_status_pending',$this->_getOrder()->getStoreId());
+        $order->setStatus($status);
         $message = __("Order placed and is now awaiting payment authorization");
-        $order->addStatusHistoryComment($message, Order::STATE_PENDING_PAYMENT);
+        $order->addStatusHistoryComment($message,$status);
         $order->setIsNotified(false);
         $order->save();
     }
 
     /**
-     * @desc Get the Bambora Checkout Response
-     * @param $order
+     * Get the Bambora Checkout Response
+     *
+     * @param \Magento\Sales\Model\Order
      * @return array
      */
     public function getCheckoutResponse($order)
     {
         $checkoutMethod = $this->_getPaymentMethodInstance();
-        $setCheckoutRequest = $checkoutMethod->createBamboraCheckoutRequest($order);
-        $setCheckoutResponse = $checkoutMethod->setCheckout($setCheckoutRequest);
+        $setCheckoutResponse = $checkoutMethod->setCheckout($order);
 
-        if(!$this->_bamboraHelper->validateCheckoutApiResult($setCheckoutResponse, $order->getIncrementId()))
+        $message = "";
+        if(!$this->_bamboraHelper->validateCheckoutApiResult($setCheckoutResponse, $order->getIncrementId(),false, $message))
         {
-            $this->messageManager->addError(__("An error occured while fetching the payment windows."));
+            $this->messageManager->addError($message);
+            throw new \Magento\Framework\Exception\LocalizedException(__('The payment window could not be retrived'));
         }
 
         return $setCheckoutResponse;
     }
-
 }

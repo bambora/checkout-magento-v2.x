@@ -12,67 +12,12 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
   <system>
     <section id="payment">
-      <group id="bambora_checkout" translate="label comment" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
-        <label>Bambora Checkout v0.1.0</label>
-        <comment>
-          <![CDATA[Detailed description of these settings are to be found <a href='http://dev.bambora.com/carts.html#magento2' target='_blank'>here</a>.]]>
-        </comment>
-        <field id="active" translate="label comment" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>Enabled:</b>]]></label>
-          <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-          <comment><![CDATA[To enable and disable this payment method.]]></comment>
-        </field>
-        <field id="checkout_title" translate="label comment" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>Title:</b>]]></label>
-          <comment><![CDATA[The title of the payment method displayed to the customers.]]></comment>
-        </field>
-        <field id="merchant_number" translate="label comment" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>Merchant number:</b>]]></label>
-          <comment><![CDATA[The number identifying your Bambora merchant account. If you don't know your merchant number, please <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account.</a> Go to <b>Settings -> Merchant numbers</b> to view your merchant number.]]></comment>
-        </field>
-
-        <field id="access_token" translate="label comment" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>Access token:</b>]]></label>
-          <comment><![CDATA[The Access token for the API user received from the Bambora administration. If you don't know your Access token please <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account.</a> Go to <b>Settings -> API users</b> to view or create a new API user.]]></comment>
-        </field>
-
-        <field id="secret_token" translate="label comment" type="obscure" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>Secret token:</b>]]></label>
-          <comment><![CDATA[The Secret token for the API user received from the Bambora administration. The Secret token is only displayed to you when you create a new API user and as such you should take note of it. If you have lost your Secret token, <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account</a> and create a new API user. Go to <b>Settings -> API users -> Create API users</b>]]></comment>
-        </field>
-
-        <field id="md5key" translate="label comment" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>MD5 Key:</b>]]></label>
-          <comment><![CDATA[The MD5 key is used to stamp data sent between Magento and Bambora to prevent it from being tampered with. The MD5 key is optional but if used here, must be the same as in the Bambora administration. To view your MD5 key please <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account</a> and go to <b>Settings -> Merchant numbers -> Edit</b>]]></comment>
-        </field>
-
-        <field id="paymentwindow_id" translate="label comment" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>Payment Window ID:</b>]]></label>
-          <comment><![CDATA[The ID of the payment window to use. You can find the available payment windows in the Bambora administration. Please <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account</a> and go to <b>Settings -> Payment windows.</b>]]></comment>
-        </field>
-
-        <field id="instant_capture" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>Instant capture:</b>]]></label>
-          <comment><![CDATA[Set to <b>Yes</b> if you wish to capture payments at the same time they are authorized. In some countries, this is only permitted if the consumer receives the products right away Ex. digital products.]]></comment>
-          <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-        </field>
-
-        <!--<field id="window_state" translate="label comment" type="select" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>Windows state:</b>]]></label>
-          <comment><![CDATA[Set to <b>Overlay</b> for the Payment Window to open as a overlayed window on top of the store. The store will be visible behind the payment window. Set to <b>Full Screen</b> to open the payment window in the same window but in full-screen. The store will not be visible in this setting.]]></comment>
-          <source_model>Bambora\Payment\Model\Config\Source\Windowstate</source_model>
-        </field>-->
-
-        <field id="immediateredirecttoaccept" translate="label comment" type="select" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>Immediate Redirect</b>]]></label>
-          <comment><![CDATA[Set to <b>Yes</b> to immediately redirect your customer back to you shop after the payment completed.]]></comment>
-          <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-        </field>
-        <field id="sort_order" translate="label" type="text" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0">
-          <label><![CDATA[<b>Sort Order</b>]]></label>
-          <frontend_class>validate-number</frontend_class>
-        </field>
-
+      <group id="bambora_online" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Bambora Online</label>
+        <attribute type="expanded">1</attribute>
+        <fieldset_css>complex</fieldset_css>
+        <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Group</frontend_model>
+        <include path="Bambora_Online::system/bambora_checkout.xml"/>
       </group>
     </section>
   </system>

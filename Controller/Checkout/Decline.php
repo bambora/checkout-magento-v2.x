@@ -14,7 +14,7 @@ use \Magento\Sales\Model\Order;
 class Decline extends AbstractCheckout
 {
     /**
-     * @desc Decline Action
+     * Decline Action
      */
     public function execute()
     {
@@ -24,7 +24,7 @@ class Decline extends AbstractCheckout
     }
 
     /**
-     * @desc Cancel last placed order with specified comment message
+     * Cancel last placed order with specified comment message
      * @return bool
      */
     public function cancelCurrentOrder()
@@ -42,7 +42,7 @@ class Decline extends AbstractCheckout
     }
 
     /**
-     * @desc Restores quote
+     * Restores quote
      * @return bool
      */
     public function restoreQuote()

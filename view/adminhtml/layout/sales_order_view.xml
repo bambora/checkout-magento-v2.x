@@ -1,0 +1,20 @@
+﻿<?xml version="1.0"?>
+<!--
+/**
+ * Bambora Online 
+ * 
+ * @category    Online Payment Gatway
+ * @package     Bambora_Online_Checkout
+ * @author      Bambora
+ * @copyright   Bambora (http://bambora.com)
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+  <body>
+    <referenceContainer name="left">
+      <referenceContainer name="payment_additional_info">
+        <block class="Bambora\Online\Block\Adminhtml\Order\View\View" name="sales_order_view_paymentinfo" template="order/view/paymentinfo.phtml"/>
+      </referenceContainer>
+    </referenceContainer>
+  </body>
+</page>

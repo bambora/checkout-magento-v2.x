@@ -1,7 +1,7 @@
 ﻿<!--
 /**
- * Bambora Online 
- * 
+ * Bambora Online
+ *
  * @category    Online Payment Gatway
  * @package     Bambora_Online_Checkout
  * @author      Bambora
@@ -20,8 +20,8 @@
             <!-- Bambora Logo -->
             <span class="bambora_payment_title">
                 <span data-bind="text: getBamboraCheckoutTitle()" class="bambora_payment_title_text"></span>
-                <span class="bambora_paymentcards_container" data-bind="foreach: {data: getBamboraCheckoutPaymentCardIds(), as: 'cardId'} ">
-                    <img class="bambora_paymentcard" data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + cardId + '.png'}" />
+                <span class="bambora_paymentcards_container" data-bind="foreach: paymentLogos">
+                    <img class="bambora_paymentcard" alt="Bambora Paymentcard" data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + $data + '.png'}" />
                 </span>
             </span>
         </label>

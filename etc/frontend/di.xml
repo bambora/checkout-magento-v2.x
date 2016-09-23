@@ -13,7 +13,7 @@
   <type name="Magento\Checkout\Model\CompositeConfigProvider">
     <arguments>
       <argument name="configProviders" xsi:type="array">
-        <item name="bambora_online_config_provider" xsi:type="object">Bambora\Online\Model\CheckoutConfigProvider</item>
+        <item name="bambora_checkout_config_provider" xsi:type="object">Bambora\Online\Model\Method\ConfigProvider</item>
       </argument>
     </arguments>
   </type>

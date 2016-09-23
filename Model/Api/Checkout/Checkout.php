@@ -15,9 +15,9 @@ class Checkout extends Base
 {
     /**
      * Sends the checkout request
-     * 
-     * @param \Bambora\Online\Model\Api\Checkout\Models\CheckoutRequest $setcheckoutrequest 
-     * @param string $apiKey 
+     *
+     * @param \Bambora\Online\Model\Api\Checkout\Models\CheckoutRequest $setcheckoutrequest
+     * @param string $apiKey
      * @return mixed
      */
     public function setCheckout($setcheckoutrequest, $apiKey)
