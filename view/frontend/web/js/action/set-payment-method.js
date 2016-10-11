@@ -58,7 +58,7 @@ define(
             ).done(
                 function () {
                     var url = window.checkoutConfig.payment[quote.paymentMethod().method].checkoutUrl;
-                    var cancelUrl = window.checkoutConfig.payment[quote.paymentMethod().method].cancelUrl + "?magentoerror=1";
+                    var cancelUrl = window.checkoutConfig.payment[quote.paymentMethod().method].cancelUrl;
                     $.get(url)
                         .done(function (data) {
                             try {

@@ -32,7 +32,7 @@ define(
                 paymentLogos: function () {
                     var result = ko.observable();
                     var evaluator = function () {
-                        var cancelUrl = window.checkoutConfig.payment["bambora_checkout"].cancelUrl + "?magentoerror=1";
+                        var cancelUrl = window.checkoutConfig.payment["bambora_checkout"].cancelUrl;
                         var answer = $.get(window.checkoutConfig.payment["bambora_checkout"].assetsUrl);
                         if (!answer) {
                             $.mage.redirect(cancelUrl);

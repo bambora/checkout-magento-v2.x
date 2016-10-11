@@ -173,15 +173,7 @@ abstract class AbstractController extends \Magento\Framework\App\Action\Action
     {
         $this->cancelCurrentOrder();
         $this->restoreQuote();
-        $posted = $this->getRequest()->getParams();
-        if(isset($posted) && array_key_exists('magentoerror',$posted))
-        {
-            $this->_redirect('checkout/cart');
-        }
-        else
-        {
-            $this->_redirect('checkout', ['_fragment' => 'payment']);
-        }
+        $this->_redirect('checkout/cart');
     }
 
     /**
