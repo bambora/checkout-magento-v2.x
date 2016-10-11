@@ -1,0 +1,63 @@
+﻿/**
+ * 888                             888
+ * 888                             888
+ * 88888b.   8888b.  88888b.d88b.  88888b.   .d88b.  888d888  8888b.
+ * 888 "88b     "88b 888 "888 "88b 888 "88b d88""88b 888P"       "88b
+ * 888  888 .d888888 888  888  888 888  888 888  888 888     .d888888
+ * 888 d88P 888  888 888  888  888 888 d88P Y88..88P 888     888  888
+ * 88888P"  "Y888888 888  888  888 88888P"   "Y88P"  888     "Y888888
+ *
+ * @category    Online Payment Gatway
+ * @package     Bambora_Online
+ * @author      Bambora Online
+ * @copyright   Bambora (http://bambora.com)
+ */
+.bambora_action_container {
+    line-height: 2.6rem;
+}
+.bambora_action_container tr:nth-child(even) {
+    background: #f1f1f1;
+}
+.bambora_action_container td {
+    width: 50%;
+    padding-left: 5px;
+    padding-right: 5px; 
+}
+
+.bambora_table_title {
+    border-bottom: 1px solid gray;
+    font-weight: bold;
+}
+.bambora_table_title_padding {
+    padding-top: 20px;
+}
+
+.bambora_table_history_td {
+    vertical-align: top;
+}
+.bambora_table_history_tr {
+    border-bottom: 1px solid gray;
+}
+
+.bambora_paymentcard {
+    height: 17px;
+    position: relative;
+    vertical-align: middle;
+}
+
+
+.bambora-checkout-method > .entry-edit-head > .config-heading .heading strong {
+    padding-left: 134px;
+    background: url(https://d3r1pwhfz7unl9.cloudfront.net/bambora/bambora-logo.png) no-repeat 0 0;
+    -ms-background-size: 127px 40px;
+    background-size: 127px 40px;
+    line-height: 44px;
+}
+
+.bambora-epay-method > .entry-edit-head > .config-heading .heading strong {
+    padding-left: 134px;
+    background: url(https://d3r1pwhfz7unl9.cloudfront.net/bambora/ePay-logo.png) no-repeat 0 0;
+    -ms-background-size: 127px 35px;
+    background-size: 127px 35px;
+    line-height: 35px;
+}

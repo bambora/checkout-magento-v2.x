@@ -1,9 +1,15 @@
 ﻿/**
- * Bambora Online 
- * 
+ * 888                             888
+ * 888                             888
+ * 88888b.   8888b.  88888b.d88b.  88888b.   .d88b.  888d888  8888b.
+ * 888 "88b     "88b 888 "888 "88b 888 "88b d88""88b 888P"       "88b
+ * 888  888 .d888888 888  888  888 888  888 888  888 888     .d888888
+ * 888 d88P 888  888 888  888  888 888 d88P Y88..88P 888     888  888
+ * 88888P"  "Y888888 888  888  888 88888P"   "Y88P"  888     "Y888888
+ *
  * @category    Online Payment Gatway
- * @package     Bambora_Online_Checkout
- * @author      Bambora
+ * @package     Bambora_Online
+ * @author      Bambora Online
  * @copyright   Bambora (http://bambora.com)
  */
 define(
@@ -19,7 +25,7 @@ define(
     function ($, quote, urlBuilder, storage, errorProcessor, customer, fullScreenLoader) {
         'use strict';
 
-        return function () {
+        return function (messageContainer) {
             var serviceUrl,
                 payload,
                 paymentData = quote.paymentMethod();
@@ -52,23 +58,27 @@ define(
             ).done(
                 function () {
                     var url = window.checkoutConfig.payment[quote.paymentMethod().method].checkoutUrl;
+                    var cancelUrl = window.checkoutConfig.payment[quote.paymentMethod().method].cancelUrl + "?magentoerror=1";
                     $.get(url)
                         .done(function (data) {
-                            data = JSON.parse(data);
-                            if (data == null || !data["meta"]["result"]) {
-                                $.mage.redirect(window.checkoutConfig.payment[quote.paymentMethod().method].declineUrl);
+                            try {
+                                data = JSON.parse(data);
+                                if (data == null) {
+                                    $.mage.redirect(cancelUrl);
+                                }
+                                $.mage.redirect(data["url"]);
+                            }catch(err) {
+                                $.mage.redirect(cancelUrl);
                             }
-                            $.mage.redirect(data["url"]);
-
-                        })
-                        .fail(function (response) {
-                            errorProcessor.process(response);
+                       }).fail(function (response) {
+                            errorProcessor.process(response, messageContainer);
                             fullScreenLoader.stopLoader();
+                            $.mage.redirect(cancelUrl);
                         });
                 }
             ).fail(
                 function (response) {
-                    errorProcessor.process(response);
+                    errorProcessor.process(response, messageContainer);
                     fullScreenLoader.stopLoader();
                 }
             );

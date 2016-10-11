@@ -1,11 +1,17 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Bambora Online 
- * 
+ * 888                             888
+ * 888                             888
+ * 88888b.   8888b.  88888b.d88b.  88888b.   .d88b.  888d888  8888b.
+ * 888 "88b     "88b 888 "888 "88b 888 "88b d88""88b 888P"       "88b
+ * 888  888 .d888888 888  888  888 888  888 888  888 888     .d888888
+ * 888 d88P 888  888 888  888  888 888 d88P Y88..88P 888     888  888
+ * 88888P"  "Y888888 888  888  888 88888P"   "Y88P"  888     "Y888888
+ *
  * @category    Online Payment Gatway
- * @package     Bambora_Online_Checkout
- * @author      Bambora
+ * @package     Bambora_Online
+ * @author      Bambora Online
  * @copyright   Bambora (http://bambora.com)
  */
 -->
@@ -16,14 +22,43 @@
         <active>0</active>
         <model>Bambora\Online\Model\Method\Checkout\Payment</model>
         <title>Bambora Checkout</title>
-        <paymentwindow_id>1</paymentwindow_id>
-        <instant_capture>0</instant_capture>
+        <paymentwindowid>1</paymentwindowid>
+        <instantcapture>0</instantcapture>
+        <instantinvoice>0</instantinvoice>
+        <instantinvoicemail>0</instantinvoicemail>
         <immediateredirecttoaccept>0</immediateredirecttoaccept>
+        <addfeetoshipping>0</addfeetoshipping>
+        <sendmailorderconfirmation>1</sendmailorderconfirmation>
         <sort_order>1</sort_order>
+        <windowstate>1</windowstate>
+        <group>bambora</group>
+      </bambora_checkout>
+      <bambora_epay>
+        <active>0</active>
+        <model>Bambora\Online\Model\Method\Epay\Payment</model>
+        <title>ePay | Payment solutions</title>
+        <paymentwindowid>1</paymentwindowid>
+        <instantcapture>0</instantcapture>
+        <instantinvoice>0</instantinvoice>
+        <instantinvoicemail>0</instantinvoicemail>
+        <paymentgroup>0</paymentgroup>
+        <ownreceipt>0</ownreceipt>
+        <addfeetoshipping>0</addfeetoshipping>
+        <remoteinterface>0</remoteinterface>
+        <enableinvoicedata>0</enableinvoicedata>
+        <sendmailorderconfirmation>1</sendmailorderconfirmation>
+        <sort_order>1</sort_order>
+        <windowstate>3</windowstate>
+        <timeout>60</timeout>
+        <group>bambora</group>
+      </bambora_epay>
+      <bambora_advanced>
+        <model>Bambora\Online\Model\Method\BamboraAdvanced</model>
+        <title>Bambora Advanced</title>
         <order_status>processing</order_status>
         <order_status_pending>pending_payment</order_status_pending>
-        <window_state>1</window_state>
-      </bambora_checkout>
+        <group>bambora</group>
+      </bambora_advanced>
     </payment>
   </default>
 </config>

@@ -1,0 +1,51 @@
+﻿<!--
+/**
+ * 888                             888
+ * 888                             888
+ * 88888b.   8888b.  88888b.d88b.  88888b.   .d88b.  888d888  8888b.
+ * 888 "88b     "88b 888 "888 "88b 888 "88b d88""88b 888P"       "88b
+ * 888  888 .d888888 888  888  888 888  888 888  888 888     .d888888
+ * 888 d88P 888  888 888  888  888 888 d88P Y88..88P 888     888  888
+ * 88888P"  "Y888888 888  888  888 88888P"   "Y88P"  888     "Y888888
+ *
+ * @category    Online Payment Gatway
+ * @package     Bambora_Online
+ * @author      Bambora Online
+ * @copyright   Bambora (http://bambora.com)
+ */
+-->
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()" />
+        <img data-bind="attr: {src: getBamboraEpayLogo()}" class="bambora_payment_title_icon" />
+        <span class="bambora_payment_title">
+            <span data-bind="text: getBamboraEpayTitle()" class="bambora_payment_title_text"></span>
+        </span>
+        <iframe data-bind="attr: {src: getBamboraEpayPaymentLogoSrc()}" frameborder="0" class="bambora_epay_paymenttype" alt="ePay payment type"></iframe>
+    </div>
+
+    <div class="payment-method-content">
+        <div class="checkout-agreements-block">
+            <span data-bind="i18n: 'You will be redirected to the ePay Payment Window.'"></span>
+        </div>
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button class="action primary checkout"
+                        type="submit"
+                        data-bind="click: continueToBamboraEpay, enable: (getCode() == isChecked())"
+                        disabled>
+                    <span data-bind="i18n: 'Place order'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

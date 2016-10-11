@@ -1,23 +1,31 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Bambora Online 
- * 
+ * 888                             888
+ * 888                             888
+ * 88888b.   8888b.  88888b.d88b.  88888b.   .d88b.  888d888  8888b.
+ * 888 "88b     "88b 888 "888 "88b 888 "88b d88""88b 888P"       "88b
+ * 888  888 .d888888 888  888  888 888  888 888  888 888     .d888888
+ * 888 d88P 888  888 888  888  888 888 d88P Y88..88P 888     888  888
+ * 88888P"  "Y888888 888  888  888 88888P"   "Y88P"  888     "Y888888
+ *
  * @category    Online Payment Gatway
- * @package     Bambora_Online_Checkout
- * @author      Bambora
+ * @package     Bambora_Online
+ * @author      Bambora Online
  * @copyright   Bambora (http://bambora.com)
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
   <system>
-    <section id="payment">
-      <group id="bambora_online" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+    <section id="payment" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1">
+      <group id="bambora_online" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
         <label>Bambora Online</label>
         <attribute type="expanded">1</attribute>
         <fieldset_css>complex</fieldset_css>
         <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Group</frontend_model>
         <include path="Bambora_Online::system/bambora_checkout.xml"/>
+        <include path="Bambora_Online::system/bambora_epay.xml"/>
+        <include path="Bambora_Online::system/bambora_advanced.xml"/>
       </group>
     </section>
   </system>
