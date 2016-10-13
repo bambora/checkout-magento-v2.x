@@ -239,7 +239,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                        "vat" =>$order->getBaseShippingTaxAmount() > 0 ? round(($order->getBaseShippingTaxAmount() / ($order->getBaseShippingInclTax() - $order->getBaseShippingDiscountAmount())) * 100) : 0
                    );
 
-            return json_encode($invoice);
+            return json_encode($invoice,JSON_UNESCAPED_UNICODE);
 		}
 		else
 		{
