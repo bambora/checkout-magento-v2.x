@@ -101,27 +101,27 @@
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/ownreceipt</config_path>
     </field>
-    <field id="addfeetoshipping" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Add payment fee to the "shipping and handling amount":</b>]]></label>
-      <comment><![CDATA[If the customer pays for the payment fee the amount will not be displayed on the order confirmation. However it is possible to add the amount to the shipping and handling amount displayed at the bottom of the order confirmation.]]></comment>
+    <field id="addsurchargetopayment" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Add payment surcharge to the order:</b>]]></label>
+      <comment><![CDATA[If the customer pays for the payment surcharge the amount will not be displayed on the order confirmation. The surcharge is displayed on the order, invoice and creditmemo totals]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/bambora_epay/addfeetoshipping</config_path>
+      <config_path>payment/bambora_epay/addsurchargetopayment</config_path>
     </field>
     <field id="enableinvoicedata" translate="label comment" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enable invoice data:</b>]]></label>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/enableinvoicedata</config_path>
     </field>
-    <field id="sort_order" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Sort order:</b>]]></label>
-      <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
-      <config_path>payment/bambora_epay/sort_order</config_path>
-    </field>
-    <field id="sendmailorderconfirmation" translate="label comment" type="select" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="sendmailorderconfirmation" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Send Email Order Confirmation:</b>]]></label>
       <comment><![CDATA[Enabling this setting will result in an order confirmation is e-mailed to the customer as the payment is made.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/sendmailorderconfirmation</config_path>
+    </field>
+    <field id="sort_order" translate="label comment" type="text" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Sort order:</b>]]></label>
+      <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
+      <config_path>payment/bambora_epay/sort_order</config_path>
     </field>
     <!--
     Intended out-comment for later release

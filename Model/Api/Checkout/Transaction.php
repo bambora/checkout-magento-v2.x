@@ -66,7 +66,7 @@ class Transaction extends Base
         }
         catch(\Exception $ex)
         {
-            $this->_bamboraLogger->addCheckoutError($transactionId, $ex->getMessage());
+            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
             return null;
         }
     }
@@ -117,7 +117,7 @@ class Transaction extends Base
         }
         catch(\Exception $ex)
         {
-            $this->_bamboraLogger->addCheckoutError($transactionId, $ex->getMessage());
+            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
             return null;
         }
     }
@@ -157,7 +157,7 @@ class Transaction extends Base
         }
         catch(\Exception $ex)
         {
-            $this->_bamboraLogger->addCheckoutError($transactionId, $ex->getMessage());
+            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
             return null;
         }
     }

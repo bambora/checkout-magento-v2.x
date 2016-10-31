@@ -1,4 +1,4 @@
-<?php
+<?php 
 /**
  * 888                             888
  * 888                             888
@@ -13,15 +13,12 @@
  * @author      Bambora Online
  * @copyright   Bambora (http://bambora.com)
  */
-namespace Bambora\Online\Controller\Checkout;
+?>
+<div>
+  <br/>
+  <table class="bambora_action_container" border="0" width="100%">
 
-class Accept extends \Bambora\Online\Controller\AbstractActionController
-{
-    /**
-     * Accept Action
-     */
-    public function execute()
-    {
-        $this->acceptOrder();
-    }
-}
+    <?php echo $this->getTransactionData(); ?>
+
+  </table>
+</div>

@@ -15,7 +15,7 @@
  */
 namespace Bambora\Online\Controller\Epay;
 
-class Accept extends \Bambora\Online\Controller\AbstractController
+class Accept extends \Bambora\Online\Controller\AbstractActionController
 {
     /**
      * Accept Action

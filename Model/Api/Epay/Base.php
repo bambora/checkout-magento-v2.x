@@ -80,7 +80,7 @@ class Base extends DataObject
     protected function _initSoapClient($wsdlUrl)
     {
         $soapClient = new \Zend\Soap\Client($wsdlUrl);
-        $soapClient->setSoapVersion(SOAP_1_2);
+        $soapClient->setSoapVersion(2);
 
         return $soapClient;
     }

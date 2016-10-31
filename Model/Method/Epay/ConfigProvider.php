@@ -15,7 +15,8 @@
  */
 namespace Bambora\Online\Model\Method\Epay;
 
-use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
+use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
+use \Bambora\Online\Helper\BamboraConstants;
 
 class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
 {
@@ -55,7 +56,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
         $config = [
             'payment' => [
                  $this->methodCode => [
-                    'paymentTitle' => $this->_ePayMethod->getEpayConfig('title'),
+                    'paymentTitle' => $this->_ePayMethod->getConfigData(BamboraConstants::TITLE),
                     'paymentLogoSrc' => $this->_ePayMethod->getEpayLogoUrl(),
                     'paymentTypeLogoSrc' => $this->_ePayMethod->getEpayPaymentTypeUrl(),
                     'checkoutUrl'=> $this->_ePayMethod->getCheckoutUrl(),

@@ -18,7 +18,6 @@ namespace Bambora\Online\Block\Info;
 use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
 use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
-
 class View extends \Magento\Payment\Block\Info
 {
     /**

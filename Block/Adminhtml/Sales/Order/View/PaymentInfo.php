@@ -13,12 +13,13 @@
  * @author      Bambora Online
  * @copyright   Bambora (http://bambora.com)
  */
-namespace Bambora\Online\Block\Adminhtml\Order\View;
+namespace Bambora\Online\Block\Adminhtml\Sales\Order\View;
 
-use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
+use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
+use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
+use Bambora\Online\Helper\BamboraConstants;
 
-class View extends \Magento\Backend\Block\Template
+class PaymentInfo extends \Magento\Backend\Block\Template
 {
     /**
      * @var \Magento\Framework\Registry
@@ -31,7 +32,7 @@ class View extends \Magento\Backend\Block\Template
     protected $_bamboraHelper;
 
     /**
-     * View constructor.
+     * PaymentInfo constructor.
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Bambora\Online\Helper\Data $bamboraHelper
@@ -65,7 +66,7 @@ class View extends \Magento\Backend\Block\Template
 
     public function getTransactionData()
     {
-        $result = '';
+        $result = 'No transaction data found';
 
         $order = $this->getOrder();
         $payment = $order->getPayment();;
@@ -76,7 +77,7 @@ class View extends \Magento\Backend\Block\Template
             $checkoutMethod = $payment->getMethodInstance();
             if(isset($checkoutMethod))
             {
-                $transactionId = $payment->getAdditionalInformation('bamboraCheckoutReference');
+                $transactionId = $payment->getAdditionalInformation($checkoutMethod::METHOD_REFERENCE);
 
                 $transaction = $checkoutMethod->getTransaction($transactionId);
 
@@ -86,13 +87,13 @@ class View extends \Magento\Backend\Block\Template
                 }
             }
         }
-        elseif($paymentMethod === EpayPayment::METHOD_CODE && $this->_bamboraHelper->getBamboraEpayConfigData('remoteinterface',$order->getStoreId()))
+        elseif($paymentMethod === EpayPayment::METHOD_CODE && $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::REMOTE_INTERFACE, $order->getStoreId()))
         {
             /** @var \Bambora\Online\Model\Method\Epay\Payment */
             $ePayMethod = $payment->getMethodInstance();
             if(isset($ePayMethod))
             {
-                $transactionId = $payment->getAdditionalInformation('bamboraEPayReference');
+                $transactionId = $payment->getAdditionalInformation($ePayMethod::METHOD_REFERENCE);
 
                 $transaction = $ePayMethod->getTransaction($transactionId);
 
@@ -113,7 +114,7 @@ class View extends \Magento\Backend\Block\Template
      * @return string
      */
     private function createCheckoutTransactionHtml($transaction)
-    { 
+    {
         $res = '<tr><td colspan="2" class="bambora_table_title">'.__('Bambora Checkout'). '</td></tr>';
 
         $res .= '<tr><td>' . __('Transaction ID') . ':</td>';
@@ -131,7 +132,7 @@ class View extends \Magento\Backend\Block\Template
         $res .= '<tr><td>' . __('Card number') . ':</td>';
         $res .= '<td>' . $transaction->information->primaryAccountnumbers[0]->number . '</td></tr>';
 
-        $res .= '<tr><td>' . __('Transaction fee') . ':</td>';
+        $res .= '<tr><td>' . __('Surcharge fee') . ':</td>';
         $res .= '<td>' . $transaction->currency->code . "&nbsp;" .$this->_bamboraHelper->convertPriceFromMinorUnits($transaction->total->feeamount, $transaction->currency->minorunits) . '</td></tr>';
 
         $res .= '<tr><td>' . __('Captured') . ':</td>';
@@ -249,7 +250,7 @@ class View extends \Magento\Backend\Block\Template
             $res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->crediteddate)) . '</td></tr>';
         }
 
-        $res .= '<tr><td>' . __('Transaction fee') . ':</td>';
+        $res .= '<tr><td>' . __('Surcharge fee') . ':</td>';
         $res .= '<td>' . $order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->fee,$minorUnits) . '</td></tr>';
 
         if(isset($transactionInformation->history) && isset($transactionInformation->history->TransactionHistoryInfo) && count($transactionInformation->history->TransactionHistoryInfo) > 0)

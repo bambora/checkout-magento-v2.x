@@ -18,6 +18,7 @@ namespace Bambora\Online\Model\Method\Epay;
 use \Bambora\Online\Model\Api\EpayApi;
 use \Bambora\Online\Model\Api\EpayApiModels;
 use \Magento\Sales\Model\Order\Payment\Transaction;
+use Bambora\Online\Helper\BamboraConstants;
 
 class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \Bambora\Online\Model\Method\IPayment
 {
@@ -44,18 +45,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     private $_auth;
 
-
-    /**
-     * Retrieve value for a configurationType
-     *
-     * @return string
-     */
-    public function getEpayConfig($configType)
-    {
-        $value = $this->_bamboraHelper->getBamboraEpayConfigData($configType,$this->getStoreManager()->getStore()->getId());
-
-        return $value;
-    }
 
     /**
      * Retrieve an url for merchant payment logoes
@@ -148,25 +137,26 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $currency = $order->getBaseCurrencyCode();
         $minorUnits = $this->_bamboraHelper->getCurrencyMinorUnits($currency);
         $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorUnits($order->getBaseTotalDue(), $minorUnits);
+        $storeId = $order->getStoreId();
 
         /** @var \Bambora\Online\Model\Api\Epay\Request\Payment */
         $paymentRequest = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_PAYMENT);
         $paymentRequest->encoding = "UTF-8";
         $paymentRequest->cms = $this->_bamboraHelper->getModuleHeaderInfo();
-        $paymentRequest->windowState = $this->getEpayConfig('windowstate');
+        $paymentRequest->windowState = $this->getConfigData(BamboraConstants::WINDOW_STATE, $storeId);
         $paymentRequest->merchantNumber = $this->getAuth()->merchantNumber;
-        $paymentRequest->windowId = $this->getEpayConfig('paymentwindowid');
+        $paymentRequest->windowId = $this->getConfigData(BamboraConstants::PAYMENT_WINDOW_ID, $storeId);
         $paymentRequest->amount = $totalAmountMinorUnits;
         $paymentRequest->currency = $currency;
         $paymentRequest->orderId = $order->getIncrementId();
         $paymentRequest->acceptUrl = $this->_urlBuilder->getUrl('bambora/epay/accept', ['_secure' => $this->_request->isSecure()]);
         $paymentRequest->cancelUrl = $this->_urlBuilder->getUrl('bambora/epay/cancel', ['_secure' => $this->_request->isSecure()]);
         $paymentRequest->callbackUrl = $this->_urlBuilder->getUrl('bambora/epay/callback', ['_secure' => $this->_request->isSecure()]);
-        $paymentRequest->instantCapture = $this->getEpayConfig('instantcapture');
-        $paymentRequest->group = $this->getEpayConfig('group');
+        $paymentRequest->instantCapture = $this->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId);
+        $paymentRequest->group = $this->getConfigData(BamboraConstants::PAYMENT_GROUP, $storeId);
         $paymentRequest->language = $this->_bamboraHelper->calcLanguage();
-        $paymentRequest->ownReceipt = $this->getEpayConfig('ownreceipt');
-        $paymentRequest->timeout = $this->getEpayConfig('timeout');
+        $paymentRequest->ownReceipt = $this->getConfigData(BamboraConstants::OWN_RECEIPT, $storeId);
+        $paymentRequest->timeout = 60;
         $paymentRequest->invoice = $this->createInvoice($order,$minorUnits);
         $paymentRequest->hash = $this->_bamboraHelper->calcEpayMd5Key($order, $paymentRequest);
 
@@ -186,7 +176,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function createInvoice($order,$minorUnits)
     {
-        if($this->getConfigData('enableinvoicedata'))
+        if($this->getConfigData(BamboraConstants::ENABLE_INVOICE_DATA))
         {
             /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Invoice */
             $invoice = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_INVOICE);
@@ -267,7 +257,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function canCapture()
     {
-        $isActivatedInConfig = $this->getConfigData('remoteinterface');
+        $isActivatedInConfig = $this->getConfigData(BamboraConstants::REMOTE_INTERFACE);
         $this->_canCapture = $isActivatedInConfig;
         return $this->_canCapture;
     }
@@ -282,33 +272,38 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        parent::capture($payment, $amount);
-
-        $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
-        $order = $payment->getOrder();
-
-        $currency = $order->getBaseCurrencyCode();
-        $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-        $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount,$minorunits);
-
-        /** @var \Bambora\Online\Model\Api\Epay\Action */
-        $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
-        $captureResponse = $actionProvider->capture($amountMinorunits,$transactionId,$this->getAuth());
-
-        $message = "";
-        if(!$this->_bamboraHelper->validateEpayApiResult($captureResponse, $transactionId, $this->getAuth(), 'capture', $message))
+        try
         {
-            $this->_messageManager->addError($message);
-            throw new \Magento\Framework\Exception\LocalizedException(__('The capture action failed.'));
+            parent::capture($payment, $amount);
+
+            $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
+            $order = $payment->getOrder();
+
+            $currency = $order->getBaseCurrencyCode();
+            $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
+            $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount,$minorunits);
+
+            /** @var \Bambora\Online\Model\Api\Epay\Action */
+            $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
+            $captureResponse = $actionProvider->capture($amountMinorunits,$transactionId,$this->getAuth());
+
+            $message = "";
+            if(!$this->_bamboraHelper->validateEpayApiResult($captureResponse, $transactionId, $this->getAuth(), BamboraConstants::CAPTURE, $message))
+            {
+                throw new \Exception(__('The capture action failed.') . ' - '.$message);
+            }
+
+            $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_CAPTURE)
+                    ->setIsTransactionClosed(true)
+                    ->setParentTransactionId($transactionId);
+
+            return $this;
         }
-
-        $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_CAPTURE)
-                ->setIsTransactionClosed(true)
-                ->setParentTransactionId($transactionId);
-
-        return $this;
+        catch(\Exception $ex)
+        {
+            throw $ex;
+        }
     }
-
 
     /**
      * Check Refund availability
@@ -318,7 +313,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function canRefund()
     {
-        $isActivatedInConfig = $this->getConfigData('remoteinterface');
+        $isActivatedInConfig = $this->getConfigData(BamboraConstants::REMOTE_INTERFACE);
         $this->_canRefund = $isActivatedInConfig;
         return $this->_canRefund;
     }
@@ -334,30 +329,36 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        parent::refund($payment, $amount);
-        $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
-        $order = $payment->getOrder();
-
-        $currency = $order->getBaseCurrencyCode();
-        $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-        $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount,$minorunits);
-
-        /** @var \Bambora\Online\Model\Api\Epay\Action */
-        $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
-        $creditResponse = $actionProvider->credit($amountMinorunits,$transactionId,$this->getAuth());
-
-        $message = "";
-        if(!$this->_bamboraHelper->validateEpayApiResult($creditResponse, $transactionId, $this->getAuth(), 'refund', $message))
+        try
         {
-            $this->_messageManager->addError($message);
-            throw new \Magento\Framework\Exception\LocalizedException(__('The refund action failed.'));
+            parent::refund($payment, $amount);
+            $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
+            $order = $payment->getOrder();
+
+            $currency = $order->getBaseCurrencyCode();
+            $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
+            $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount,$minorunits);
+
+            /** @var \Bambora\Online\Model\Api\Epay\Action */
+            $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
+            $creditResponse = $actionProvider->credit($amountMinorunits,$transactionId,$this->getAuth());
+
+            $message = "";
+            if(!$this->_bamboraHelper->validateEpayApiResult($creditResponse, $transactionId, $this->getAuth(), BamboraConstants::REFUND, $message))
+            {
+                throw new \Exception(__('The refund action failed.') . ' - '.$message);
+            }
+
+            $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_REFUND)
+                    ->setIsTransactionClosed(true)
+                    ->setParentTransactionId($transactionId);
+
+            return $this;
         }
-
-        $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_REFUND)
-                ->setIsTransactionClosed(true)
-                ->setParentTransactionId($transactionId);
-
-        return $this;
+        catch(\Exception $ex)
+        {
+            throw $ex;
+        }
     }
 
     /**
@@ -368,7 +369,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function canVoid()
     {
-        $isActivatedInConfig = $this->getConfigData('remoteinterface');
+        $isActivatedInConfig = $this->getConfigData(BamboraConstants::REMOTE_INTERFACE);
         $this->_canVoid = $isActivatedInConfig;
         return $this->_canVoid;
     }
@@ -381,26 +382,48 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function void(\Magento\Payment\Model\InfoInterface $payment)
     {
-        parent::void($payment);
-
-        $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
-
-        /** @var \Bambora\Online\Model\Api\Epay\Action */
-        $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
-        $deleteResponse = $actionProvider->delete($transactionId, $this->getAuth());
-
-        $message = "";
-        if(!$this->_bamboraHelper->validateEpayApiResult($deleteResponse, $transactionId, $this->getAuth(), 'void', $message))
+        try
         {
-            $this->_messageManager->addError($message);
-            throw new \Magento\Framework\Exception\LocalizedException(__('The void action failed.'));
+            parent::void($payment);
+
+            $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
+
+            /** @var \Bambora\Online\Model\Api\Epay\Action */
+            $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
+            $deleteResponse = $actionProvider->delete($transactionId, $this->getAuth());
+
+            $message = "";
+            if(!$this->_bamboraHelper->validateEpayApiResult($deleteResponse, $transactionId, $this->getAuth(), BamboraConstants::VOID, $message))
+            {
+                throw new \Exception(__('The void action failed.') . ' - '.$message);
+            }
+
+            $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_VOID)
+                    ->setIsTransactionClosed(true)
+                    ->setParentTransactionId($transactionId);
+
+            return $this;
+        }
+        catch(\Exception $ex)
+        {
+            throw $ex;
+        }
+    }
+
+    private function _canVoid($txnId)
+    {
+        if(!$this->canVoid())
+        {
+            return false;
         }
 
-        $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_VOID)
-                ->setIsTransactionClosed(true)
-                ->setParentTransactionId($transactionId);
+        $transaction = $this->getTransaction($txnId);
+        if(!isset($transaction) && $transaction->status !== '1')
+        {
+            return false;
+        }
 
-        return $this;
+        return true;
     }
 
     /**
@@ -411,14 +434,30 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function cancel(\Magento\Payment\Model\InfoInterface $payment)
     {
-        parent::cancel($payment);
-        if($this->canVoid())
+        try
         {
-            $this->void($payment);
+            /** @var \Magento\Sales\Model\Order */
+            $order = $payment->getOrder();
+            foreach($order->getItems() as $item)
+            {
+                if($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE)
+                {
+                    $item->setQtyCanceled(1);
+                }
+            }
+
+            if($this->_canVoid($payment->getAdditionalInformation($this::METHOD_REFERENCE)))
+            {
+                $this->void($payment);
+            }
+            else
+            {
+                $this->_messageManager->addNotice(__('The order: %1 is canceled but the payment could not be voided', $order->getId()));
+            }
         }
-        else
+        catch(\Exception $ex)
         {
-            $this->_messageManager->addInfo(__('The payment is canceled but could not be voided'));
+            throw $ex;
         }
 
         return $this;
@@ -432,20 +471,26 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function getTransaction($transactionId)
     {
-        if(!$this->getConfigData('remoteinterface'))
+        try
         {
-            return null;
-        }
-        /** @var \Bambora\Online\Model\Api\Epay\Action */
-        $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
-        $transactionResponse = $actionProvider->getTransaction($transactionId,$this->getAuth());
-        $message = "";
-        if(!$this->_bamboraHelper->validateEpayApiResult($transactionResponse, $transactionId,$this->getAuth(), 'gettransaction', $message))
-        {
-            $this->_messageManager->addError($message);
-            return null;
-        }
+            if(!$this->getConfigData(BamboraConstants::REMOTE_INTERFACE))
+            {
+                return null;
+            }
+            /** @var \Bambora\Online\Model\Api\Epay\Action */
+            $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
+            $transactionResponse = $actionProvider->getTransaction($transactionId,$this->getAuth());
+            $message = "";
+            if(!$this->_bamboraHelper->validateEpayApiResult($transactionResponse, $transactionId,$this->getAuth(), BamboraConstants::GET_TRANSACTION, $message))
+            {
+                return null;
+            }
 
-        return $transactionResponse->transactionInformation;
+            return $transactionResponse->transactionInformation;
+        }
+        catch(\Exception $ex)
+        {
+            return null;
+        }
     }
 }

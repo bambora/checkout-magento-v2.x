@@ -51,8 +51,9 @@ class Error extends Base
 				$res = $result->epayresponsestring;
 			}
         }
-        catch (\Exception $e)
+        catch (\Exception $ex)
         {
+            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
             return $res;
         }
 
@@ -91,9 +92,10 @@ class Error extends Base
                 $res = $result->pbsresponsestring;
             }
 		}
-		catch (\Exception $e)
+		catch (\Exception $ex)
 		{
-			return $res;
+            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
+            return $res;
 		}
 
 	    return $res;

@@ -137,7 +137,7 @@ class Action extends Base
         }
         catch(\Exception $ex)
         {
-            $this->_bamboraLogger->addEpayError($transactionId, $ex->getMessage());
+            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
             return null;
         }
     }
@@ -153,6 +153,9 @@ class Action extends Base
      */
     public function credit($amount,$transactionId,$auth)
     {
+        /** @var \Bambora\Online\Model\Api\Epay\Response\Credit */
+        $creditResponse = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::RESPONSE_CREDIT);
+
         try
         {
             $param = array
@@ -169,8 +172,6 @@ class Action extends Base
             $client = $this->_initSoapClient($url);
             $result = $client->credit($param);
 
-            /** @var \Bambora\Online\Model\Api\Epay\Response\Credit */
-            $creditResponse = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::RESPONSE_CREDIT);
             $creditResponse->result = $result->creditResult;
             $creditResponse->epayResponse = $result->epayresponse;
             $creditResponse->pbsResponse = $result->pbsresponse;
@@ -179,7 +180,7 @@ class Action extends Base
         }
         catch(\Exception $ex)
         {
-            $this->_bamboraLogger->addEpayError($transactionId, $ex->getMessage());
+            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
             return null;
         }
     }
@@ -216,7 +217,7 @@ class Action extends Base
         }
         catch(\Exception $ex)
         {
-            $this->_bamboraLogger->addEpayError($transactionId, $ex->getMessage());
+            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
             return null;
         }
     }
@@ -230,8 +231,8 @@ class Action extends Base
      */
     public function getTransaction($transactionId,$auth)
     {
-        try{
-
+        try
+        {
             $param = array
             (
                 'merchantnumber' => $auth->merchantNumber,
@@ -256,7 +257,7 @@ class Action extends Base
         }
         catch(\Exception $ex)
         {
-            $this->_bamboraLogger->addEpayError($transactionId, $ex->getMessage());
+            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
             return null;
         }
     }

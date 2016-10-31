@@ -27,7 +27,7 @@
         <instantinvoice>0</instantinvoice>
         <instantinvoicemail>0</instantinvoicemail>
         <immediateredirecttoaccept>0</immediateredirecttoaccept>
-        <addfeetoshipping>0</addfeetoshipping>
+        <addsurchargetopayment>0</addsurchargetopayment>
         <sendmailorderconfirmation>1</sendmailorderconfirmation>
         <sort_order>1</sort_order>
         <windowstate>1</windowstate>
@@ -43,7 +43,7 @@
         <instantinvoicemail>0</instantinvoicemail>
         <paymentgroup>0</paymentgroup>
         <ownreceipt>0</ownreceipt>
-        <addfeetoshipping>0</addfeetoshipping>
+        <addsurchargetopayment>0</addsurchargetopayment>
         <remoteinterface>0</remoteinterface>
         <enableinvoicedata>0</enableinvoicedata>
         <sendmailorderconfirmation>1</sendmailorderconfirmation>
@@ -57,6 +57,7 @@
         <title>Bambora Advanced</title>
         <order_status>processing</order_status>
         <order_status_pending>pending_payment</order_status_pending>
+        <masscaptureinvoicemail>1</masscaptureinvoicemail>
         <group>bambora</group>
       </bambora_advanced>
     </payment>

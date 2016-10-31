@@ -19,6 +19,7 @@ use Magento\Framework\DataObject;
 use Bambora\Online\Model\Api\CheckoutApi;
 use Bambora\Online\Model\Api\CheckoutApiModels;
 use \Magento\Sales\Model\Order\Payment\Transaction;
+use Bambora\Online\Helper\BamboraConstants;
 
 class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \Bambora\Online\Model\Method\IPayment
 {
@@ -38,6 +39,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     protected $_canRefund                   = true;
     protected $_canRefundInvoicePartial     = true;
     protected $_canVoid                     = true;
+    protected $_canDelete                   = true;
+
 
     /**
      * @var string
@@ -145,24 +148,10 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function getCheckoutIconUrl()
     {
-        $assetsApi = $this->_bamboraHelper->getCheckoutApi('Assets');
+        $assetsApi = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_ASSETS);
 
         return $assetsApi->getCheckoutIconUrl();
     }
-
-    /**
-     * Retrieve value for a configurationType
-     *
-     * @return string
-     */
-    public function getCheckoutConfig($configType)
-    {
-        $value = $this->_bamboraHelper->getBamboraCheckoutConfigData($configType,$this->getStoreManager()->getStore()->getId());
-
-        return $value;
-    }
-
-
 
     /**
      * Create the Bambora Checkout Request object
@@ -189,9 +178,9 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
         /** @var \Bambora\Online\Model\Api\Checkout\Request\Checkout */
         $checkoutRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CHECKOUT);
-        $checkoutRequest->instantcaptureamount = $this->_bamboraHelper->getBamboraCheckoutConfigData('instantcapture', $storeId) == 0 ? 0 : $totalAmountMinorUnits;
+        $checkoutRequest->instantcaptureamount = $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) == 0 ? 0 : $totalAmountMinorUnits;
         $checkoutRequest->language = $this->_bamboraHelper->getShopLocalCode();
-        $checkoutRequest->paymentwindowid = $this->getConfigData('paymentwindowid', $storeId);
+        $checkoutRequest->paymentwindowid = $this->getConfigData(BamboraConstants::PAYMENT_WINDOW_ID, $storeId);
 
         /** @var \Bambora\Online\Model\Api\Checkout\Request\Models\Customer */
         $bamboraCustomer = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_MODEL_CUSTOMER);
@@ -214,7 +203,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $bamboraCallback->url = $this->_urlBuilder->getUrl('bambora/checkout/callback', ['_secure' => $this->_request->isSecure()]);
         $bamboraUrl->callbacks = array();
         $bamboraUrl->callbacks[] = $bamboraCallback;
-        $bamboraUrl->immediateredirecttoaccept = $this->getConfigData('immediateredirecttoaccept', $storeId);
+        $bamboraUrl->immediateredirecttoaccept = $this->getConfigData(BamboraConstants::IMMEDIATEREDI_REDIRECT_TO_ACCEPT, $storeId);
         $checkoutRequest->url = $bamboraUrl;
 
         if($billingAddress)
@@ -368,43 +357,44 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        parent::capture($payment, $amount);
-
-        $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
-        $order = $payment->getOrder();
-
-        $invoicelines = null;
-
-        if($order->getGrandTotal() != $amount)
+        try
         {
-            $invoice = $order->getInvoiceCollection()->getLastItem();
-            $invoicelines = $this->getCaptureInvoiceLines($invoice, $order);
+            parent::capture($payment, $amount);
+
+            $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
+            $order = $payment->getOrder();
+
+            //For later implementation
+            $invoicelines = null;
+
+            $currency = $order->getBaseCurrencyCode();
+            $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
+            $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount,$minorunits);
+
+            /** @var \Bambora\Online\Model\Api\Checkout\Transaction */
+            $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
+            $captureResponse = $transactionProvider->capture($transactionId,$amountMinorunits,$currency,$invoicelines,$this->getApiKey());
+            $message = "";
+            if(!$this->_bamboraHelper->validateCheckoutApiResult($captureResponse, $order->getIncrementId(),true, $message))
+            {
+                throw new \Exception(__('The capture action failed.') . ' - '.$message);
+            }
+            $transactionoperationId = "";
+            foreach($captureResponse->transactionOperations as $transactionoperation)
+            {
+                $transactionoperationId = $transactionoperation->id;
+            }
+
+            $payment->setTransactionId($transactionoperationId . '-' . Transaction::TYPE_CAPTURE)
+                    ->setIsTransactionClosed(true)
+                    ->setParentTransactionId($transactionId);
+
+            return $this;
         }
-
-        $currency = $order->getBaseCurrencyCode();
-        $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-        $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount,$minorunits);
-
-        /** @var \Bambora\Online\Model\Api\Checkout\Transaction */
-        $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
-        $captureResponse = $transactionProvider->capture($transactionId,$amountMinorunits,$currency,$invoicelines,$this->getApiKey());
-        $message = "";
-        if(!$this->_bamboraHelper->validateCheckoutApiResult($captureResponse, $order->getIncrementId(),true, $message))
+        catch(\Exception $ex)
         {
-            $this->_messageManager->addError($message);
-            throw new \Magento\Framework\Exception\LocalizedException(__('The capture action failed.'));
+            throw $ex;
         }
-        $transactionoperationId = "";
-        foreach($captureResponse->transactionOperations as $transactionoperation)
-        {
-            $transactionoperationId = $transactionoperation->id;
-        }
-
-        $payment->setTransactionId($transactionoperationId . '-' . Transaction::TYPE_CAPTURE)
-                ->setIsTransactionClosed(true)
-                ->setParentTransactionId($transactionId);
-
-        return $this;
     }
 
 
@@ -418,34 +408,40 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        parent::refund($payment, $amount);
-        $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
-        $order = $payment->getOrder();
-        $creditMemo = $payment->getCreditmemo();
-
-        $invoicelines = $this->getRefundInvoiceLines($creditMemo, $order);
-
-        $currency = $order->getBaseCurrencyCode();
-        $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-        $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount,$minorunits);
-        $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
-        $creditResponse = $transactionProvider->credit($transactionId,$amountMinorunits,$currency,$invoicelines,$this->getApiKey());
-        $message = "";
-        if(!$this->_bamboraHelper->validateCheckoutApiResult($creditResponse, $order->getIncrementId(), true, $message))
+        try
         {
-            $this->_messageManager->addError($message);
-            throw new \Magento\Framework\Exception\LocalizedException(__('The refund action failed.'));
-        }
-        $transactionoperationId = "";
-        foreach($creditResponse->transactionOperations as $transactionoperation)
-        {
-            $transactionoperationId = $transactionoperation->id;
-        }
-        $payment->setTransactionId($transactionoperationId . '-' . Transaction::TYPE_REFUND)
-                ->setIsTransactionClosed(true)
-                ->setParentTransactionId($transactionId);
+            parent::refund($payment, $amount);
+            $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
+            $order = $payment->getOrder();
 
-        return $this;
+            //For later implementation
+            $invoicelines = null;
+
+            $currency = $order->getBaseCurrencyCode();
+            $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
+            $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount,$minorunits);
+            $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
+            $creditResponse = $transactionProvider->credit($transactionId,$amountMinorunits,$currency,$invoicelines,$this->getApiKey());
+            $message = "";
+            if(!$this->_bamboraHelper->validateCheckoutApiResult($creditResponse, $order->getIncrementId(), true, $message))
+            {
+                throw new \Exception(__('The refund action failed.') . ' - '.$message);
+            }
+            $transactionoperationId = "";
+            foreach($creditResponse->transactionOperations as $transactionoperation)
+            {
+                $transactionoperationId = $transactionoperation->id;
+            }
+            $payment->setTransactionId($transactionoperationId . '-' . Transaction::TYPE_REFUND)
+                    ->setIsTransactionClosed(true)
+                    ->setParentTransactionId($transactionId);
+
+            return $this;
+        }
+        catch(\Exception $ex)
+        {
+            throw $ex;
+        }
     }
 
     /**
@@ -456,28 +452,49 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function void(\Magento\Payment\Model\InfoInterface $payment)
     {
-        parent::void($payment);
+        try{
+            parent::void($payment);
 
-        $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
-        $order = $payment->getOrder();
-        $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
-        $deleteResponse = $transactionProvider->delete($transactionId,$this->getApiKey());
-        $message = "";
-        if(!$this->_bamboraHelper->validateCheckoutApiResult($deleteResponse, $order->getIncrementId(),true, $message))
-        {
-            $this->_messageManager->addError($message);
-            throw new \Magento\Framework\Exception\LocalizedException(__('The void or cancel action failed.'));
-        }
-        $transactionoperationId = "";
-        foreach($deleteResponse->transactionOperations as $transactionoperation)
-        {
-            $transactionoperationId = $transactionoperation->id;
-        }
-        $payment->setTransactionId($transactionoperationId . '-' . Transaction::TYPE_VOID)
-                ->setIsTransactionClosed(true)
-                ->setParentTransactionId($transactionId);
+            $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
+            $order = $payment->getOrder();
+            $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
+            $deleteResponse = $transactionProvider->delete($transactionId,$this->getApiKey());
+            $message = "";
+            if(!$this->_bamboraHelper->validateCheckoutApiResult($deleteResponse, $order->getIncrementId(),true, $message))
+            {
+                throw new \Exception(__('The void action failed.') . ' - '.$message);
+            }
+            $transactionoperationId = "";
+            foreach($deleteResponse->transactionOperations as $transactionoperation)
+            {
+                $transactionoperationId = $transactionoperation->id;
+            }
+            $payment->setTransactionId($transactionoperationId . '-' . Transaction::TYPE_VOID)
+                    ->setIsTransactionClosed(true)
+                    ->setParentTransactionId($transactionId);
 
-        return $this;
+            return $this;
+        }
+        catch(\Exception $ex)
+        {
+            throw $ex;
+        }
+    }
+
+    private function _canVoid($txnId)
+    {
+        if(!$this->canVoid())
+        {
+            return false;
+        }
+
+        $transaction = $this->getTransaction($txnId);
+        if(!isset($transaction) && !$transaction->canDelete)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -488,18 +505,34 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function cancel(\Magento\Payment\Model\InfoInterface $payment)
     {
-        parent::cancel($payment);
-        if($this->canVoid())
+        try
         {
-            $this->void($payment);
+            /** @var \Magento\Sales\Model\Order */
+            $order = $payment->getOrder();
+            foreach($order->getItems() as $item)
+            {
+                if($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE)
+                {
+                    $item->setQtyCanceled(1);
+                }
+            }
+            if($this->_canVoid($payment->getAdditionalInformation($this::METHOD_REFERENCE)))
+            {
+                $this->void($payment);
+            }
+            else
+            {
+                $this->_messageManager->addNotice(__('The order: %1 is canceled but the payment could not be voided', $order->getId()));
+            }
         }
-        else
+        catch(\Exception $ex)
         {
-            $this->_messageManager->addInfo(__('The payment is canceled but could not be voided'));
+            throw $ex;
         }
 
         return $this;
     }
+
 
     /**
      * Get Bambora Checkout Transaction
@@ -509,18 +542,24 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function getTransaction($transactionId)
     {
-        /** @var \Bambora\Online\Model\Api\Checkout\Merchant */
-        $merchantProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_MERCHANT);
-        $transactionResponse = $merchantProvider->getTransaction($transactionId,$this->getApiKey());
-
-        $message = "";
-        if(!$this->_bamboraHelper->validateCheckoutApiResult($transactionResponse, $transactionId,true, $message))
+        try
         {
-            $this->_messageManager->addError($message);
+            /** @var \Bambora\Online\Model\Api\Checkout\Merchant */
+            $merchantProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_MERCHANT);
+            $transactionResponse = $merchantProvider->getTransaction($transactionId,$this->getApiKey());
+
+            $message = "";
+            if(!$this->_bamboraHelper->validateCheckoutApiResult($transactionResponse, $transactionId, true, $message))
+            {
+                return null;
+            }
+
+            return $transactionResponse->transaction;
+        }
+        catch(\Exception $ex)
+        {
             return null;
         }
-
-        return $transactionResponse->transaction;
     }
 
     /**
@@ -538,7 +577,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $invoiceLines[] = $this->createInvoiceLine(
                 $item->getDescription(),
                 $item->getSku(),
-                array_search($item->getOrderItemId(),array_keys($order->getItems()))+1,
+                array_search($item->getOrderItemId(),array_keys($order->getItems())) + 1,
                 floatval($item->getQty()),
                 $item->getName(),
                 $item->getBaseRowTotal(),
@@ -549,85 +588,5 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         }
 
         return $invoiceLines;
-    }
-
-
-
-    /**
-     * Get Refund Invoice Lines
-     *
-     * @param \Magento\Sales\Model\Order\Creditmemo $creditMemo
-     * @param \Magento\Sales\Model\Order $order
-     * @return \Bambora\Online\Model\Api\Checkout\Request\Models\Line[]
-     */
-    public function getRefundInvoiceLines($creditMemo,$order)
-    {
-        $refundItems = $creditMemo->getItems();
-        $lines = $this->getInvoiceLines($refundItems,$order);
-
-
-        $shippingAmount = $creditMemo->getBaseShippingAmount();
-        //Shipping discount handling
-        if($order->getBaseShippingDiscountAmount() > 0)
-        {
-            $creditShipmentAmount = $creditMemo->getBaseShippingAmount();
-            $shipmentDiscount = $order->getBaseShippingDiscountAmount();
-
-            if(($creditShipmentAmount - $shipmentDiscount) < 0)
-            {
-                $shippingAmount = 0;
-            }
-            else
-            {
-                $shippingAmount = $creditShipmentAmount - $shipmentDiscount;
-            }
-        }
-
-
-        //Shipping
-        $shippingName = __("Shipping");
-        $lines[] = $this->createInvoiceLine($shippingName, $shippingName, count($lines) + 1, 1, $shippingName, $shippingAmount, $creditMemo->getBaseShippingTaxAmount(),null, $creditMemo->getBaseCurrencyCode());
-
-        //Adjustment refund
-        $adjustmentRefundName = __("Adjustment refund");
-        $lines[] = $this->createInvoiceLine($adjustmentRefundName, $adjustmentRefundName, count($lines) + 1, 1, $adjustmentRefundName, $creditMemo->getBaseAdjustment(), 0, null, $creditMemo->getBaseCurrencyCode());
-
-        return $lines;
-    }
-
-    /**
-     * Get Refund Invoice Lines
-     *
-     * @param \Magento\Sales\Model\Order\Invoice $creditMemo
-     * @param \Magento\Sales\Model\Order $order
-     * @return \Bambora\Online\Model\Api\Checkout\Request\Models\Line[]
-     */
-    public function getCaptureInvoiceLines($invoice,$order)
-    {
-        $invoiceItems = $invoice->getItemsCollection()->getItems();
-        $lines = $this->getInvoiceLines($invoiceItems,$order);
-
-        $shippingAmount = $invoice->getBaseShippingAmount();
-        //Shipping discount handling
-        if($order->getBaseShippingDiscountAmount() > 0)
-        {
-            $invoiceShipmentAmount = $invoice->getBaseShippingAmount();
-            $shipmentDiscount = $order->getBaseShippingDiscountAmount();
-
-            if(($invoiceShipmentAmount - $shipmentDiscount) < 0)
-            {
-                $shippingAmount = 0;
-            }
-            else
-            {
-                $shippingAmount = $invoiceShipmentAmount - $shipmentDiscount;
-            }
-        }
-
-        //Shipping
-        $shippingName = __("Shipping");
-        $lines[] = $this->createInvoiceLine($shippingName, $shippingName, count($lines), 1, $shippingName, $shippingAmount, $invoice->getBaseShippingTaxAmount(), null, $invoice->getBaseCurrencyCode());
-
-        return $lines;
     }
 }

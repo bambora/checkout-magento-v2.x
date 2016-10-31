@@ -16,6 +16,7 @@
 namespace Bambora\Online\Model\Method\Checkout;
 
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
+use \Bambora\Online\Helper\BamboraConstants;
 
 class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
 {
@@ -55,7 +56,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
         $config = [
             'payment' => [
                 $this->methodCode => [
-                    'paymentTitle' => $this->_checkoutMethod->getCheckoutConfig('title'),
+                    'paymentTitle' => $this->_checkoutMethod->getConfigData(BamboraConstants::TITLE),
                     'paymentIconSrc' => $this->_checkoutMethod->getCheckoutIconUrl(),
                     'windowState' => 1,
                     'checkoutUrl'=> $this->_checkoutMethod->getCheckoutUrl(),

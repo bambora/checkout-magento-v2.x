@@ -19,7 +19,7 @@
   <body>
     <referenceContainer name="left">
       <referenceContainer name="payment_additional_info">
-        <block class="Bambora\Online\Block\Adminhtml\Order\View\View" name="sales_order_view_paymentinfo" template="order/view/paymentinfo.phtml"/>
+        <block class="Bambora\Online\Block\Adminhtml\Sales\Order\View\PaymentInfo" name="sales_order_view_paymentinfo" template="sales/order/view/paymentinfo.phtml"/>
       </referenceContainer>
     </referenceContainer>
   </body>

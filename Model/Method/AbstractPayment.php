@@ -149,4 +149,15 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
         return $this->_order;
     }
 
+    /**
+     * Can be edit order (renew order)
+     *
+     * @return bool
+     * @api
+     */
+    public function canEdit()
+    {
+        return false;
+    }
+
 }

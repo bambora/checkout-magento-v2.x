@@ -17,7 +17,7 @@ namespace Bambora\Online\Controller\Checkout;
 
 use \Magento\Sales\Model\Order;
 
-class Cancel extends \Bambora\Online\Controller\AbstractController
+class Cancel extends \Bambora\Online\Controller\AbstractActionController
 {
     /**
      * Cancel Action

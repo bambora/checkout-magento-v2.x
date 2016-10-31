@@ -20,8 +20,9 @@ use \Magento\Framework\Webapi\Response;
 use \Magento\Sales\Model\Order;
 use \Magento\Sales\Model\Order\Payment\Transaction;
 use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
+use \Bambora\Online\Helper\BamboraConstants;
 
-class Callback extends \Bambora\Online\Controller\AbstractController
+class Callback extends \Bambora\Online\Controller\AbstractActionController
 {
     /**
      * Callback Action
@@ -49,7 +50,7 @@ class Callback extends \Bambora\Online\Controller\AbstractController
         if(!isset($posted))
         {
             $message = "Response is null";
-            $this->setResult(Exception::HTTP_BAD_REQUEST, $message, null);
+            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, null);
             return false;
         }
 
@@ -57,7 +58,7 @@ class Callback extends \Bambora\Online\Controller\AbstractController
         if(!$posted['orderid'] || !$posted['txnid'] || !$posted['amount'] || !$posted['currency'])
         {
             $message = "Parameteres are missing. Request: " . json_encode($posted);
-            $this->setResult(Exception::HTTP_BAD_REQUEST, $message,null);
+            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message,null);
             return false;
         }
 
@@ -66,12 +67,12 @@ class Callback extends \Bambora\Online\Controller\AbstractController
         if(!isset($order))
         {
             $message = "The Order could be found or created";
-            $this->setResult(Exception::HTTP_BAD_REQUEST,$message,$posted['orderid']);
+            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST,$message,$posted['orderid']);
             return false;
         }
 
         //Validate MD5
-        $shopMd5 = $this->_bamboraHelper->getBamboraEpayConfigData('md5key', $order->getStoreId());
+        $shopMd5 = $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
         $var = "";
         if(strlen($shopMd5) > 0)
         {
@@ -87,7 +88,7 @@ class Callback extends \Bambora\Online\Controller\AbstractController
             if($genstamp != $posted["hash"])
             {
                 $message = "Bambora MD5 check failed";
-                $this->setResult(Exception::HTTP_BAD_REQUEST, $message, $order->getIncrementId());
+                $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, $order->getIncrementId());
 
                 return false;
             }
@@ -105,138 +106,45 @@ class Callback extends \Bambora\Online\Controller\AbstractController
     {
         $ePayTransactionId = $posted['txnid'];
 
+        /** @var \Magento\Sales\Model\Order */
+        $order = $this->_getOrderByIncrementId($posted['orderid']);
+        $payment = $order->getPayment();
+
         try
         {
-            /** @var \Magento\Sales\Model\Order */
-            $order = $this->_getOrderByIncrementId($posted['orderid']);
-            $payment = $order->getPayment();
             $pspReference = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
-
             if(!isset($pspReference))
             {
-                $payment->setTransactionId($ePayTransactionId);
+                /** @var \Bambora\Online\Model\Method\Epay\Payment */
+                $paymentMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
+                $currency = $this->_bamboraHelper->convertIsoCode($posted['currency'], false);
+                $minorUnits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
 
-                $instantCapture = $this->_bamboraHelper->getBamboraEpayConfigData('instantcapture',$order->getStore()->getId());
-                $shouldCloseTransaction = $instantCapture ? true : false;
-                $payment->setIsTransactionClosed($shouldCloseTransaction);
-                $payment->setAdditionalInformation(array(EpayPayment::METHOD_REFERENCE => $ePayTransactionId));
-                $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
+                $this->_processCallbackData($order,
+                    $paymentMethod,
+                    $ePayTransactionId,
+                    EpayPayment::METHOD_REFERENCE,
+                    $this->_bamboraHelper->calcCardtype($posted['paymenttype']),
+                    $posted['cardno'],
+                    $posted['txnfee'],
+                    $minorUnits,
+                    $payment
+                );
 
-                $order->setState(Order::STATE_PROCESSING);
-                $status = $this->_bamboraHelper->getBamboraAdvancedConfigData('order_status',$this->_getOrder()->getStoreId());
-                $order->setStatus($status);
 
-                $message = __("Payment authorization was a success.");
-
-                $payment->addTransactionCommentsToOrder($transaction, $message);
-
-                $payment->setCcType($this->_bamboraHelper->calcCardtype($posted['paymenttype']));
-                $payment->setCcNumberEnc($posted['cardno']);
-
-                $payment->save();
-
-                if($this->_bamboraHelper->getBamboraEpayConfigData('addfeetoshipping', $order->getStoreId()) && strlen($posted['txnfee']) > 0)
-                {
-                    $minorUnits = $this->_bamboraHelper->getCurrencyMinorunits($order->getOrderCurrencyCode());
-                    $feeAmount = floatval($this->_bamboraHelper->convertPriceFromMinorUnits($posted['txnfee'],$minorUnits));
-
-                    //Update Base amounts
-                    $baseShippingAmount = $order->getBaseShippingAmount();
-                    $order->setBaseShippingAmount($baseShippingAmount + $feeAmount);
-                    $baseGrandTotal = $order->getBaseGrandTotal();
-                    $order->setBaseGrandTotal($baseGrandTotal + $feeAmount);
-
-                    //Update Order amounts
-                    $feeAmountConverted = $order->getStore()->getBaseCurrency()->convert($feeAmount,$order->getOrderCurrencyCode());
-
-                    $shippingAmount = $order->getShippingAmount();
-                    $order->setShippingAmount($shippingAmount + $feeAmountConverted);
-                    $grandTotal = $order->getGrandTotal();
-                    $order->setGrandTotal($grandTotal + $feeAmountConverted);
-
-                    $feeMessage = __("Shipping and handling fee, added to order");
-                    $order->addStatusHistoryComment($feeMessage);
-
-                    $order->save();
-                }
-
-                if (!$order->getEmailSent() && $this->_bamboraHelper->getBamboraEpayConfigData('sendmailorderconfirmation', $order->getStoreId()))
-                {
-                    $this->_orderSender->send($order);
-                    $order->addStatusHistoryComment(__('Order confirmation send to custommer'))
-                        ->setIsCustomerNotified(1)
-                        ->save();
-                }
-
-                $order->save();
-
-                if($this->_bamboraHelper->getBamboraEpayConfigData('instantinvoice', $order->getStoreId())== 1)
-                {
-                    if($order->canInvoice())
-                    {
-                         /** @var \Magento\Sales\Model\Order\Invoice */
-                        $invoice = $order->prepareInvoice();
-                        $invoice->setTransactionId($ePayTransactionId);
-                        $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
-                        $invoice->register();
-                        $invoice->save();
-                        $transactionSave = $this->_objectManager->create('Magento\Framework\DB\Transaction')
-                            ->addObject($invoice)
-                            ->addObject($invoice->getOrder());
-                        $transactionSave->save();
-
-                        if($this->_bamboraHelper->getBamboraCheckoutConfigData('instantinvoicemail', $order->getStoreId()) == 1)
-                        {
-                            $invoice->setEmailSent(1);
-                            $this->_invoiceSender->send($invoice);
-                            $order->addStatusHistoryComment(__('Notified customer about invoice') .' #'. $invoice->getId())
-                                ->setIsCustomerNotified(1)
-                                ->save();
-                        }
-                    }
-                }
-
-                $this->setResult(Response::HTTP_OK, "Callback Success - Order created",$order->getIncrementId());
+                $this->_callbackResult = $this->_getResult(Response::HTTP_OK, "Callback Success - Order created", $ePayTransactionId, $payment->getMethod());
             }
             else
             {
-                $this->setResult(Response::HTTP_OK, "Callback Success - Order already created",$order->getIncrementId());
+                $this->_callbackResult = $this->_getResult(Response::HTTP_OK, "Callback Success - Order already created", $ePayTransactionId, $payment->getMethod());
             }
-
         }
         catch(Exception $ex)
         {
+            $payment->setAdditionalInformation(array(EpayPayment::METHOD_REFERENCE => ""));
+            $payment->save();
             $message = "Callback Failed - " .$ex->getMessage();
-            $this->setResult(Exception::HTTP_INTERNAL_ERROR, $message,$ePayTransactionId);
+            $this->_callbackResult = $this->_getResult(Exception::HTTP_INTERNAL_ERROR, $message,$ePayTransactionId);
         }
-    }
-
-    /**
-     * Set Callback Response
-     *
-     * @param mixed $statusCode
-     * @param mixed $message
-     * @param mixed $id
-     * @return void
-     */
-    private function setResult($statusCode,$message,$id)
-    {
-        $result = $this->_resultJsonFactory->create();
-        $result->setHttpResponseCode($statusCode);
-
-        $result->setData(
-            ['id'=>$id,
-            'message'=>$message]);
-
-        if($statusCode === Response::HTTP_OK)
-        {
-            $this->_bamboraLogger->addEpayInfo($id,$message);
-        }
-        else
-        {
-            $this->_bamboraLogger->addEpayError($id,$message);
-        }
-
-        $this->_callbackResult = $result;
     }
 }

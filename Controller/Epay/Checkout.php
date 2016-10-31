@@ -17,8 +17,9 @@ namespace Bambora\Online\Controller\Epay;
 
 use \Magento\Sales\Model\Order;
 use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
+use \Bambora\Online\Helper\BamboraConstants;
 
-class Checkout extends \Bambora\Online\Controller\AbstractController
+class Checkout extends \Bambora\Online\Controller\AbstractActionController
 {
     /**
      * Checkout Action
@@ -27,8 +28,8 @@ class Checkout extends \Bambora\Online\Controller\AbstractController
     {
         $order = $this->_getOrder();
 
-        $status = $this->_bamboraHelper->getBamboraAdvancedConfigData('order_status_pending',$this->_getOrder()->getStoreId());
-        $this->setOrderDetails($order, EpayPayment::METHOD_CODE, $status);
+        $status = $this->_bamboraHelper->getBamboraAdvancedConfigData(BamboraConstants::ORDER_STATUS_PENDING, $this->_getOrder()->getStoreId());
+        $this->setOrderDetails($order, $status);
         $result = $this->getEPayPaymentWindowUrl($order);
         $resultJson = json_encode($result);
 
@@ -46,7 +47,7 @@ class Checkout extends \Bambora\Online\Controller\AbstractController
         try
         {
             /** @var \Bambora\Online\Model\Method\Epay\Payment */
-            $epayMethod = $this->_getPaymentMethodInstance(EpayPayment::METHOD_CODE);
+            $epayMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
             $response = $epayMethod->getPaymentWindow($order);
             return $response;
         }

@@ -90,7 +90,7 @@ class Merchant extends Base
         }
         catch(\Exception $ex)
         {
-            $this->_bamboraLogger->addCheckoutError(-1, $ex->getMessage());
+            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
             return null;
         }
     }
@@ -205,7 +205,7 @@ class Merchant extends Base
         }
         catch(\Exception $ex)
         {
-            $this->_bamboraLogger->addCheckoutError($transactionId, $ex->getMessage());
+            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
             return null;
         }
 	}
