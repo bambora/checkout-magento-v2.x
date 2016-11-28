@@ -174,7 +174,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
         $storeId = $order->getStoreId();
         $minorUnits = $this->_bamboraHelper->getCurrencyMinorUnits($order->getBaseCurrencyCode());
-        $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorUnits($order->getGrandTotal(), $minorUnits);
+        $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorUnits($order->getBaseTotalDue(), $minorUnits);
 
         /** @var \Bambora\Online\Model\Api\Checkout\Request\Checkout */
         $checkoutRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CHECKOUT);
@@ -190,7 +190,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $bamboraOrder = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_MODEL_ORDER);
         $bamboraOrder->currency = $order->getBaseCurrencyCode();
         $bamboraOrder->ordernumber = $order->getIncrementId();
-        $bamboraOrder->total = $this->_bamboraHelper->convertPriceToMinorUnits($order->getBaseTotalDue(), $minorUnits);
+        $bamboraOrder->total = $totalAmountMinorUnits;
         $bamboraOrder->vatamount = $this->_bamboraHelper->convertPriceToMinorUnits($order->getBaseTaxAmount(), $minorUnits);
 
         /** @var \Bambora\Online\Model\Api\Checkout\Request\Models\Url */
