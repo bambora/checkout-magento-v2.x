@@ -47,54 +47,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
 
     /**
-     * Retrieve an url for merchant payment logoes
-     *
-     * @return string
-     */
-    public function getEpayPaymentTypeUrl()
-    {
-        /** @var \Bambora\Online\Model\Api\Epay\Action */
-        $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
-
-        return $actionProvider->getPaymentLogoUrl($this->getAuth()->merchantNumber);
-    }
-
-    /**
-     * Retrieve an url ePay Logo
-     *
-     * @return string
-     */
-    public function getEpayLogoUrl()
-    {
-        /** @var \Bambora\Online\Model\Api\Epay\Action */
-        $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
-
-        return $actionProvider->getEpayLogoUrl();
-    }
-
-    /**
-     * Retrieve an url for the ePay Checkout action
-     *
-     * @return string
-     */
-    public function getCheckoutUrl()
-    {
-        return $this->_urlBuilder->getUrl('bambora/epay/checkout', ['_secure' => $this->_request->isSecure()]);
-    }
-
-
-    /**
-     * Retrieve an url for the ePay Decline action
-     *
-     * @return string
-     */
-    public function getCancelUrl()
-    {
-        return $this->_urlBuilder->getUrl('bambora/epay/cancel', ['_secure' => $this->_request->isSecure()]);
-    }
-
-
-    /**
      * Get ePay Auth object
      *
      * @return \Bambora\Online\Model\Api\Epay\Request\Models\Auth
@@ -109,7 +61,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
         return $this->_auth;
     }
-
 
     /**
      * Get Bambora Checkout payment window
@@ -153,7 +104,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $paymentRequest->cancelUrl = $this->_urlBuilder->getUrl('bambora/epay/cancel', ['_secure' => $this->_request->isSecure()]);
         $paymentRequest->callbackUrl = $this->_urlBuilder->getUrl('bambora/epay/callback', ['_secure' => $this->_request->isSecure()]);
         $paymentRequest->instantCapture = $this->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId);
-        $paymentRequest->group = $this->getConfigData(BamboraConstants::PAYMENT_GROUP, $storeId);
         $paymentRequest->language = $this->_bamboraHelper->calcLanguage();
         $paymentRequest->ownReceipt = $this->getConfigData(BamboraConstants::OWN_RECEIPT, $storeId);
         $paymentRequest->timeout = 60;
@@ -210,12 +160,13 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $items = $order->getAllVisibleItems();
             foreach($items as $item)
             {
+                $description = empty($item->getDescription()) ? $item->getName() : $item->getDescription();
                 $invoice->lines[] = array(
                         "id" =>$item->getSku(),
-                        "description" => $this->removeSpecialCharacters($item->getDescription()),
+                        "description" => $this->removeSpecialCharacters($description),
                         "quantity" => intval($item->getQtyOrdered()),
                         "price" => $this->_bamboraHelper->convertPriceToMinorUnits($item->getBasePrice() - ($item->getBaseDiscountAmount() / intval($item->getQtyOrdered())), $minorUnits),
-                        "vat" => $item->getTaxPercent()
+                        "vat" => floatval($item->getTaxPercent())
                     );
             }
             // add shipment as line
@@ -248,20 +199,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 		return preg_replace('/[^\p{Latin}\d ]/u', '', $value);
 	}
 
-
-    /**
-     * Check capture availability
-     *
-     * @return bool
-     * @api
-     */
-    public function canCapture()
-    {
-        $isActivatedInConfig = $this->getConfigData(BamboraConstants::REMOTE_INTERFACE);
-        $this->_canCapture = $isActivatedInConfig;
-        return $this->_canCapture;
-    }
-
     /**
      * Capture payment
      *
@@ -272,12 +209,29 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+
+        /** @var \Magento\Sales\Model\Order */
+        $order = $payment->getOrder();
+
         try
         {
-            parent::capture($payment, $amount);
-
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
-            $order = $payment->getOrder();
+
+            $isInstantCapure = $payment->getAdditionalInformation(BamboraConstants::INSTANT_CAPTURE);
+
+            if($isInstantCapure === true)
+            {
+                $payment->setTransactionId($transactionId . '-' . BamboraConstants::INSTANT_CAPTURE)
+                    ->setIsTransactionClosed(true)
+                    ->setParentTransactionId($transactionId);
+
+                return $this;
+            }
+
+            if(!$this->canOnlineAction($payment))
+            {
+                throw new \Exception(__("The capture action could not, be processed online. Please enable remote payment processing from the module configuration"));
+            }
 
             $currency = $order->getBaseCurrencyCode();
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
@@ -290,7 +244,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $message = "";
             if(!$this->_bamboraHelper->validateEpayApiResult($captureResponse, $transactionId, $this->getAuth(), BamboraConstants::CAPTURE, $message))
             {
-                throw new \Exception(__('The capture action failed.') . ' - '.$message);
+                throw new \Exception(__("The capture action failed.") . ' - '.$message);
             }
 
             $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_CAPTURE)
@@ -301,21 +255,10 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         }
         catch(\Exception $ex)
         {
+            $errorMessage = "({$order->getIncrementId()}) " . $ex->getMessage();
+            $this->_messageManager->addError($errorMessage);
             throw $ex;
         }
-    }
-
-    /**
-     * Check Refund availability
-     *
-     * @return bool
-     * @api
-     */
-    public function canRefund()
-    {
-        $isActivatedInConfig = $this->getConfigData(BamboraConstants::REMOTE_INTERFACE);
-        $this->_canRefund = $isActivatedInConfig;
-        return $this->_canRefund;
     }
 
 
@@ -329,11 +272,21 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
+        /** @var \Magento\Sales\Model\Order */
+        $order = $payment->getOrder();
+        $id = $order->getIncrementId();
+
         try
         {
-            parent::refund($payment, $amount);
+            $creditMemo = $payment->getCreditmemo();
+            $id = $creditMemo->getInvoice()->getIncrementId();
+
+            if(!$this->canOnlineAction($payment))
+            {
+                throw new \Exception(__("The refund action could not, be processed online. Please enable remote payment processing from the module configuration"));
+            }
+
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
-            $order = $payment->getOrder();
 
             $currency = $order->getBaseCurrencyCode();
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
@@ -346,7 +299,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $message = "";
             if(!$this->_bamboraHelper->validateEpayApiResult($creditResponse, $transactionId, $this->getAuth(), BamboraConstants::REFUND, $message))
             {
-                throw new \Exception(__('The refund action failed.') . ' - '.$message);
+                throw new \Exception(__("The refund action failed.") . ' - '.$message);
             }
 
             $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_REFUND)
@@ -357,21 +310,31 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         }
         catch(\Exception $ex)
         {
+            $errorMessage = "({$id}) " . $ex->getMessage();
+            $this->_messageManager->addError($errorMessage);
             throw $ex;
         }
     }
 
     /**
-     * Check Void availability
+     * Cancel payment
      *
-     * @return bool
-     * @api
+     * @param \Magento\Payment\Model\InfoInterface $payment
+     * @return $this
      */
-    public function canVoid()
+    public function cancel(\Magento\Payment\Model\InfoInterface $payment)
     {
-        $isActivatedInConfig = $this->getConfigData(BamboraConstants::REMOTE_INTERFACE);
-        $this->_canVoid = $isActivatedInConfig;
-        return $this->_canVoid;
+        try
+        {
+            $this->void($payment);
+            $this->_messageManager->addSuccess(__("The payment have been voided").' ('.$payment->getOrder()->getIncrementId().')');
+        }
+        catch(\Exception $ex)
+        {
+            $this->_messageManager->addError($ex->getMessage());
+        }
+
+        return $this;
     }
 
     /**
@@ -382,9 +345,15 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function void(\Magento\Payment\Model\InfoInterface $payment)
     {
+        /** @var \Magento\Sales\Model\Order */
+        $order = $payment->getOrder();
+
         try
         {
-            parent::void($payment);
+            if(!$this->canOnlineAction($payment))
+            {
+                throw new \Exception(__("The void action could not, be processed online. Please enable remote payment processing from the module configuration"));
+            }
 
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
 
@@ -402,65 +371,16 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                     ->setIsTransactionClosed(true)
                     ->setParentTransactionId($transactionId);
 
+            $this->cancelSurchargeFeeItem($payment);
+
             return $this;
         }
         catch(\Exception $ex)
         {
+            $errorMessage = "({$order->getIncrementId()}) " . $ex->getMessage();
+            $this->_messageManager->addError($errorMessage);
             throw $ex;
         }
-    }
-
-    private function _canVoid($txnId)
-    {
-        if(!$this->canVoid())
-        {
-            return false;
-        }
-
-        $transaction = $this->getTransaction($txnId);
-        if(!isset($transaction) && $transaction->status !== '1')
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Cancel payment
-     *
-     * @param \Magento\Payment\Model\InfoInterface $payment
-     * @return $this
-     */
-    public function cancel(\Magento\Payment\Model\InfoInterface $payment)
-    {
-        try
-        {
-            /** @var \Magento\Sales\Model\Order */
-            $order = $payment->getOrder();
-            foreach($order->getItems() as $item)
-            {
-                if($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE)
-                {
-                    $item->setQtyCanceled(1);
-                }
-            }
-
-            if($this->_canVoid($payment->getAdditionalInformation($this::METHOD_REFERENCE)))
-            {
-                $this->void($payment);
-            }
-            else
-            {
-                $this->_messageManager->addNotice(__('The order: %1 is canceled but the payment could not be voided', $order->getId()));
-            }
-        }
-        catch(\Exception $ex)
-        {
-            throw $ex;
-        }
-
-        return $this;
     }
 
     /**
@@ -492,5 +412,85 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         {
             return null;
         }
+    }
+
+    /**{@inheritDoc}*/
+    public function canCapture()
+    {
+		if($this->_canCapture && $this->canAction($this::METHOD_REFERENCE))
+        {
+            return true;
+        }
+
+		return false;
+    }
+
+    /**{@inheritDoc}*/
+    public function canRefund()
+    {
+		if($this->_canRefund && $this->canAction($this::METHOD_REFERENCE))
+        {
+            return true;
+        }
+
+		return false;
+    }
+
+    /**{@inheritDoc}*/
+    public function canVoid()
+    {
+        if($this->_canVoid && $this->canAction($this::METHOD_REFERENCE))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Retrieve an url for merchant payment logoes
+     *
+     * @return string
+     */
+    public function getEpayPaymentTypeUrl()
+    {
+        /** @var \Bambora\Online\Model\Api\Epay\Action */
+        $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
+
+        return $actionProvider->getPaymentLogoUrl($this->getAuth()->merchantNumber);
+    }
+
+    /**
+     * Retrieve an url ePay Logo
+     *
+     * @return string
+     */
+    public function getEpayLogoUrl()
+    {
+        /** @var \Bambora\Online\Model\Api\Epay\Action */
+        $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
+
+        return $actionProvider->getEpayLogoUrl();
+    }
+
+    /**
+     * Retrieve an url for the ePay Checkout action
+     *
+     * @return string
+     */
+    public function getCheckoutUrl()
+    {
+        return $this->_urlBuilder->getUrl('bambora/epay/checkout', ['_secure' => $this->_request->isSecure()]);
+    }
+
+
+    /**
+     * Retrieve an url for the ePay Decline action
+     *
+     * @return string
+     */
+    public function getCancelUrl()
+    {
+        return $this->_urlBuilder->getUrl('bambora/epay/cancel', ['_secure' => $this->_request->isSecure()]);
     }
 }

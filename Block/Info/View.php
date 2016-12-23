@@ -36,12 +36,12 @@ class View extends \Magento\Payment\Block\Info
             $ccType = $this->getInfo()->getOrder()->getPayment()->getCcType();
             if($ccType)
             {
-                $data[(string)__('Payment Type')] = $ccType;
+                $data[(string)__("Payment type")] = $ccType;
             }
             $ccNumber = $this->getInfo()->getOrder()->getPayment()->getCcNumberEnc();
             if($ccNumber)
             {
-                $data[(string)__('Card Number')] = $ccNumber;
+                $data[(string)__("Card number")] = $ccNumber;
             }
 
             $txnId = "";
@@ -57,7 +57,7 @@ class View extends \Magento\Payment\Block\Info
 
             if($txnId)
             {
-                $data[(string)__('Transaction Id')] = $txnId;
+                $data[(string)__("Transaction Id")] = $txnId;
             }
         }
 

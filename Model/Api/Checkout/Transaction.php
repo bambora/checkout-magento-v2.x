@@ -23,24 +23,15 @@ class Transaction extends Base
     /**
      * Capture an amount for a given transaction
      * @param string $transactionId
-     * @param int|long $amount
-     * @param string $currency
-     * @param \Bambora\Online\Model\Api\Checkout\Request\Models\Line[] $invoiceLines
+     * @param \Bambora\Online\Model\Api\Checkout\Request\Capture $captureRequest
      * @param string $apikey
      * @return \Bambora\Online\Model\Api\Checkout\Response\Capture
      */
-    public function capture($transactionId, $amount, $currency, $invoiceLines, $apikey)
+    public function capture($transactionId, $captureRequest, $apikey)
     {
         try
         {
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION) .'/transactions/'.  sprintf('%.0F',$transactionId) . '/capture';
-
-            /** @var \Bambora\Online\Model\Api\Checkout\Request\Capture */
-            $captureRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CAPTURE);
-            $captureRequest->amount = $amount;
-            $captureRequest->currency = $currency;
-            $captureRequest->invoicelines = $invoiceLines;
-
             $captureRequestJson = json_encode($captureRequest);
 
             $resultJson = $this->_callRestService($serviceUrl, $captureRequestJson, "POST",$apikey);
@@ -74,24 +65,15 @@ class Transaction extends Base
     /**
      * Credit an amount for a given transaction
      * @param string $transactionId
-     * @param int|long $amount
-     * @param string $currency
-     * @param \Bambora\Online\Model\Api\Checkout\Request\Models\Line[] $invoiceLines
+     * @param \Bambora\Online\Model\Api\Checkout\Request\Credit $creditRequest
      * @param string $apikey
      * @return \Bambora\Online\Model\Api\Checkout\Response\Credit
      */
-    public function credit($transactionId, $amount, $currency, $invoiceLines, $apikey)
+    public function credit($transactionId, $creditRequest, $apikey)
     {
         try
         {
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION).'/transactions/'.  sprintf('%.0F',$transactionId) . '/credit';
-
-            /** @var \Bambora\Online\Model\Api\Checkout\Request\Credit */
-            $creditRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CREDIT);
-            $creditRequest->amount = $amount;
-            $creditRequest->currency = $currency;
-            $creditRequest->invoicelines = $invoiceLines;
-
             $creditRequestJson = json_encode($creditRequest);
 
             $resultJson = $this->_callRestService($serviceUrl, $creditRequestJson, "POST",$apikey);

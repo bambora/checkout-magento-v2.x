@@ -65,18 +65,17 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
         $countRefundInvoices = 0;
+        $refunded = array();
+        $notRefunded = array();
+
         /** @var \Magento\Sales\Model\Order\Invoice $invoice */
         foreach($collection->getItems() as $invoice)
         {
             try
             {
-                if (!$invoice->getEntityId())
-                {
-                    continue;
-                }
-
                 if(!$invoice->canRefund())
                 {
+                    $notRefunded[] = $invoice->getIncrementId(). '('.__("Creditmemo not available"). ')';
                     continue;
                 }
 
@@ -89,23 +88,24 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
                 $this->_creditmemoService->refund($creditMemo);
 
                 $countRefundInvoices++;
+                $refunded[] = $invoice->getIncrementId();
             }
             catch(\Exception $ex)
             {
-                $this->messageManager->addError(__('Invoice: %1 returned with an error: %2', $invoice->getEntityId(), $ex->getMessage()));
+                $notRefunded[] = $invoice->getIncrementId(). '('.$ex->getMessage().')';
                 continue;
             }
         }
         $countNonRefundInvoice = $collection->count() - $countRefundInvoices;
 
         if ($countNonRefundInvoice && $countRefundInvoices) {
-            $this->messageManager->addError(__('%1 invoice(s) were not refunded.', $countNonRefundInvoice));
+            $this->messageManager->addError(__("%1 invoice(s) were not refunded.", $countNonRefundInvoice). ' (' .implode(" , ", $notRefunded) . ')');
         } elseif ($countNonRefundInvoice) {
-            $this->messageManager->addError(__('No invoice(s) were refunded.'));
+            $this->messageManager->addError(__("No invoice(s) were refunded."). ' (' .implode(" , ", $notRefunded) . ')');
         }
 
         if ($countRefundInvoices) {
-            $this->messageManager->addSuccess(__('You have refunded %1 invoice(s).', $countRefundInvoices));
+            $this->messageManager->addSuccess(__("You have refunded %1 invoice(s).", $countRefundInvoices). ' (' .implode(" , ", $refunded) . ')');
         }
 
         $resultRedirect = $this->resultRedirectFactory->create();

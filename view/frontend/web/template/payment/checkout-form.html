@@ -20,27 +20,33 @@
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()" />
-        <img data-bind="attr: {src: getBamboraCheckoutIconSrc()}" class="bambora_payment_title_icon" />
-          <span class="bambora_payment_title">
-            <span data-bind="text: getBamboraCheckoutTitle()" class="bambora_payment_title_text"></span>
-            <span class="bambora_paymentcards_container" data-bind="foreach: paymentLogos">
-                <img class="bambora_checkout_paymenttype" alt="Bambora Payment type" data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + $data + '.png'}" />
-            </span>
+
+        <span data-bind="text: getBamboraCheckoutTitle()" class="bambora_payment_title"></span>
+        <span class="bambora_paymentcards_container" data-bind="foreach: paymentLogos">
+            <img class="bambora_checkout_paymenttype" alt="Bambora Payment type" data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + $data + '.png'}" />
         </span>
-   
+
 
     </div>
-
     <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <fieldset class="fieldset" data-bind='attr: {id: "payment_form_" + getCode()}'>
+            <div class="payment-method-note">
+                <!-- ko i18n: 'You will be redirected to Bambora Checkout.' --><!-- /ko -->
+            </div>
+            <div class="payment-method-billing-address">
+                <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
+                <!--/ko-->
+            </div>
+        </fieldset>
         <div class="checkout-agreements-block">
-            <span data-bind="i18n: 'You will be redirected to Bambora Checkout.'"></span>
-        </div>
-        <div class="payment-method-billing-address">
-            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
             <!-- ko template: getTemplate() --><!-- /ko -->
             <!--/ko-->
         </div>
-
         <div class="actions-toolbar">
             <div class="primary">
                 <button class="action primary checkout"

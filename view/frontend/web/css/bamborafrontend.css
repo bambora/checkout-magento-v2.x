@@ -12,7 +12,7 @@
  * @author      Bambora Online
  * @copyright   Bambora (http://bambora.com)
  */
-.bambora_payment_title_icon {
+/*.bambora_payment_title_icon {
     display: inline-block;
     margin-right: 5px;
     vertical-align: middle;
@@ -23,18 +23,28 @@
     vertical-align: middle;
     width: 80%;
 }
+ */
 
-.bambora_payment_title_text {
-    display: block;
-}
-
+   
 .bambora_paymentcards_container {
     display: block;
+    padding-left: 18px;
 }
 
 .bambora_checkout_paymenttype {
-    margin-left: -3px;
-    width: 40px;
+    width: 50px;
+    padding: 2px 0 2px 0;
+}
+
+.bambora_checkout_paymenttype:last-of-type {
+    margin-left: -6px; 
+}
+
+.bambora_epay_paymenttype {
+    width: 100%;
+    height: 60px;
+    display: block;
+    padding-left: 18px;
 }
 
 .bambora_info_title {
@@ -45,9 +55,3 @@
     font-style: italic;
 }
 
-.bambora_epay_paymenttype {
-    width: 100%;
-    height: 60px;
-    display: block;
-    padding-left: 18px;
-}

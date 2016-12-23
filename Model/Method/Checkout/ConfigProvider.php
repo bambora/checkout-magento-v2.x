@@ -26,7 +26,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
     protected $methodCode = CheckoutPayment::METHOD_CODE;
 
     /**
-     * @var Object
+     * @var \Bambora\Online\Model\Method\Checkout\Payment
      */
     protected $_checkoutMethod;
 

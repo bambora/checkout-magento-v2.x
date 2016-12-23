@@ -26,9 +26,7 @@ class EpayWindowstate implements \Magento\Framework\Option\ArrayInterface
     {
         return [
            ['value' => 1, 'label' => __('Overlay')],
-           ['value' => 2, 'label' => __('iframe')],
-           ['value' => 3, 'label' => __('Full screen')],
-           ['value' => 4, 'label' => __(' Integrated payment form')],
+           ['value' => 3, 'label' => __('Full screen')]
         ];
     }
 }

@@ -137,16 +137,11 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * Set the order details
      *
      * @param \Magento\Sales\Model\Order $order
-     * @param string $paymentMethod
-     * @param string $status
      */
-    protected function setOrderDetails($order, $status)
+    protected function setOrderDetails($order)
     {
-        $order->setState(Order::STATE_PROCESSING);
-
-        $order->setStatus($status);
         $message = __("Order placed and is now awaiting payment authorization");
-        $order->addStatusHistoryComment($message,$status);
+        $order->addStatusHistoryComment($message);
         $order->setIsNotified(false);
         $order->save();
     }
@@ -239,22 +234,30 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             {
                 $payment = $order->getPayment();
             }
+            $storeId = $order->getStoreId();
+            $this->updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance);
 
-            $this->updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber);
-
-            if($paymentMethodInstance->getConfigData(BamboraConstants::ADD_SURCHARGE_TO_PAYMENT, $order->getStoreId()) == 1 && $feeAmountInMinorUnits > 0)
+            if($paymentMethodInstance->getConfigData(BamboraConstants::ADD_SURCHARGE_TO_PAYMENT, $storeId) == 1 && $feeAmountInMinorUnits > 0)
             {
                 $this->addSurchargeItemToOrder($order, $feeAmountInMinorUnits, $minorUnits, $ccType);
             }
 
-            if (!$order->getEmailSent() && $paymentMethodInstance->getConfigData(BamboraConstants::SEND_MAIL_ORDER_CONFIRMATION,$order->getStoreId()) == 1)
+            if (!$order->getEmailSent() && $paymentMethodInstance->getConfigData(BamboraConstants::SEND_MAIL_ORDER_CONFIRMATION, $storeId) == 1)
             {
                 $this->sendOrderEmail($order);
             }
 
-            if($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_INVOICE, $order->getStoreId()) == 1)
+            if($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_INVOICE, $storeId) == 1)
             {
-                $this->createInvoice($order, $paymentMethodInstance, $txnId);
+                if($paymentMethodInstance->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 1 || $paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) == 1)
+                {
+                    $this->createInvoice($order, $paymentMethodInstance, $txnId);
+                }
+                else
+                {
+                    $order->addStatusHistoryComment(__("Could not use instant invoice.") . ' - ' . __("Please enable remote payment processing from the module configuration"));
+                    $order->save();
+                }
             }
         }
         catch(\Exception $ex)
@@ -271,10 +274,12 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param string $methodReference
      * @param string $ccType
      * @param string $ccNumber
+     * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
      * @return void
      */
-    private function updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber)
+    private function updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance)
     {
+        /** @var \Magento\Sales\Model\Order\Payment */
         $payment = $order->getPayment();
         $payment->setTransactionId($txnId);
         $payment->setIsTransactionClosed(false);
@@ -283,13 +288,14 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
         $order->setState(Order::STATE_PROCESSING);
         $status = $this->_bamboraHelper->getBamboraAdvancedConfigData(BamboraConstants::ORDER_STATUS, $order->getStoreId());
         $order->setStatus($status);
-
         $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
         $payment->addTransactionCommentsToOrder($transaction, __("Payment authorization was a success."));
         $payment->setCcType($ccType);
         $payment->setCcNumberEnc($ccNumber);
-        $payment->save();
 
+        $isInstantCapture = intval($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $order->getStoreId())) === 1 ? true : false;
+        $payment->setAdditionalInformation(BamboraConstants::INSTANT_CAPTURE, $isInstantCapture);
+        $payment->save();
 
         $order->save();
     }
@@ -319,9 +325,9 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         /** @var \Magento\Sales\Model\Order\Item */
         $feeItem = $objectManager->create('\Magento\Sales\Model\Order\Item');
-
         $feeItem->setSku(BamboraConstants::BAMBORA_SURCHARGE);
-        $text = $ccType . ' - ' . __('Surcharge fee');
+
+        $text = $ccType . ' - ' . __("Surcharge fee");
         $feeItem->setName($text);
         $feeItem->setBaseCost($baseFeeAmount);
         $feeItem->setBasePrice($baseFeeAmount);
@@ -329,14 +335,12 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
         $feeItem->setBaseOriginalPrice($baseFeeAmount);
         $feeItem->setBaseRowTotal($baseFeeAmount);
         $feeItem->setBaseRowTotalInclTax($baseFeeAmount);
-
         $feeItem->setCost($feeAmount);
         $feeItem->setPrice($feeAmount);
         $feeItem->setPriceInclTax($feeAmount);
         $feeItem->setOriginalPrice($feeAmount);
         $feeItem->setRowTotal($feeAmount);
         $feeItem->setRowTotalInclTax($feeAmount);
-
         $feeItem->setProductType(\Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL);
         $feeItem->setIsVirtual(1);
         $feeItem->setQtyOrdered(1);
@@ -364,10 +368,20 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      */
     private function sendOrderEmail($order)
     {
-        $this->_orderSender->send($order);
-        $order->addStatusHistoryComment(__('Notified customer about order #%1', $order->getId()))
-                    ->setIsCustomerNotified(1)
-                    ->save();
+        try
+        {
+            $this->_orderSender->send($order);
+            $order->addStatusHistoryComment(__("Notified customer about order #%1", $order->getId()))
+                        ->setIsCustomerNotified(1)
+                        ->save();
+        }
+        catch(\Exception $ex)
+        {
+            $order->addStatusHistoryComment(__("Could not send order confirmation for order #%1", $order->getId()))
+                        ->setIsCustomerNotified(0)
+                        ->save();
+        }
+
     }
 
     /**
@@ -382,17 +396,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
         {
             /** @var \Magento\Sales\Model\Order\Invoice */
             $invoice = $order->prepareInvoice();
-
-            if($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $order->getStoreId()) == 1)
-            {
-                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
-                $invoice->setTransactionId($txnId . '-'. Transaction::TYPE_CAPTURE);
-            }
-            else
-            {
-                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
-            }
-
+            $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
             $invoice->register();
             $invoice->save();
             $transactionSave = $this->_objectManager->create('Magento\Framework\DB\Transaction')
@@ -404,7 +408,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             {
                 $invoice->setEmailSent(1);
                 $this->_invoiceSender->send($invoice);
-                $order->addStatusHistoryComment(__('Notified customer about invoice #%1', $invoice->getId()))
+                $order->addStatusHistoryComment(__("Notified customer about invoice #%1", $invoice->getId()))
                     ->setIsCustomerNotified(1)
                     ->save();
             }

@@ -25,8 +25,8 @@ class CheckoutWindowstate implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => 1, 'label' => __('Full screen')],
-            ['value' => 2, 'label' => __('Overlay')],
+            ['value' => 1, 'label' => __("Full screen")],
+            ['value' => 2, 'label' => __("Overlay")],
         ];
     }
 }

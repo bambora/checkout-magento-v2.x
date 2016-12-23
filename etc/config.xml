@@ -29,6 +29,7 @@
         <immediateredirecttoaccept>0</immediateredirecttoaccept>
         <addsurchargetopayment>0</addsurchargetopayment>
         <sendmailorderconfirmation>1</sendmailorderconfirmation>
+        <remoteinterface>1</remoteinterface>
         <sort_order>1</sort_order>
         <windowstate>1</windowstate>
         <group>bambora</group>
@@ -44,7 +45,7 @@
         <paymentgroup>0</paymentgroup>
         <ownreceipt>0</ownreceipt>
         <addsurchargetopayment>0</addsurchargetopayment>
-        <remoteinterface>0</remoteinterface>
+        <remoteinterface>1</remoteinterface>
         <enableinvoicedata>0</enableinvoicedata>
         <sendmailorderconfirmation>1</sendmailorderconfirmation>
         <sort_order>1</sort_order>

@@ -19,12 +19,9 @@ class BamboraConstants
 {
     //Surcharge
     const BAMBORA_SURCHARGE = 'surcharge_fee';
-    const BAMBORA_BASE_SURCHARGE = 'bambora_base_surcharge';
-
 
     //Config constants
     const ORDER_STATUS = 'order_status';
-    const ORDER_STATUS_PENDING = 'order_status_pending';
     const MASS_CAPTURE_INVOICE_MAIL = 'masscaptureinvoicemail';
     const TITLE = 'title';
     const MERCHANT_NUMBER = 'merchantnumber';

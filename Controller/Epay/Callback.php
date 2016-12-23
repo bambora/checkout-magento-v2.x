@@ -30,9 +30,21 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     public function execute()
     {
         $posted = $this->getRequest()->getParams();
-        if($this->validateCallback($posted))
+
+        /** @var \Magento\Sales\Model\Order */
+        $order = null;
+        $message = "";
+        if($this->validateCallback($posted, $order, $message))
         {
-            $this->processCallback($posted);
+            $this->processCallback($posted, $order);
+        }
+        else
+        {
+            if(isset($order))
+            {
+                $order->addStatusHistoryComment($message);
+                $order->save();
+            }
         }
 
         return $this->_callbackResult;
@@ -42,9 +54,11 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
      * Validate the callback
      *
      * @param mixed $posted
+     * @param \Magento\Sales\Model\Order &$order
+     * @param string &$message
      * @return bool
      */
-    private function validateCallback($posted)
+    private function validateCallback($posted, &$order, &$message)
     {
         //Validate response
         if(!isset($posted))
@@ -72,7 +86,8 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         }
 
         //Validate MD5
-        $shopMd5 = $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
+        $shopMd5encrypted = $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
+        $shopMd5 = $this->_bamboraHelper->decryptData($shopMd5encrypted);
         $var = "";
         if(strlen($shopMd5) > 0)
         {
@@ -99,15 +114,13 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
 
     /**
      * Process the callback from Bambora
-     *
+     * @param mixed $posted
+     * @param \Magento\Sales\Model\Order $order
      * @return void
      */
-    private function processCallback($posted)
+    private function processCallback($posted, $order)
     {
         $ePayTransactionId = $posted['txnid'];
-
-        /** @var \Magento\Sales\Model\Order */
-        $order = $this->_getOrderByIncrementId($posted['orderid']);
         $payment = $order->getPayment();
 
         try

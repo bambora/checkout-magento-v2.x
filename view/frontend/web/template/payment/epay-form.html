@@ -20,23 +20,28 @@
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()" />
-        <img data-bind="attr: {src: getBamboraEpayLogo()}" class="bambora_payment_title_icon" />
-        <span class="bambora_payment_title">
-            <span data-bind="text: getBamboraEpayTitle()" class="bambora_payment_title_text"></span>
-        </span>
+        <span data-bind="text: getBamboraEpayTitle()" class="bambora_payment_title"></span>
         <iframe data-bind="attr: {src: getBamboraEpayPaymentLogoSrc()}" frameborder="0" class="bambora_epay_paymenttype" alt="ePay payment type"></iframe>
     </div>
-
     <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <fieldset class="fieldset" data-bind='attr: {id: "payment_form_" + getCode()}'>
+            <div class="payment-method-note">
+                <!-- ko i18n: 'You will be redirected to the ePay | Payment solutions.' --><!-- /ko -->
+            </div>
+            <div class="payment-method-billing-address">
+                <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+                <!-- ko template: getTemplate() --><!-- /ko -->
+                <!--/ko-->
+            </div>
+        </fieldset>
         <div class="checkout-agreements-block">
-            <span data-bind="i18n: 'You will be redirected to the ePay Payment Window.'"></span>
-        </div>
-        <div class="payment-method-billing-address">
-            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
             <!-- ko template: getTemplate() --><!-- /ko -->
             <!--/ko-->
         </div>
-
         <div class="actions-toolbar">
             <div class="primary">
                 <button class="action primary checkout"

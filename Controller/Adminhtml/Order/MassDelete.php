@@ -40,28 +40,35 @@ class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassA
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
         $countDeleteOrder = 0;
+        $deleted = array();
+        $notDeleted = array();
+
         /** @var \Magento\Sales\Model\Order $order */
         foreach ($collection->getItems() as $order)
         {
-            if (!$order->getEntityId())
+            try
             {
+                $order->delete();
+                $countDeleteOrder++;
+                $deleted[] = $order->getIncrementId();
+            }
+            catch(\Exception $ex)
+            {
+                $notDeleted[] = $order->getIncrementId(). '('.$ex->getMessage().')';;
                 continue;
             }
-
-            $order->delete();
-            $countDeleteOrder++;
         }
 
         $countNonDeleteOrder = $collection->count() - $countDeleteOrder;
 
         if ($countNonDeleteOrder && $countDeleteOrder) {
-            $this->messageManager->addError(__('%1 order(s) were not deleted.', $countNonDeleteOrder));
+            $this->messageManager->addError(__("%1 order(s) were not deleted.", $countNonDeleteOrder). ' (' .implode(" , ", $notDeleted) . ')');
         } elseif ($countNonDeleteOrder) {
-            $this->messageManager->addError(__('No order(s) were deleted.'));
+            $this->messageManager->addError(__("No order(s) were deleted."). ' (' .implode(" , ", $notDeleted) . ')');
         }
 
         if ($countDeleteOrder) {
-            $this->messageManager->addSuccess(__('You have deleted %1 order(s).', $countDeleteOrder));
+            $this->messageManager->addSuccess(__("You have deleted %1 order(s).", $countDeleteOrder). ' (' .implode(" , ", $deleted) . ')');
         }
 
         $resultRedirect = $this->resultRedirectFactory->create();

@@ -19,7 +19,7 @@ use \Bambora\Online\Helper\BamboraConstants;
 
 class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
 {
-   /**
+    /**
      * @var \Magento\Sales\Model\Order\Email\Sender\InvoiceSender
      */
     protected $_invoiceSender;
@@ -71,36 +71,23 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
         $countInvoicedOrder = 0;
+        $invoiced = array();
+        $notInvoiced = array();
+
         /** @var \Magento\Sales\Model\Order $order */
         foreach ($collection->getItems() as $order)
         {
             try
             {
-                if(!$order->getEntityId())
-                {
-                    continue;
-                }
-
                 if(!$order->canInvoice())
                 {
+                    $notInvoiced[] = $order->getIncrementId(). '('.__("Invoice not available"). ')';
                     continue;
                 }
 
                 /** @var \Magento\Sales\Model\Order\Invoice */
                 $invoice = $order->prepareInvoice();
-
-                /** @var \Bambora\Online\Model\Method\AbstractPayment */
-                $paymentMethod = $this->_paymentHelper->getMethodInstance($order->getPayment()->getMethod());
-
-                if($paymentMethod->getConfigData(BamboraConstants::INSTANT_CAPTURE, $order->getStoreId()) == 1)
-                {
-                    $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
-                }
-                else
-                {
-                    $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
-                }
-
+                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
                 $invoice->register();
                 $invoice->save();
 
@@ -113,28 +100,29 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
                 {
                     $invoice->setEmailSent(1);
                     $this->_invoiceSender->send($invoice);
-                    $order->addStatusHistoryComment(__('Notified customer about invoice #%1', $invoice->getId()))
+                    $order->addStatusHistoryComment(__("Notified customer about invoice #%1", $invoice->getIncrementId()))
                         ->setIsCustomerNotified(1)
                         ->save();
                 }
                 $countInvoicedOrder++;
+                $invoiced[] = $order->getIncrementId();
             }
             catch(\Exception $ex)
             {
-                $this->messageManager->addError(__('Order: %1 returned with an error: %2', $order->getEntityId(), $ex->getMessage()));
+                $notInvoiced[] = $order->getIncrementId(). '('.$ex->getMessage().')';;
                 continue;
             }
         }
         $countNonInvoicedOrder = $collection->count() - $countInvoicedOrder;
 
         if ($countNonInvoicedOrder && $countInvoicedOrder) {
-            $this->messageManager->addError(__('%1 order(s) cannot be Invoiced and Captured.', $countNonInvoicedOrder));
+            $this->messageManager->addError(__("%1 order(s) cannot be Invoiced and Captured.", $countNonInvoicedOrder). ' (' .implode(" , ", $notInvoiced) . ')');
         } elseif ($countNonInvoicedOrder) {
-            $this->messageManager->addError(__('You cannot Invoice and Capture the order(s).'));
+            $this->messageManager->addError(__("You cannot Invoice and Capture the order(s)."). ' (' .implode(" , ", $notInvoiced) . ')');
         }
 
         if ($countInvoicedOrder) {
-            $this->messageManager->addSuccess(__('We Invoiced and Captured %1 order(s).', $countInvoicedOrder));
+            $this->messageManager->addSuccess(__("You Invoiced and Captured %1 order(s).", $countInvoicedOrder). ' (' .implode(" , ", $invoiced) . ')');
         }
         $resultRedirect = $this->resultRedirectFactory->create();
         $resultRedirect->setPath($this->getComponentRefererUrl());

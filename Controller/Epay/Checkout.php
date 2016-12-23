@@ -27,9 +27,7 @@ class Checkout extends \Bambora\Online\Controller\AbstractActionController
     public function execute()
     {
         $order = $this->_getOrder();
-
-        $status = $this->_bamboraHelper->getBamboraAdvancedConfigData(BamboraConstants::ORDER_STATUS_PENDING, $this->_getOrder()->getStoreId());
-        $this->setOrderDetails($order, $status);
+        $this->setOrderDetails($order);
         $result = $this->getEPayPaymentWindowUrl($order);
         $resultJson = json_encode($result);
 
@@ -53,7 +51,7 @@ class Checkout extends \Bambora\Online\Controller\AbstractActionController
         }
         catch(\Exception $ex)
         {
-            $this->messageManager->addError(__('The payment window could not be retrived'));
+            $this->messageManager->addError(__("The payment window could not be retrived"));
             $this->_bamboraLogger->addEpayError($order->getId(), $ex->getMessage());
             return null;
         }

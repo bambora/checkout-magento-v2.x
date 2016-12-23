@@ -16,85 +16,102 @@
  */
 -->
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-  <group id="bambora_checkout" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+  <group id="bambora_checkout" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
     <label>Bambora Checkout</label>
     <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
     <fieldset_css>bambora-checkout-method</fieldset_css>
     <comment><![CDATA[Accept online payments in Magento 2 using the Bambora Checkout payment window.<br/> Go to <a href='http://dev.bambora.com/carts.html#magento-v2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
-    <field id="active" translate="label comment" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="active" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enabled:</b>]]></label>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <comment><![CDATA[To enable and disable this payment method.]]></comment>
       <config_path>payment/bambora_checkout/active</config_path>
     </field>
-    <field id="title" translate="label comment" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="title" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Title:</b>]]></label>
       <comment><![CDATA[The title of the payment method displayed to the customers.]]></comment>
       <config_path>payment/bambora_checkout/title</config_path>
     </field>
-    <field id="merchantnumber" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="merchantnumber" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Merchant number:</b>]]></label>
       <comment><![CDATA[The number identifying your Bambora merchant account. If you don't know your merchant number, please <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account.</a> Go to <b>Settings -> Merchant numbers</b> to view your merchant number.]]></comment>
       <config_path>payment/bambora_checkout/merchantnumber</config_path>
     </field>
-    <field id="accesstoken" translate="label comment" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="accesstoken" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Access token:</b>]]></label>
       <comment><![CDATA[The Access token for the API user received from the Bambora administration. If you don't know your Access token please <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account.</a> Go to <b>Settings -> API users</b> to view or create a new API user.]]></comment>
       <config_path>payment/bambora_checkout/accesstoken</config_path>
     </field>
-    <field id="secrettoken" translate="label comment" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="secrettoken" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Secret token:</b>]]></label>
       <comment><![CDATA[The Secret token for the API user received from the Bambora administration. The Secret token is only displayed to you when you create a new API user and as such you should take note of it. If you have lost your Secret token, <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account</a> and create a new API user. Go to <b>Settings -> API users -> Create API users</b>]]></comment>
       <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
       <config_path>payment/bambora_checkout/secrettoken</config_path>
     </field>
-    <field id="md5key" translate="label comment" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="md5key" type="obscure" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>MD5 Key:</b>]]></label>
       <comment><![CDATA[The MD5 key is used to stamp data sent between Magento and Bambora to prevent it from being tampered with. The MD5 key is optional but if used here, must be the same as in the Bambora administration. To view your MD5 key please <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account</a> and go to <b>Settings -> Merchant numbers -> Edit</b>]]></comment>
+      <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
       <config_path>payment/bambora_checkout/md5key</config_path>
     </field>
-    <field id="paymentwindowid" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="paymentwindowid" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Payment Window ID:</b>]]></label>
       <comment><![CDATA[The ID of the payment window to use. You can find the available payment windows in the Bambora administration. Please <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account</a> and go to <b>Settings -> Payment windows.</b>]]></comment>
       <config_path>payment/bambora_checkout/paymentwindowid</config_path>
     </field>
-    <field id="instantcapture" translate="label comment" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="instantcapture" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant capture:</b>]]></label>
       <comment><![CDATA[Set to <b>Yes</b> if you wish to capture payments at the same time they are authorized. In some countries, this is only permitted if the consumer receives the products right away Ex. digital products.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/instantcapture</config_path>
     </field>
-    <field id="instantinvoice" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="instantinvoice" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant invoice:</b>]]></label>
       <comment><![CDATA[This is used if you wish to create an invoice once the payment has been authorized.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/instantinvoice</config_path>
     </field>
-    <field id="instantinvoicemail" translate="label comment" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="instantinvoicemail" type="select" sortOrder="45" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant invoice mail:</b>]]></label>
       <comment><![CDATA[If instant invoice then send invoice to customer.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/instantinvoicemail</config_path>
     </field>
-    <field id="immediateredirecttoaccept" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="immediateredirecttoaccept" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Immediate Redirect</b>]]></label>
       <comment><![CDATA[Set to <b>Yes</b> to immediately redirect your customer back to you shop after the payment completed.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/immediateredirecttoaccept</config_path>
     </field>
-    <field id="addsurchargetopayment" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="addsurchargetopayment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Add payment surcharge to the order:</b>]]></label>
       <comment><![CDATA[If the customer pays for the payment surcharge the amount will not be displayed on the order confirmation. The surcharge is displayed on the order, invoice and creditmemo totals]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/addsurchargetopayment</config_path>
     </field>
-   <field id="sendmailorderconfirmation" translate="label comment" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1">
+   <field id="sendmailorderconfirmation" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Send Email Order Confirmation:</b>]]></label>
       <comment><![CDATA[Enabling this setting will result in an order confirmation is e-mailed to the customer as the payment is made.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/sendmailorderconfirmation</config_path>
     </field>
-    <field id="sort_order" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="remoteinterface" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Process payments from within the order administration of Magento:</b>]]></label>
+      <comment>
+        <![CDATA[
+       Enable this option in order to capture, credit and delete payments directly from the Magento administration on the order page. You then don't need to enter the administration area of the payment system in order to process payments.
+       <br><br>
+       <b>Important information when processing the payments from Magento:</b>
+       <br>
+			  - When an order is canceled the payment is deleted within the payment system.<br>
+        - When an invoice is created the payment can be captured from the bottom of the invoice.<br>
+        - When a credit memo is created the payment can be credited back to the customer from the bottom of the credit memo.<br>
+       </ul>]]>
+      </comment>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/bambora_checkout/remoteinterface</config_path>
+    </field>
+    <field id="sort_order" type="text" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Sort order:</b>]]></label>
       <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
       <config_path>payment/bambora_checkout/sort_order</config_path>

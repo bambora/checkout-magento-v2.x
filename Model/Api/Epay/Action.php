@@ -45,7 +45,6 @@ class Action extends Base
                        "&cancelurl=".urlencode($paymentRequest->cancelUrl).
                        "&callbackurl=".urlencode($paymentRequest->callbackUrl).
                        "&instantcapture=".urlencode($paymentRequest->instantCapture).
-                       "&group=".urlencode($paymentRequest->group).
                        "&language=".urlencode($paymentRequest->language).
                        "&ownreceipt=".urlencode($paymentRequest->ownReceipt).
                        "&timeout=".urlencode($paymentRequest->timeout).
@@ -82,10 +81,9 @@ class Action extends Base
      */
     public function getPaymentLogoUrl($merchantNumber)
     {
-        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_INTEGRATION)."/paymentlogos/PaymentLogos.aspx?merchantnumber={$merchantNumber}&direction=2&padding=2&rows=2&logo=0&showdivs=0&iframe=1&cardwidth=40";
+        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_INTEGRATION)."/paymentlogos/PaymentLogos.aspx?merchantnumber={$merchantNumber}&direction=2&padding=1&rows=2&logo=0&showdivs=0&iframe=1&cardwidth=50";
         return $url;
     }
-
     /**
      * Get ePay logo url
      *

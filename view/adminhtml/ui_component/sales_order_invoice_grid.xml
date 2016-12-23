@@ -26,7 +26,7 @@
             <item name="url" xsi:type="url" path="bambora/order/massinvoicerefund"/>
             <item name="confirm" xsi:type="array">
               <item name="title" xsi:type="string" translate="true">Bambora refund invoice(s)</item>
-              <item name="message" xsi:type="string" translate="true">Are you sure you wan't to refund selected items?</item>
+              <item name="message" xsi:type="string" translate="true">Are you sure you want to refund selected items?</item>
             </item>
           </item>
         </argument>

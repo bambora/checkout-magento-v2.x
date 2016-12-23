@@ -15,6 +15,7 @@
  */
 namespace Bambora\Online\Model\Method;
 
+use Bambora\Online\Helper\BamboraConstants;
 abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMethod
 {
     /**
@@ -158,6 +159,59 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
     public function canEdit()
     {
         return false;
+    }
+
+    /**
+     * Can do online action
+     *
+     * @param \Magento\Payment\Model\InfoInterface $payment
+     * @return boolean
+     */
+    protected function canOnlineAction($payment)
+    {
+        $storeId = $payment->getOrder()->getStoreId();
+        if (intval($this->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId)) === 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Can do action
+     *
+     * @return boolean
+     */
+    protected function canAction($reference)
+    {
+        $infoInstance = $this->getInfoInstance();
+        $payment = $infoInstance->getOrder()->getPayment();
+		$transactionId = $payment->getAdditionalInformation($reference);
+        if(!empty($transactionId))
+		{
+			return true;
+		}
+
+        return false;
+    }
+
+    /**
+     * Cancel the surcharge fee item
+     *
+     * @param \Magento\Payment\Model\InfoInterface $payment
+     */
+    protected function cancelSurchargeFeeItem($payment)
+    {
+        /** @var \Magento\Sales\Model\Order */
+        $order = $payment->getOrder();
+        foreach($order->getItems() as $item)
+        {
+            if($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE)
+            {
+                $item->setQtyCanceled(1);
+            }
+        }
     }
 
 }

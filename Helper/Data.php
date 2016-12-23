@@ -343,7 +343,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function calcEpayMd5Key($order, $paymentRequest)
     {
-        $storeId = $order ? $order->getStoreId() : null;
+        $shopMd5encrypted = $this->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
+        $shopMd5 = $this->decryptData($shopMd5encrypted);
 		$md5stamp = md5(
                     $paymentRequest->encoding.
 					$paymentRequest->cms.
@@ -362,7 +363,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $paymentRequest->ownReceipt.
                     $paymentRequest->timeout.
                     $paymentRequest->invoice.
-                    $this->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $storeId));
+                    $shopMd5);
 
 		return $md5stamp;
     }
@@ -446,10 +447,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
             if(isset($response->epayResponse) && $response->epayResponse != -1)
             {
-                $message = $this->createEpayErrorText($response->epayResponse, $action, $errorProvicer, $auth);
+                if($response->epayresponse == -1019)
+                {
+                    $message = __("Invalid password used for webservice access!");
+                }
+                else
+                {
+                    $message = "({$response->epayrespons}: ".$errorProvicer->getEpayErrorText($response->epayrespons, $this->calcLanguage($this->getShopLocalCode()),$auth);
+                }
                 $this->_bamboraLogger->addEpayError($id,"Epay Error: {$message}");
             }
-            if(isset($response->pbsResponse) && $response->pbsResponse != -1)
+            else if(isset($response->pbsResponse) && $response->pbsResponse != -1)
             {
                 $message .= "({$response->pbsResponse}): " . $errorProvicer->getPbsErrorText($response->pbsResponse,$this->calcLanguage($this->getShopLocalCode()), $auth);
                 $this->_bamboraLogger->addEpayError($id,"PBS Error: {$message}");
@@ -457,84 +465,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
         }
         return true;
-    }
-
-    /**
-     * Create ePay error text
-     *
-     * @param mixed $errorId
-     * @param mixed $action
-     * @param \Bambora\Online\Model\Api\Epay\Error  $errorProvicer
-     * @param mixed $auth
-     * @return string
-     */
-    public function createEpayErrorText($errorId, $action, $errorProvicer, $auth)
-    {
-        $message = "";
-
-        if($action === BamboraConstants::CAPTURE)
-        {
-            $message = __("Transaction could not be captured by ePay")." ({$errorId}): ";
-            if($errorId ==  -1002)
-            {
-                $message .= __("Forretningsnummeret findes ikke.");
-            }
-            elseif($errorId == -1003 || $errorId == -1006)
-            {
-                $message .= __("Der er ikke adgang til denne funktion (API / Remote Interface).");
-            }
-            else
-            {
-                $message .= $errorProvicer->getEpayErrorText($errorId, $this->calcLanguage($this->getShopLocalCode()), $auth);
-            }
-        }
-        elseif($action === BamboraConstants::REFUND)
-        {
-            $message = __("Transaction could not be credited by ePay")." ({$errorId}): ";
-            if($errorId == -1002)
-            {
-                $message .= __("The merchantnumber you are using does not exists or is disabled. Please log into your ePay account to verify your merchantnumber. This can be done from the menu: SETTINGS -> PAYMENT SYSTEM.");
-            }
-            elseif($errorId == -1003)
-            {
-                $message .= __("The IP address your system calls ePay from is UNKNOWN. Please log into your ePay account to verify enter the IP address your system calls ePay from. This can be done from the menu: API / WEBSERVICES -> ACCESS.");
-            }
-            elseif($errorId == -1006)
-            {
-                $message .= __("Your ePay account has not access to API / Remote Interface. This is only for ePay BUSINESS accounts. Please contact ePay to upgrade your ePay account.");
-            }
-            elseif($errorId == -1021)
-            {
-                $message .= __("An operation every 15 minutes can be performed on a transaction. Please wait 15 minutes and try again.");
-            }
-            else
-            {
-                $message .= $errorProvicer->getEpayErrorText($errorId, $this->calcLanguage($this->getShopLocalCode()), $auth);
-            }
-        }
-        elseif($action === BamboraConstants::VOID)
-        {
-            $message = __("Transaction could not be deleted / void by ePay")." ({$errorId}): ";
-            if($errorId == -1002)
-            {
-                $message .= __("The Merchant number does not exist.");
-            }
-            elseif($errorId == -1003 || $errorId == -1006)
-            {
-                $message .= __("There is no acces to this function (API / Remote Interface).");
-            }
-            else
-            {
-                $message .= $errorProvicer->getEpayErrorText($errorId, $this->calcLanguage($this->getShopLocalCode()), $auth);
-            }
-        }
-        elseif($action === BamboraConstants::GET_TRANSACTION)
-        {
-            $message = __("Could not get transaction from ePay")." ({$errorId}): ";
-            $message .= $errorProvicer->getEpayErrorText($errorId, $this->calcLanguage($this->getShopLocalCode()), $auth);
-        }
-
-        return $message;
     }
 
     /**
@@ -647,4 +577,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return array_search($code, $isoCodeArray);
     }
+
+
 }

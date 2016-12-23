@@ -17,8 +17,6 @@ namespace Bambora\Online\Controller\Checkout;
 
 use \Magento\Framework\Webapi\Exception;
 use \Magento\Framework\Webapi\Response;
-use \Magento\Sales\Model\Order;
-use \Magento\Sales\Model\Order\Payment\Transaction;
 use \Bambora\Online\Model\Api\CheckoutApi;
 use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
 use \Bambora\Online\Model\Api\CheckoutApiModels;
@@ -42,10 +40,21 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         /** @var \Bambora\Online\Model\Api\Checkout\Response\Transaction */
         $transactionResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_TRANSACTION);
 
-        $isValid = $this->validateCallback($posted, $transactionResponse);
+        /** @var \Magento\Sales\Model\Order */
+        $order = null;
+        $message = "";
+        $isValid = $this->validateCallback($posted, $transactionResponse, $order, $message);
         if($isValid)
         {
-            $this->processCallback($posted, $transactionResponse);
+            $this->processCallback($posted, $transactionResponse, $order);
+        }
+        else
+        {
+            if(isset($order))
+            {
+                $order->addStatusHistoryComment($message);
+                $order->save();
+            }
         }
 
         return $this->_callbackResult;
@@ -56,9 +65,11 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
      *
      * @param mixed $posted
      * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction &$transactionResponse
+     * @param \Magento\Sales\Model\Order &$order
+     * @param string &$message
      * @return bool
      */
-    private function validateCallback($posted, &$transactionResponse)
+    private function validateCallback($posted, &$transactionResponse, &$order, &$message)
     {
         //Validate response
         if(!isset($posted) || !$posted['txnid'])
@@ -73,12 +84,13 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         if(!isset($order))
         {
             $message = "The Order could be found or created";
-            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST,$message,$posted['orderid']);
+            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, $posted['orderid']);
             return false;
         }
 
         //Validate MD5
-        $shopMd5 = $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
+        $shopMd5encrypted = $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
+        $shopMd5 = $this->_bamboraHelper->decryptData($shopMd5encrypted);
         $var = "";
         if(strlen($shopMd5) > 0)
         {
@@ -133,16 +145,14 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
      *
      * @param mixed $posted
      * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
+     * @param \Magento\Sales\Model\Order $order
      * @return void
      */
-    private function processCallback($posted, $transactionResponse)
+    private function processCallback($posted, $transactionResponse, $order)
     {
         $bamboraTransactionId = $transactionResponse->transaction->id;
-
-        /** @var \Magento\Sales\Model\Order */
-        $order = $this->_getOrderByIncrementId($posted['orderid']);
         $payment = $order->getPayment();
-        
+
         try
         {
             $pspReference = $payment->getAdditionalInformation(CheckoutPayment::METHOD_REFERENCE);

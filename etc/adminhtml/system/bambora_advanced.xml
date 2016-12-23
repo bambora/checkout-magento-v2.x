@@ -16,28 +16,22 @@
  */
 -->
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-  <group id="bambora_advanced" translate="comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+  <group id="bambora_advanced" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
     <label>Bambora Advanced settings</label>
     <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
     <fieldset_css>bambora-advanced-method</fieldset_css>
     <comment><![CDATA[Go to <a href='http://dev.bambora.com/carts.html#magento-v2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
-    <field id="version" translate="label" type="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="version" type="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Module version:</b>]]></label>
       <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Field\Version</frontend_model>
     </field>
-    <field id="order_status" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="order_status" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Order Status After Payment:</b>]]></label>
       <source_model>Magento\Sales\Model\Config\Source\Order\Status\Processing</source_model>
       <config_path>payment/bambora_advanced/order_status</config_path>
       <comment><![CDATA[The order status after payment is compleated]]></comment>
     </field>
-    <field id="order_status_pending" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Order Status Pending Payment:</b>]]></label>
-      <comment><![CDATA[The order status before the custommer is redirected to Payment gateway]]></comment>
-      <source_model>Bambora\Online\Model\Config\Source\Pending</source_model>
-      <config_path>payment/bambora_advanced/order_status_pending</config_path>
-    </field>
-    <field id="masscaptureinvoicemail" translate="label comment" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="masscaptureinvoicemail" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Mass invoice and capture mail:</b>]]></label>
       <comment><![CDATA[When bulk invoice and capture then send invoice mail to customer(s).]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

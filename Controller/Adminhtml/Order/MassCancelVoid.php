@@ -39,43 +39,43 @@ class MassCancelVoid extends \Magento\Sales\Controller\Adminhtml\Order\AbstractM
      */
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
-        $countDeleteOrder = 0;
+        $countCanceledOrder = 0;
+        $canceled = array();
+        $notCanceled = array();
+
         /** @var \Magento\Sales\Model\Order $order */
         foreach ($collection->getItems() as $order)
         {
             try
             {
-                if (!$order->getEntityId())
-                {
-                    continue;
-                }
-
                 if(!$order->canCancel())
                 {
+                    $notCanceled[] = $order->getIncrementId(). '('.__("Cancel not available"). ')';
                     continue;
                 }
 
                 $order->cancel();
                 $order->save();
-                $countDeleteOrder++;
+                $countCanceledOrder++;
+                $canceled[] = $order->getIncrementId();
             }
             catch(\Exception $ex)
             {
-                $this->messageManager->addError(__('Order: %1 returned with an error: %2', $order->getEntityId(), $ex->getMessage()));
+                $notCanceled[] = $order->getIncrementId(). '('.$ex->getMessage().')';;
                 continue;
             }
         }
 
-        $countNonDeleteOrder = $collection->count() - $countDeleteOrder;
+        $countNonCanceledOrder = $collection->count() - $countCanceledOrder;
 
-        if ($countNonDeleteOrder && $countDeleteOrder) {
-            $this->messageManager->addError(__('%1 order(s) were not canceled or voided.', $countNonDeleteOrder));
-        } elseif ($countNonDeleteOrder) {
-            $this->messageManager->addError(__('No order(s) were canceled or voided.'));
+        if ($countNonCanceledOrder && $countCanceledOrder) {
+            $this->messageManager->addError(__("%1 order(s) were not canceled or voided.", $countNonCanceledOrder). ' (' .implode(" , ", $notCanceled) . ')');
+        } elseif ($countNonCanceledOrder) {
+            $this->messageManager->addError(__("No order(s) were canceled or voided."). ' (' .implode(" , ", $notCanceled) . ')');
         }
 
-        if ($countDeleteOrder) {
-            $this->messageManager->addSuccess(__('You have canceled and voided %1 order(s).', $countDeleteOrder));
+        if ($countCanceledOrder) {
+            $this->messageManager->addSuccess(__("You have canceled and voided %1 order(s).", $countCanceledOrder). ' (' .implode(" , ", $canceled) . ')');
         }
 
         $resultRedirect = $this->resultRedirectFactory->create();

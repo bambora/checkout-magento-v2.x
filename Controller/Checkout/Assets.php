@@ -49,7 +49,7 @@ class Assets extends \Bambora\Online\Controller\AbstractActionController
         }
         catch(\Exception $ex)
         {
-            $this->messageManager->addError(__('The allowed payment types could not be loaded'));
+            $this->messageManager->addError(__("The allowed payment types could not be loaded"));
             $this->_bamboraLogger->addCheckoutError(-1,$ex->getMessage());
             return null;
         }

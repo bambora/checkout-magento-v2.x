@@ -26,7 +26,7 @@
             <item name="url" xsi:type="url" path="bambora/order/massdelete"/>
             <item name="confirm" xsi:type="array">
               <item name="title" xsi:type="string" translate="true">Delete Order(s)</item>
-              <item name="message" xsi:type="string" translate="true">If there have been authorized a payment on the order it will not get voided by this action. Are you sure you wan't to delete selected items?</item> 
+              <item name="message" xsi:type="string" translate="true">If there have been authorized a payment on the order it will not get voided by this action. Are you sure you want to delete selected items?</item> 
           </item>
           </item>
         </argument>
@@ -39,7 +39,7 @@
             <item name="url" xsi:type="url" path="bambora/order/massinvoicecapture"/>
             <item name="confirm" xsi:type="array">
               <item name="title" xsi:type="string" translate="true">Invoice and Capture Order(s)</item>
-              <item name="message" xsi:type="string" translate="true">Are you sure you wan't to invoice and capture selected items?</item>
+              <item name="message" xsi:type="string" translate="true">Are you sure you want to invoice and capture selected items?</item>
             </item>
           </item>
         </argument>
