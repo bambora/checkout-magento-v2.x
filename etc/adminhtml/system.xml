@@ -18,15 +18,9 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
   <system>
     <section id="payment" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1">
-      <group id="bambora_online" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-        <label>Bambora Online</label>
-        <attribute type="expanded">1</attribute>
-        <fieldset_css>complex</fieldset_css>
-        <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Group</frontend_model>
-        <include path="Bambora_Online::system/bambora_checkout.xml"/>
-        <include path="Bambora_Online::system/bambora_epay.xml"/>
-        <include path="Bambora_Online::system/bambora_advanced.xml"/>
-      </group>
+      <include path="Bambora_Online::system/bambora_checkout.xml"/>
+      <include path="Bambora_Online::system/bambora_epay.xml"/>
+      <include path="Bambora_Online::system/bambora_advanced.xml"/>
     </section>
   </system>
 </config>
