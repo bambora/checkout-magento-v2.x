@@ -223,10 +223,11 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param string $ccNumber
      * @param mixed $feeAmountInMinorUnits
      * @param mixed $minorUnits
+     * @param mixed $status
      * @param \Magento\Sales\Model\Order\Payment $payment
      * @return void
      */
-    protected function _processCallbackData($order, $paymentMethodInstance, $txnId, $methodReference, $ccType, $ccNumber, $feeAmountInMinorUnits, $minorUnits, $payment = null)
+    protected function _processCallbackData($order, $paymentMethodInstance, $txnId, $methodReference, $ccType, $ccNumber, $feeAmountInMinorUnits, $minorUnits, $status, $payment = null, $fraudStatus = 0)
     {
         try
         {
@@ -235,7 +236,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
                 $payment = $order->getPayment();
             }
             $storeId = $order->getStoreId();
-            $this->updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance);
+            $this->updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $fraudStatus);
 
             if($paymentMethodInstance->getConfigData(BamboraConstants::ADD_SURCHARGE_TO_PAYMENT, $storeId) == 1 && $feeAmountInMinorUnits > 0)
             {
@@ -275,21 +276,34 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param string $ccType
      * @param string $ccNumber
      * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
+     * @param mixed $status
+     * @param mixed $fraudStatus
      * @return void
      */
-    private function updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance)
+    private function updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $fraudStatus)
     {
         /** @var \Magento\Sales\Model\Order\Payment */
         $payment = $order->getPayment();
         $payment->setTransactionId($txnId);
         $payment->setIsTransactionClosed(false);
         $payment->setAdditionalInformation(array($methodReference => $txnId));
+        $transactionComment = __("Payment authorization was a success.");
+        if($fraudStatus == 1)
+        {
+            $payment->setIsFraudDetected(true);
+            $order->setStatus(Order::STATUS_FRAUD);
+            $order->setState(Order::STATE_PAYMENT_REVIEW);
+            $transactionComment = __("Fraud was detected on the payment");
+        }
+        else
+        {
+            //$status = $this->_bamboraHelper->getBamboraAdvancedConfigData(BamboraConstants::ORDER_STATUS, $order->getStoreId());
+            $order->setStatus($status);
+            $order->setState(Order::STATE_PROCESSING);
+        }
 
-        $order->setState(Order::STATE_PROCESSING);
-        $status = $this->_bamboraHelper->getBamboraAdvancedConfigData(BamboraConstants::ORDER_STATUS, $order->getStoreId());
-        $order->setStatus($status);
         $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
-        $payment->addTransactionCommentsToOrder($transaction, __("Payment authorization was a success."));
+        $payment->addTransactionCommentsToOrder($transaction, $transactionComment);
         $payment->setCcType($ccType);
         $payment->setCcNumberEnc($ccNumber);
 

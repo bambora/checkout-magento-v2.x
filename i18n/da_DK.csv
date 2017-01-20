@@ -49,6 +49,7 @@
 "Could not use instant invoice.","Kunne ikke udf&oslash;re instant invoice"
 "Please enable remote payment processing from the module configuration","Du skal aktivere betalings systemet i modulets configuration"
 "Payment authorization was a success.","Betalings anmodningen var en success."
+"Fraud was detected on the payment","Der er detekteret svindel p&aring; betalingen"
 "added to order","tilf&oslash;jet til ordren"
 "Notified customer about order #%1","Kunden er underrettet om order #%1"
 "Could not send order confirmation for order #%1","Kunne ikke sende ordre bekr&#230;ftigelsen til kunden for ordre #%1"

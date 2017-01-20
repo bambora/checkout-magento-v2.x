@@ -30,6 +30,8 @@
         <addsurchargetopayment>0</addsurchargetopayment>
         <sendmailorderconfirmation>1</sendmailorderconfirmation>
         <remoteinterface>1</remoteinterface>
+        <order_status>processing</order_status>
+        <masscaptureinvoicemail>1</masscaptureinvoicemail>
         <sort_order>1</sort_order>
         <windowstate>1</windowstate>
         <group>bambora</group>
@@ -47,20 +49,15 @@
         <addsurchargetopayment>0</addsurchargetopayment>
         <remoteinterface>1</remoteinterface>
         <enableinvoicedata>0</enableinvoicedata>
+        <enablemobilepaymentwindow>1</enablemobilepaymentwindow>
         <sendmailorderconfirmation>1</sendmailorderconfirmation>
         <sort_order>1</sort_order>
         <windowstate>3</windowstate>
         <timeout>60</timeout>
-        <group>bambora</group>
-      </bambora_epay>
-      <bambora_advanced>
-        <model>Bambora\Online\Model\Method\BamboraAdvanced</model>
-        <title>Bambora Advanced</title>
         <order_status>processing</order_status>
-        <order_status_pending>pending_payment</order_status_pending>
         <masscaptureinvoicemail>1</masscaptureinvoicemail>
         <group>bambora</group>
-      </bambora_advanced>
+      </bambora_epay>
     </payment>
   </default>
 </config>

@@ -36,6 +36,7 @@ class BamboraConstants
     const ADD_SURCHARGE_TO_PAYMENT = 'addsurchargetopayment';
     const SEND_MAIL_ORDER_CONFIRMATION = 'sendmailorderconfirmation';
     const WINDOW_STATE = 'windowstate';
+    const ENABLE_MOBILE_PAYMENT_WINDOW = 'enablemobilepaymentwindow';
     const REMOTE_INTERFACE = 'remoteinterface';
     const REMOTE_INTERFACE_PASSWORD = 'remoteinterfacepassword';
     const PAYMENT_GROUP = 'paymentgroup';

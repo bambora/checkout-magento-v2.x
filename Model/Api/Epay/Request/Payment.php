@@ -35,6 +35,11 @@ class Payment
     /**
      * @var string
      */
+    public $mobile;
+
+    /**
+     * @var string
+     */
     public $merchantNumber;
 
     /**

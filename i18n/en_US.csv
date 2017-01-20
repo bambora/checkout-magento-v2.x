@@ -50,6 +50,7 @@
 "Could not use instant invoice.","Could not use instant invoice."
 "Please enable remote payment processing from the module configuration","Please enable remote payment processing from the module configuration"
 "Payment authorization was a success.","Payment authorization was a success."
+"Fraud was detected on the payment","Fraud was detected on the payment"
 "added to order","added to order"
 "Notified customer about order #%1","Notified customer about order #%1"
 "Could not send order confirmation for order #%1","Could not send order confirmation for order #%1"

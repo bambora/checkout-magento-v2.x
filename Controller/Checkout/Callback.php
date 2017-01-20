@@ -89,8 +89,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         }
 
         //Validate MD5
-        $shopMd5encrypted = $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
-        $shopMd5 = $this->_bamboraHelper->decryptData($shopMd5encrypted);
+        $shopMd5 = $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
         $var = "";
         if(strlen($shopMd5) > 0)
         {
@@ -122,9 +121,8 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         $transactionResponse = $merchantApi->getTransaction($transactionId,$apiKey);
 
         //Validate transaction
-        if(!isset($transactionResponse) || !$transactionResponse->meta->result)
+        if(!$this->_bamboraHelper->validateCheckoutApiResult($transactionResponse, $order->getIncrementId(), true, $message))
         {
-            $message = !isset($transactionResponse) ? "gettransactionInformation object is null" : $transactionResponse->meta->message->merchant;
             $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, $order->getIncrementId());
             return false;
         }
@@ -169,7 +167,9 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                     $transactionResponse->transaction->information->primaryAccountnumbers[0]->number,
                     $transactionResponse->transaction->total->feeamount,
                     $transactionResponse->transaction->currency->minorunits,
+                    $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::ORDER_STATUS),
                     $payment
+
                 );
 
                 $this->_callbackResult = $this->_getResult(Response::HTTP_OK, "Callback Success - Order created", $bamboraTransactionId, $payment->getMethod());

@@ -36,6 +36,7 @@ class Action extends Base
         $paramString = "?encoding=".urlencode($paymentRequest->encoding).
                        "&cms=".urlencode($paymentRequest->cms).
                        "&windowstate=".urlencode($paymentRequest->windowState).
+                       "&mobile=".urlencode($paymentRequest->mobile).
                        "&merchantnumber=".urlencode($paymentRequest->merchantNumber).
                        "&windowid=".urlencode($paymentRequest->windowId).
                        "&amount=".urlencode($paymentRequest->amount).
@@ -227,7 +228,7 @@ class Action extends Base
      * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
      * @return \Bambora\Online\Model\Api\Epay\Response\Transaction
      */
-    public function getTransaction($transactionId,$auth)
+    public function getTransaction($transactionId, $auth)
     {
         try
         {

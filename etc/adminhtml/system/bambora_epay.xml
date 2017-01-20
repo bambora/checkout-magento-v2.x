@@ -16,11 +16,15 @@
  */
 -->
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-  <group id="bambora_epay" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+  <group id="bambora_epay" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
     <label>ePay | Payment Solutions</label>
     <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
     <fieldset_css>bambora-epay-method</fieldset_css>
     <comment><![CDATA[Accept online payments in Magento 2 using the ePay payment window..<br/> Go to <a href='http://dev.bambora.com/carts.html#magento-v2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
+    <field id="version" type="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Module version:</b>]]></label>
+      <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Field\Version</frontend_model>
+    </field>
     <field id="active" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enabled:</b>]]></label>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -82,11 +86,10 @@
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/instantinvoicemail</config_path>
     </field>
-    <field id="md5key" type="obscure" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="md5key" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>MD5 Key:</b>]]></label>
       <comment><![CDATA[This is the secret password you must enter both here and within the payment system if you enable MD5 above. Notice that the secret password must be 100% the same. Otherwise the customer will be declined as payments are made. You can log into your account on the payment system <a href="https://ssl.ditonlinebetalingssystem.dk/admin/" target="_blank">here</a>. The MD5 settings are to be found from the menu <b>Settings</b> -> <b>Payment System</b>.]]></comment>
-      <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-      <config_path>payment/bambora_epay/md5key</config_path>
+     <config_path>payment/bambora_epay/md5key</config_path>
     </field>
     <field id="ownreceipt" type="select" sortOrder="55" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Use own receipt:</b>]]></label>
@@ -102,8 +105,15 @@
     </field>
     <field id="enableinvoicedata" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enable invoice data:</b>]]></label>
+      <comment><![CDATA[Collect invoice data and send to the payment window]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/enableinvoicedata</config_path>
+    </field>
+    <field id="enablemobilepaymentwindow" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Enable Mobile Payment Window:</b>]]></label>
+      <comment><![CDATA[When using a mobile device use the mobile payment window]]></comment>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/bambora_epay/enablemobilepaymentwindow</config_path>
     </field>
     <field id="sendmailorderconfirmation" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Send Email Order Confirmation:</b>]]></label>
@@ -111,11 +121,24 @@
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/sendmailorderconfirmation</config_path>
     </field>
-    <field id="sort_order" type="text" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="masscaptureinvoicemail" type="select" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Mass invoice and capture mail:</b>]]></label>
+      <comment><![CDATA[When bulk invoice and capture then send invoice mail to customer(s).]]></comment>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/bambora_epay/masscaptureinvoicemail</config_path>
+    </field>
+     <field id="order_status" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Order Status After Payment:</b>]]></label>
+      <source_model>Magento\Sales\Model\Config\Source\Order\Status\Processing</source_model>
+      <config_path>payment/bambora_epay/order_status</config_path>
+      <comment><![CDATA[The order status after payment is compleated]]></comment>
+    </field>
+    <field id="sort_order" type="text" sortOrder="85" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Sort order:</b>]]></label>
       <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
       <config_path>payment/bambora_epay/sort_order</config_path>
     </field>
+   
     <!--
     Intended out-comment for later release
     <field id="windowstate" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">

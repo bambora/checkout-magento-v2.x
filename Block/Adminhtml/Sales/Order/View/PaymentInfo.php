@@ -85,8 +85,8 @@ class PaymentInfo extends \Magento\Backend\Block\Template
             if(isset($checkoutMethod))
             {
                 $transactionId = $payment->getAdditionalInformation($checkoutMethod::METHOD_REFERENCE);
-
-                $transaction = $checkoutMethod->getTransaction($transactionId);
+                $message = "";
+                $transaction = $checkoutMethod->getTransaction($transactionId, $message);
 
                 if(isset($transaction))
                 {
@@ -95,6 +95,10 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 elseif($checkoutMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0)
                 {
                     $result .= ' '.__("Please enable remote payment processing from the module configuration");
+                }
+                else
+                {
+                    $result .= ' - ' .  $message;
                 }
             }
         }
@@ -107,7 +111,8 @@ class PaymentInfo extends \Magento\Backend\Block\Template
             {
                 $transactionId = $payment->getAdditionalInformation($ePayMethod::METHOD_REFERENCE);
 
-                $transaction = $ePayMethod->getTransaction($transactionId);
+                $message = "";
+                $transaction = $ePayMethod->getTransaction($transactionId, $message);
 
                 if(isset($transaction))
                 {
@@ -116,6 +121,10 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 elseif($ePayMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0)
                 {
                     $result .= ' - '.__("Please enable remote payment processing from the module configuration");
+                }
+                else
+                {
+                    $result .= ' - ' .  $message;
                 }
             }
         }
@@ -265,6 +274,24 @@ class PaymentInfo extends \Magento\Backend\Block\Template
 
         $res .= '<tr><td>' . __("Surcharge fee") . ':</td>';
         $res .= '<td>' . $order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->fee,$minorUnits) . '</td></tr>';
+
+        //Fraud
+        if($transactionInformation->fraudStatus > 0)
+        {
+            $res .= '<tr><td>' . __("Fraud status") . ':</td>';
+            $res .= '<td>' .$transactionInformation->fraudStatus. '</td></tr>';
+
+            $res .= '<tr><td>' . __("Payer country code") . ':</td>';
+            $res .= '<td>' .$transactionInformation->payerCountryCode. '</td></tr>';
+
+            $res .= '<tr><td>' . __("Issued country code") . ':</td>';
+            $res .= '<td>' .$transactionInformation->issuedCountryCode. '</td></tr>';
+            if(isset($transactionInformation->FraudMessage))
+            {
+                $res .= '<tr><td>' . __("Fraud message") . ':</td>';
+                $res .= '<td>' .$transactionInformation->FraudMessage. '</td></tr>';
+            }
+        }
 
         if(isset($transactionInformation->history) && isset($transactionInformation->history->TransactionHistoryInfo) && count($transactionInformation->history->TransactionHistoryInfo) > 0)
         {

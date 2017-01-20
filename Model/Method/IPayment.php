@@ -69,8 +69,9 @@ interface IPayment
      * Get Bambora Checkout Transaction
      *
      * @param mixed $transactionId
+     * @param string &$message
      * @return mixed
      */
-    public function getTransaction($transactionId);
+    public function getTransaction($transactionId, &$message);
 
 }

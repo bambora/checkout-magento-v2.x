@@ -16,11 +16,15 @@
  */
 -->
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-  <group id="bambora_checkout" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+  <group id="bambora_checkout" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
     <label>Bambora Checkout</label>
     <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
     <fieldset_css>bambora-checkout-method</fieldset_css>
     <comment><![CDATA[Accept online payments in Magento 2 using the Bambora Checkout payment window.<br/> Go to <a href='http://dev.bambora.com/carts.html#magento-v2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
+    <field id="version" type="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Module version:</b>]]></label>
+      <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Field\Version</frontend_model>
+    </field>
     <field id="active" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enabled:</b>]]></label>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -48,10 +52,9 @@
       <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
       <config_path>payment/bambora_checkout/secrettoken</config_path>
     </field>
-    <field id="md5key" type="obscure" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="md5key" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>MD5 Key:</b>]]></label>
       <comment><![CDATA[The MD5 key is used to stamp data sent between Magento and Bambora to prevent it from being tampered with. The MD5 key is optional but if used here, must be the same as in the Bambora administration. To view your MD5 key please <a href='https://merchant.bambora.com' target='_blank'>log into your Bambora account</a> and go to <b>Settings -> Merchant numbers -> Edit</b>]]></comment>
-      <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
       <config_path>payment/bambora_checkout/md5key</config_path>
     </field>
     <field id="paymentwindowid" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -111,7 +114,19 @@
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/remoteinterface</config_path>
     </field>
-    <field id="sort_order" type="text" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="masscaptureinvoicemail" type="select" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Mass invoice and capture mail:</b>]]></label>
+      <comment><![CDATA[When bulk invoice and capture then send invoice mail to customer(s).]]></comment>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/bambora_checkout/masscaptureinvoicemail</config_path>
+    </field>
+    <field id="order_status" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Order Status After Payment:</b>]]></label>
+      <source_model>Magento\Sales\Model\Config\Source\Order\Status\Processing</source_model>
+      <config_path>payment/bambora_checkout/order_status</config_path>
+      <comment><![CDATA[The order status after payment is compleated]]></comment>
+    </field>
+    <field id="sort_order" type="text" sortOrder="85" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Sort order:</b>]]></label>
       <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
       <config_path>payment/bambora_checkout/sort_order</config_path>

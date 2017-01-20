@@ -17,10 +17,10 @@ namespace Bambora\Online\Controller\Epay;
 
 use \Magento\Framework\Webapi\Exception;
 use \Magento\Framework\Webapi\Response;
-use \Magento\Sales\Model\Order;
-use \Magento\Sales\Model\Order\Payment\Transaction;
 use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 use \Bambora\Online\Helper\BamboraConstants;
+use \Bambora\Online\Model\Api\EpayApi;
+use \Bambora\Online\Model\Api\EpayApiModels;
 
 class Callback extends \Bambora\Online\Controller\AbstractActionController
 {
@@ -86,11 +86,11 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         }
 
         //Validate MD5
-        $shopMd5encrypted = $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
-        $shopMd5 = $this->_bamboraHelper->decryptData($shopMd5encrypted);
-        $var = "";
-        if(strlen($shopMd5) > 0)
+        $shopMd5 = $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
+        if(!empty($shopMd5))
         {
+            $var = "";
+
             foreach($posted as $key => $value)
             {
                 if($key != "hash")
@@ -115,6 +115,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     /**
      * Process the callback from Bambora
      * @param mixed $posted
+     * @param \Bambora\Online\Model\Api\Epay\Response\Transaction $transactionResponse
      * @param \Magento\Sales\Model\Order $order
      * @return void
      */
@@ -126,7 +127,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         try
         {
             $pspReference = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
-            if(!isset($pspReference))
+            if(empty($pspReference))
             {
                 /** @var \Bambora\Online\Model\Method\Epay\Payment */
                 $paymentMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
@@ -137,13 +138,15 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                     $paymentMethod,
                     $ePayTransactionId,
                     EpayPayment::METHOD_REFERENCE,
-                    $this->_bamboraHelper->calcCardtype($posted['paymenttype']),
+                    $posted['paymenttype'],
                     $posted['cardno'],
                     $posted['txnfee'],
                     $minorUnits,
-                    $payment
-                );
+                    $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::ORDER_STATUS),
+                    $payment,
+                    array_key_exists('fraud',$posted) ? $posted['fraud'] : 0
 
+                );
 
                 $this->_callbackResult = $this->_getResult(Response::HTTP_OK, "Callback Success - Order created", $ePayTransactionId, $payment->getMethod());
             }
@@ -157,7 +160,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
             $payment->setAdditionalInformation(array(EpayPayment::METHOD_REFERENCE => ""));
             $payment->save();
             $message = "Callback Failed - " .$ex->getMessage();
-            $this->_callbackResult = $this->_getResult(Exception::HTTP_INTERNAL_ERROR, $message,$ePayTransactionId);
+            $this->_callbackResult = $this->_getResult(Exception::HTTP_INTERNAL_ERROR, $message, $ePayTransactionId);
         }
     }
 }

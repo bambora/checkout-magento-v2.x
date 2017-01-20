@@ -95,6 +95,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $paymentRequest->encoding = "UTF-8";
         $paymentRequest->cms = $this->_bamboraHelper->getModuleHeaderInfo();
         $paymentRequest->windowState = $this->getConfigData(BamboraConstants::WINDOW_STATE, $storeId);
+        $paymentRequest->mobile = $this->getConfigData(BamboraConstants::ENABLE_MOBILE_PAYMENT_WINDOW, $storeId);
         $paymentRequest->merchantNumber = $this->getAuth()->merchantNumber;
         $paymentRequest->windowId = $this->getConfigData(BamboraConstants::PAYMENT_WINDOW_ID, $storeId);
         $paymentRequest->amount = $totalAmountMinorUnits;
@@ -386,10 +387,11 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Get Bambora Checkout Transaction
      *
-     * @param string $transactionId
+     * @param mixed $transactionId
+     * @param string &$message
      * @return \Bambora\Online\Model\Api\Epay\Response\Models\TransactionInformationType|null
      */
-    public function getTransaction($transactionId)
+    public function getTransaction($transactionId, &$message)
     {
         try
         {
@@ -400,7 +402,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
             $transactionResponse = $actionProvider->getTransaction($transactionId,$this->getAuth());
-            $message = "";
+
             if(!$this->_bamboraHelper->validateEpayApiResult($transactionResponse, $transactionId,$this->getAuth(), BamboraConstants::GET_TRANSACTION, $message))
             {
                 return null;

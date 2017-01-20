@@ -343,12 +343,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function calcEpayMd5Key($order, $paymentRequest)
     {
-        $shopMd5encrypted = $this->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
-        $shopMd5 = $this->decryptData($shopMd5encrypted);
+        $shopMd5 = $this->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
 		$md5stamp = md5(
                     $paymentRequest->encoding.
 					$paymentRequest->cms.
 					$paymentRequest->windowState.
+                    $paymentRequest->mobile.
                     $paymentRequest->merchantNumber.
                     $paymentRequest->windowId.
                     $paymentRequest->amount.
@@ -447,7 +447,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
             if(isset($response->epayResponse) && $response->epayResponse != -1)
             {
-                if($response->epayresponse == -1019)
+                if($response->epayResponse == -1019)
                 {
                     $message = __("Invalid password used for webservice access!");
                 }

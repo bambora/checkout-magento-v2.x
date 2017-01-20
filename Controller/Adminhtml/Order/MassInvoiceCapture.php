@@ -16,6 +16,8 @@
 namespace Bambora\Online\Controller\Adminhtml\Order;
 
 use \Bambora\Online\Helper\BamboraConstants;
+use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
+use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
 class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
 {
@@ -96,14 +98,21 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
                     ->addObject($invoice->getOrder());
                 $transactionSave->save();
 
-                if($this->_bamboraHelper->getBamboraAdvancedConfigData(BamboraConstants::MASS_CAPTURE_INVOICE_MAIL, $order->getStoreId()) == 1)
+                $payment = $order->getPayment();
+                $paymentMethod = $payment->getMethod();
+                if($paymentMethod === CheckoutPayment::METHOD_CODE || $paymentMethod === EpayPayment::METHOD_CODE)
                 {
-                    $invoice->setEmailSent(1);
-                    $this->_invoiceSender->send($invoice);
-                    $order->addStatusHistoryComment(__("Notified customer about invoice #%1", $invoice->getIncrementId()))
-                        ->setIsCustomerNotified(1)
-                        ->save();
+                    $methodInstance = $this->_paymentHelper->getMethodInstance($paymentMethod);
+                    if($methodInstance->getConfigData(BamboraConstants::MASS_CAPTURE_INVOICE_MAIL, $order->getStoreId()) == 1)
+                    {
+                        $invoice->setEmailSent(1);
+                        $this->_invoiceSender->send($invoice);
+                        $order->addStatusHistoryComment(__("Notified customer about invoice #%1", $invoice->getIncrementId()))
+                            ->setIsCustomerNotified(1)
+                            ->save();
+                    }
                 }
+                
                 $countInvoicedOrder++;
                 $invoiced[] = $order->getIncrementId();
             }

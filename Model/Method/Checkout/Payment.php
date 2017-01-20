@@ -518,10 +518,11 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Get Bambora Checkout Transaction
      *
-     * @param string $transactionId
+     * @param mixed $transactionId
+     * @param string &$message
      * @return \Bambora\Online\Model\Api\Checkout\Response\Models\Transaction
      */
-    public function getTransaction($transactionId)
+    public function getTransaction($transactionId, &$message)
     {
         try
         {
@@ -534,7 +535,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $merchantProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_MERCHANT);
             $transactionResponse = $merchantProvider->getTransaction($transactionId,$this->getApiKey());
 
-            $message = "";
             if(!$this->_bamboraHelper->validateCheckoutApiResult($transactionResponse, $transactionId, true, $message))
             {
                 return null;

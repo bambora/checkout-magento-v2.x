@@ -61,3 +61,13 @@
     background-size: 127px 35px;
     line-height: 35px;
 }
+
+.bambora-epay-method .heading,
+.bambora-checkout-method .heading {
+    display: inline-block !important;
+}
+
+.bambora-checkout-method .button-container,
+.bambora-epay-method .button-container {
+    float: right;
+}
