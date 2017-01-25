@@ -297,7 +297,6 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
         }
         else
         {
-            //$status = $this->_bamboraHelper->getBamboraAdvancedConfigData(BamboraConstants::ORDER_STATUS, $order->getStoreId());
             $order->setStatus($status);
             $order->setState(Order::STATE_PROCESSING);
         }
