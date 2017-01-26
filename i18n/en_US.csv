@@ -23,7 +23,6 @@
 "Captured date","Captured date"
 "Credited amount","Credited amount"
 "Credited date","Credited date"
-"Surcharge","Surcharge" ??
 "History","History"
 "Creditmemo not available","Creditmemo not available"
 "Order: %1 returned with an error: %2","Order: %1 returned with an error: %2"
@@ -55,8 +54,6 @@
 "Notified customer about order #%1","Notified customer about order #%1"
 "Could not send order confirmation for order #%1","Could not send order confirmation for order #%1"
 "No answer from ePay","No answer from ePay"
-"Full screen","Full screen"
-"Overlay","Overlay"
 "Could not retrive allowed payment types","Could not retrive allowed payment types"
 "Bambora Checkout error","Bambora Checkout error"
 "Shipping","Shipping"

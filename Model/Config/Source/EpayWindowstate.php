@@ -25,8 +25,8 @@ class EpayWindowstate implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-           ['value' => 1, 'label' => __('Overlay')],
-           ['value' => 3, 'label' => __('Full screen')]
+           ['value' => 1, 'label' => 'Overlay'],
+           ['value' => 3, 'label' => 'Full screen']
         ];
     }
 }
