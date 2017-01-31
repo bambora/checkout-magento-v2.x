@@ -21,5 +21,4 @@ class Links
      * @var string
      */
     public $transactionoperations;
-
 }

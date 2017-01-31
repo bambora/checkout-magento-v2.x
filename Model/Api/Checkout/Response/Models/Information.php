@@ -29,5 +29,4 @@ class Information
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\PrimaryAccountnumber[]
      */
     public $primaryAccountnumbers;
-
 }

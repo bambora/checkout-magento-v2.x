@@ -44,17 +44,14 @@ class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassA
         $notDeleted = array();
 
         /** @var \Magento\Sales\Model\Order $order */
-        foreach ($collection->getItems() as $order)
-        {
-            try
-            {
+        foreach ($collection->getItems() as $order) {
+            try {
                 $order->delete();
                 $countDeleteOrder++;
                 $deleted[] = $order->getIncrementId();
-            }
-            catch(\Exception $ex)
-            {
-                $notDeleted[] = $order->getIncrementId(). '('.$ex->getMessage().')';;
+            } catch (\Exception $ex) {
+                $notDeleted[] = $order->getIncrementId(). '('.$ex->getMessage().')';
+                ;
                 continue;
             }
         }

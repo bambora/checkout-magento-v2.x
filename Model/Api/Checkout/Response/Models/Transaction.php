@@ -69,5 +69,4 @@ class Transaction
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\Total
      */
     public $total;
-
 }

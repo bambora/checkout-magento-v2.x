@@ -21,5 +21,4 @@ class Transaction extends Base
      * @var \Bambora\Online\Model\Api\Epay\Response\Models\TransactionInformationType
      */
     public $transactionInformation;
-
 }

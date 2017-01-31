@@ -25,7 +25,6 @@
 }
  */
 
-   
 .bambora_paymentcards_container {
     display: block;
     padding-left: 18px;
@@ -37,7 +36,7 @@
 }
 
 .bambora_checkout_paymenttype:last-of-type {
-    margin-left: -6px; 
+    margin-left: -6px;
 }
 
 .bambora_epay_paymenttype {
@@ -54,4 +53,3 @@
 .bambora_info_body {
     font-style: italic;
 }
-

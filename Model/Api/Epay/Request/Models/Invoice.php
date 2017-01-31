@@ -31,5 +31,4 @@ class Invoice
      * @var array
      */
     public $lines;
-
 }

@@ -30,7 +30,6 @@ class Base extends DataObject
         'assets' => 'https://d3r1pwhfz7unl9.cloudfront.net/bambora'
     );
 
-
     /**
      * @var \Bambora\Online\Helper\Data
      */
@@ -52,13 +51,11 @@ class Base extends DataObject
         \Bambora\Online\Helper\Data $bamboraHelper,
         \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
          array $data = []
-    )
-    {
+    ) {
         parent::__construct($data);
         $this->_bamboraHelper = $bamboraHelper;
         $this->_bamboraLogger = $bamboraLogger;
     }
-
 
     /**
      * Return the address of the endpoint type
@@ -84,7 +81,4 @@ class Base extends DataObject
 
         return $soapClient;
     }
-
-
-
 }

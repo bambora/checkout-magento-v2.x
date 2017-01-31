@@ -55,12 +55,4 @@ class CheckoutApiModels
     const RESPONSE_MODEL_TOTAL = 'Response\Models\Total';
     const RESPONSE_MODEL_TRANSACTION = 'Response\Models\Transaction';
     const RESPONSE_MODEL_TRANSACTIONOPERATION = 'Response\Models\TransactionOperation';
-
-
-
-
-
-
-
-
 }

@@ -36,7 +36,6 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
      */
     protected $_bamboraHelper;
 
-
     /**
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Ui\Component\MassAction\Filter $filter
@@ -77,12 +76,9 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
         $notInvoiced = array();
 
         /** @var \Magento\Sales\Model\Order $order */
-        foreach ($collection->getItems() as $order)
-        {
-            try
-            {
-                if(!$order->canInvoice())
-                {
+        foreach ($collection->getItems() as $order) {
+            try {
+                if (!$order->canInvoice()) {
                     $notInvoiced[] = $order->getIncrementId(). '('.__("Invoice not available"). ')';
                     continue;
                 }
@@ -100,11 +96,9 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
 
                 $payment = $order->getPayment();
                 $paymentMethod = $payment->getMethod();
-                if($paymentMethod === CheckoutPayment::METHOD_CODE || $paymentMethod === EpayPayment::METHOD_CODE)
-                {
+                if ($paymentMethod === CheckoutPayment::METHOD_CODE || $paymentMethod === EpayPayment::METHOD_CODE) {
                     $methodInstance = $this->_paymentHelper->getMethodInstance($paymentMethod);
-                    if($methodInstance->getConfigData(BamboraConstants::MASS_CAPTURE_INVOICE_MAIL, $order->getStoreId()) == 1)
-                    {
+                    if ($methodInstance->getConfigData(BamboraConstants::MASS_CAPTURE_INVOICE_MAIL, $order->getStoreId()) == 1) {
                         $invoice->setEmailSent(1);
                         $this->_invoiceSender->send($invoice);
                         $order->addStatusHistoryComment(__("Notified customer about invoice #%1", $invoice->getIncrementId()))
@@ -112,13 +106,12 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
                             ->save();
                     }
                 }
-                
+
                 $countInvoicedOrder++;
                 $invoiced[] = $order->getIncrementId();
-            }
-            catch(\Exception $ex)
-            {
-                $notInvoiced[] = $order->getIncrementId(). '('.$ex->getMessage().')';;
+            } catch (\Exception $ex) {
+                $notInvoiced[] = $order->getIncrementId(). '('.$ex->getMessage().')';
+                ;
                 continue;
             }
         }

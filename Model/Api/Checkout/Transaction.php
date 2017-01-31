@@ -29,23 +29,20 @@ class Transaction extends Base
      */
     public function capture($transactionId, $captureRequest, $apikey)
     {
-        try
-        {
-            $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION) .'/transactions/'.  sprintf('%.0F',$transactionId) . '/capture';
+        try {
+            $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION) .'/transactions/'.  sprintf('%.0F', $transactionId) . '/capture';
             $captureRequestJson = json_encode($captureRequest);
 
-            $resultJson = $this->_callRestService($serviceUrl, $captureRequestJson, "POST",$apikey);
-            $result = json_decode($resultJson,true);
+            $resultJson = $this->_callRestService($serviceUrl, $captureRequestJson, "POST", $apikey);
+            $result = json_decode($resultJson, true);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Response\Capture */
             $captureResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_CAPTURE);
             $captureResponse->meta = $this->_mapMeta($result);
 
-            if($captureResponse->meta->result)
-            {
+            if ($captureResponse->meta->result) {
                 $captureResponse->transactionOperations = array();
-                foreach($result['transactionoperations'] as $operation)
-                {
+                foreach ($result['transactionoperations'] as $operation) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation */
                     $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION);
                     $transactionOperation->id = $operation['id'];
@@ -54,10 +51,8 @@ class Transaction extends Base
             }
 
             return $captureResponse;
-        }
-        catch(\Exception $ex)
-        {
-            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
             return null;
         }
     }
@@ -71,23 +66,20 @@ class Transaction extends Base
      */
     public function credit($transactionId, $creditRequest, $apikey)
     {
-        try
-        {
-            $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION).'/transactions/'.  sprintf('%.0F',$transactionId) . '/credit';
+        try {
+            $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION).'/transactions/'.  sprintf('%.0F', $transactionId) . '/credit';
             $creditRequestJson = json_encode($creditRequest);
 
-            $resultJson = $this->_callRestService($serviceUrl, $creditRequestJson, "POST",$apikey);
+            $resultJson = $this->_callRestService($serviceUrl, $creditRequestJson, "POST", $apikey);
             $result = json_decode($resultJson, true);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Response\Credit */
             $creditResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_CREDIT);
             $creditResponse->meta = $this->_mapMeta($result);
 
-            if($creditResponse->meta->result)
-            {
+            if ($creditResponse->meta->result) {
                 $creditResponse->transactionOperations = array();
-                foreach($result['transactionoperations'] as $operation)
-                {
+                foreach ($result['transactionoperations'] as $operation) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation */
                     $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION);
                     $transactionOperation->id = $operation['id'];
@@ -96,10 +88,8 @@ class Transaction extends Base
             }
 
             return $creditResponse;
-        }
-        catch(\Exception $ex)
-        {
-            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
             return null;
         }
     }
@@ -113,21 +103,18 @@ class Transaction extends Base
      */
     public function delete($transactionId, $apikey)
     {
-        try
-        {
-            $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION).'/transactions/'.  sprintf('%.0F',$transactionId) . '/delete';
+        try {
+            $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION).'/transactions/'.  sprintf('%.0F', $transactionId) . '/delete';
             $resultJson = $this->_callRestService($serviceUrl, null, "POST", $apikey);
-            $result = json_decode($resultJson,true);
+            $result = json_decode($resultJson, true);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Response\Delete */
             $deleteResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_DELETE);
             $deleteResponse->meta = $this->_mapMeta($result);
 
-            if($deleteResponse->meta->result)
-            {
+            if ($deleteResponse->meta->result) {
                 $deleteResponse->transactionOperations = array();
-                foreach($result['transactionoperations'] as $operation)
-                {
+                foreach ($result['transactionoperations'] as $operation) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation */
                     $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION);
                     $transactionOperation->id = $operation['id'];
@@ -136,10 +123,8 @@ class Transaction extends Base
             }
 
             return $deleteResponse;
-        }
-        catch(\Exception $ex)
-        {
-            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
             return null;
         }
     }

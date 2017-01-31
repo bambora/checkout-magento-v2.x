@@ -32,7 +32,6 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
      */
     protected $_creditmemoService;
 
-
     /**
      * Mass Invoice Refund Action
      *
@@ -53,7 +52,6 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
         $this->collectionFactory = $invoiceCollectionFactory;
         $this->_creditmemoFactory = $creditmemoFactory;
         $this->_creditmemoService = $creditmemoService;
-
     }
 
     /**
@@ -69,19 +67,15 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
         $notRefunded = array();
 
         /** @var \Magento\Sales\Model\Order\Invoice $invoice */
-        foreach($collection->getItems() as $invoice)
-        {
-            try
-            {
-                if(!$invoice->canRefund())
-                {
+        foreach ($collection->getItems() as $invoice) {
+            try {
+                if (!$invoice->canRefund()) {
                     $notRefunded[] = $invoice->getIncrementId(). '('.__("Creditmemo not available"). ')';
                     continue;
                 }
 
                 $creditMemo = $this->_creditmemoFactory->createByInvoice($invoice);
-                if(!$creditMemo->canRefund())
-                {
+                if (!$creditMemo->canRefund()) {
                     continue;
                 }
 
@@ -89,9 +83,7 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
 
                 $countRefundInvoices++;
                 $refunded[] = $invoice->getIncrementId();
-            }
-            catch(\Exception $ex)
-            {
+            } catch (\Exception $ex) {
                 $notRefunded[] = $invoice->getIncrementId(). '('.$ex->getMessage().')';
                 continue;
             }

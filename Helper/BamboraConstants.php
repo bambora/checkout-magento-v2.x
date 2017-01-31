@@ -48,5 +48,4 @@ class BamboraConstants
     const REFUND = 'refund';
     const VOID = 'void';
     const GET_TRANSACTION = 'gettransaction';
-
 }

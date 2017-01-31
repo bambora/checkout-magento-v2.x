@@ -16,7 +16,6 @@ define(
                 payload,
                 paymentData = quote.paymentMethod();
 
-
             /** Checkout for guest and registered customer. */
             if (!customer.isLoggedIn()) {
                 serviceUrl = urlBuilder.createUrl('/guest-carts/:quoteId/payment-information', {
@@ -53,10 +52,10 @@ define(
                                     $.mage.redirect(cancelUrl);
                                 }
                                 $.mage.redirect(data["url"]);
-                            }catch(err) {
+                            } catch (err) {
                                 $.mage.redirect(cancelUrl);
                             }
-                       }).fail(function (response) {
+                        }).fail(function (response) {
                             errorProcessor.process(response, messageContainer);
                             fullScreenLoader.stopLoader();
                             $.mage.redirect(cancelUrl);

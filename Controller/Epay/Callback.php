@@ -34,14 +34,10 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         /** @var \Magento\Sales\Model\Order */
         $order = null;
         $message = "";
-        if($this->validateCallback($posted, $order, $message))
-        {
+        if ($this->validateCallback($posted, $order, $message)) {
             $this->processCallback($posted, $order);
-        }
-        else
-        {
-            if(isset($order))
-            {
+        } else {
+            if (isset($order)) {
                 $order->addStatusHistoryComment($message);
                 $order->save();
             }
@@ -61,47 +57,40 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     private function validateCallback($posted, &$order, &$message)
     {
         //Validate response
-        if(!isset($posted))
-        {
+        if (!isset($posted)) {
             $message = "Response is null";
             $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, null);
             return false;
         }
 
         //Validate parameteres
-        if(!$posted['orderid'] || !$posted['txnid'] || !$posted['amount'] || !$posted['currency'])
-        {
+        if (!$posted['orderid'] || !$posted['txnid'] || !$posted['amount'] || !$posted['currency']) {
             $message = "Parameteres are missing. Request: " . json_encode($posted);
-            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message,null);
+            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, null);
             return false;
         }
 
         //Validate Order
         $order = $this->_getOrderByIncrementId($posted['orderid']);
-        if(!isset($order))
-        {
+        if (!isset($order)) {
             $message = "The Order could be found or created";
-            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST,$message,$posted['orderid']);
+            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, $posted['orderid']);
             return false;
         }
 
         //Validate MD5
         $shopMd5 = $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
-        if(!empty($shopMd5))
-        {
+        if (!empty($shopMd5)) {
             $var = "";
 
-            foreach($posted as $key => $value)
-            {
-                if($key != "hash")
-                {
+            foreach ($posted as $key => $value) {
+                if ($key != "hash") {
                     $var .= $value;
                 }
             }
 
             $genstamp = md5($var . $shopMd5);
-            if($genstamp != $posted["hash"])
-            {
+            if ($genstamp != $posted["hash"]) {
                 $message = "Bambora MD5 check failed";
                 $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, $order->getIncrementId());
 
@@ -124,11 +113,9 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         $ePayTransactionId = $posted['txnid'];
         $payment = $order->getPayment();
 
-        try
-        {
+        try {
             $pspReference = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
-            if(empty($pspReference))
-            {
+            if (empty($pspReference)) {
                 /** @var \Bambora\Online\Model\Method\Epay\Payment */
                 $paymentMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
                 $currency = $this->_bamboraHelper->convertIsoCode($posted['currency'], false);
@@ -144,19 +131,15 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                     $minorUnits,
                     $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::ORDER_STATUS),
                     $payment,
-                    array_key_exists('fraud',$posted) ? $posted['fraud'] : 0
+                    array_key_exists('fraud', $posted) ? $posted['fraud'] : 0
 
                 );
 
                 $this->_callbackResult = $this->_getResult(Response::HTTP_OK, "Callback Success - Order created", $ePayTransactionId, $payment->getMethod());
-            }
-            else
-            {
+            } else {
                 $this->_callbackResult = $this->_getResult(Response::HTTP_OK, "Callback Success - Order already created", $ePayTransactionId, $payment->getMethod());
             }
-        }
-        catch(Exception $ex)
-        {
+        } catch (Exception $ex) {
             $payment->setAdditionalInformation(array(EpayPayment::METHOD_REFERENCE => ""));
             $payment->save();
             $message = "Callback Failed - " .$ex->getMessage();

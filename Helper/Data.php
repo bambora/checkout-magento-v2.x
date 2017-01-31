@@ -49,14 +49,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
         \Magento\Framework\Encryption\EncryptorInterface $encryptor,
         \Magento\Framework\Module\ModuleListInterface $moduleList
-    )
-    {
+    ) {
         parent::__construct($context);
         $this->_bamboraLogger = $bamboraLogger;
         $this->_encryptor = $encryptor;
         $this->_moduleList = $moduleList;
     }
-
 
     /**
      * Gives back bambora_checkout configuration values
@@ -69,7 +67,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->getConfigData($field, 'bambora_epay', $storeId);
     }
-
 
     /**
      * Gives back bambora_checkout configuration values
@@ -108,12 +105,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $path = 'payment/' . $paymentMethodCode . '/' . $field;
 
-        if(!$flag)
-        {
+        if (!$flag) {
             return $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
-        }
-        else
-        {
+        } else {
             return $this->scopeConfig->isSetFlag($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
         }
     }
@@ -188,7 +182,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getShopLocalCode() {
+    public function getShopLocalCode()
+    {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $resolver = $objectManager->get('Magento\Framework\Locale\Resolver');
 
@@ -205,17 +200,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function convertPriceToMinorUnits($amount, $minorUnits, $defaultMinorUnits = 2)
     {
-        if($minorUnits == "" || $minorUnits == null)
-        {
+        if ($minorUnits == "" || $minorUnits == null) {
             $minorUnits = $defaultMinorUnits;
         }
 
-        if($amount == "" || $amount == null)
-        {
+        if ($amount == "" || $amount == null) {
             return 0;
         }
 
-        return $amount * pow(10,$minorUnits);;
+        return $amount * pow(10, $minorUnits);
+        ;
     }
 
     /**
@@ -228,16 +222,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function convertPriceFromMinorUnits($amount, $minorUnits, $defaultMinorUnits = 2)
     {
-        if($minorUnits == "" || $minorUnits == null)
-        {
+        if ($minorUnits == "" || $minorUnits == null) {
             $minorUnits = $defaultMinorUnits;
         }
 
-        if($amount == "" || $amount == null)
-        {
+        if ($amount == "" || $amount == null) {
             return 0;
         }
-        return number_format($amount / pow(10,$minorUnits),$minorUnits);
+        return number_format($amount / pow(10, $minorUnits), $minorUnits);
     }
 
     /**
@@ -255,7 +247,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         'VUV' => 0, 'CLF' => 0, 'KRW' => 0, 'XOF' => 0, 'RWF' => 0,
         'IQD' => 3, 'TND' => 3, 'BHD' => 3, 'JOD' => 3, 'OMR' => 3,
         'KWD' => 3, 'LYD' => 3);
-
 
         return key_exists($currencyCode, $currencyArray) ? $currencyArray[$currencyCode] : 2;
     }
@@ -344,10 +335,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function calcEpayMd5Key($order, $paymentRequest)
     {
         $shopMd5 = $this->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
-		$md5stamp = md5(
+        $md5stamp = md5(
                     $paymentRequest->encoding.
-					$paymentRequest->cms.
-					$paymentRequest->windowState.
+                    $paymentRequest->cms.
+                    $paymentRequest->windowState.
                     $paymentRequest->mobile.
                     $paymentRequest->merchantNumber.
                     $paymentRequest->windowId.
@@ -365,7 +356,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $paymentRequest->invoice.
                     $shopMd5);
 
-		return $md5stamp;
+        return $md5stamp;
     }
 
     /**
@@ -376,22 +367,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function translatePaymentStatus($status)
     {
-		if(strcmp($status, "PAYMENT_NEW") == 0)
-		{
-			return __("New");
-		}
-		elseif (strcmp($status, "PAYMENT_CAPTURED") == 0 || strcmp($status, "PAYMENT_EUROLINE_WAIT_CAPTURE") == 0 || strcmp($status, "PAYMENT_EUROLINE_WAIT_CREDIT") == 0)
-		{
-			return __("Captured");
-		}
-		elseif (strcmp($status, "PAYMENT_DELETED") == 0)
-		{
-			return __("Deleted");
-		}
-		else
-		{
-			return __("Unkown");
-		}
+        if (strcmp($status, "PAYMENT_NEW") == 0) {
+            return __("New");
+        } elseif (strcmp($status, "PAYMENT_CAPTURED") == 0 || strcmp($status, "PAYMENT_EUROLINE_WAIT_CAPTURE") == 0 || strcmp($status, "PAYMENT_EUROLINE_WAIT_CREDIT") == 0) {
+            return __("Captured");
+        } elseif (strcmp($status, "PAYMENT_DELETED") == 0) {
+            return __("Deleted");
+        } else {
+            return __("Unkown");
+        }
     }
 
     /**
@@ -403,20 +387,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string &$message
      * @return bool
      */
-    public function validateCheckoutApiResult($response, $id,$isBackoffice, &$message)
+    public function validateCheckoutApiResult($response, $id, $isBackoffice, &$message)
     {
-        if(!isset($response) || $response === false || !isset($response->meta))
-        {
+        if (!isset($response) || $response === false || !isset($response->meta)) {
             //Error without description
             $message = "No answer from Bambora";
             $this->_bamboraLogger->addCheckoutError($id, $message);
             return false;
-        }
-        else if(!$response->meta->result)
-        {
+        } elseif (!$response->meta->result) {
             // Error with description
             $message = $isBackoffice ? $response->meta->message->merchant : $response->meta->message->enduser;
-            $this->_bamboraLogger->addCheckoutError($id,$response->meta->message->merchant);
+            $this->_bamboraLogger->addCheckoutError($id, $response->meta->message->merchant);
             return false;
         }
         return true;
@@ -433,34 +414,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function validateEpayApiResult($response, $id, $auth, $action, &$message)
     {
-        if(!isset($response) || $response === false)
-        {
+        if (!isset($response) || $response === false) {
             //Error without description
             $message = "No answer from ePay";
             $this->_bamboraLogger->addEpayError($id, $message);
             return false;
-        }
-        else if(!$response->result)
-        {
+        } elseif (!$response->result) {
             /** @var \Bambora\Online\Model\Api\Epay\Error */
             $errorProvicer = $this->getEpayApi(EpayApi::API_ERROR);
 
-            if(isset($response->epayResponse) && $response->epayResponse != -1)
-            {
-                if($response->epayResponse == -1019)
-                {
+            if (isset($response->epayResponse) && $response->epayResponse != -1) {
+                if ($response->epayResponse == -1019) {
                     $message = __("Invalid password used for webservice access!");
+                } else {
+                    $message = "({$response->epayrespons}: ".$errorProvicer->getEpayErrorText($response->epayrespons, $this->calcLanguage($this->getShopLocalCode()), $auth);
                 }
-                else
-                {
-                    $message = "({$response->epayrespons}: ".$errorProvicer->getEpayErrorText($response->epayrespons, $this->calcLanguage($this->getShopLocalCode()),$auth);
-                }
-                $this->_bamboraLogger->addEpayError($id,"Epay Error: {$message}");
-            }
-            else if(isset($response->pbsResponse) && $response->pbsResponse != -1)
-            {
-                $message .= "({$response->pbsResponse}): " . $errorProvicer->getPbsErrorText($response->pbsResponse,$this->calcLanguage($this->getShopLocalCode()), $auth);
-                $this->_bamboraLogger->addEpayError($id,"PBS Error: {$message}");
+                $this->_bamboraLogger->addEpayError($id, "Epay Error: {$message}");
+            } elseif (isset($response->pbsResponse) && $response->pbsResponse != -1) {
+                $message .= "({$response->pbsResponse}): " . $errorProvicer->getPbsErrorText($response->pbsResponse, $this->calcLanguage($this->getShopLocalCode()), $auth);
+                $this->_bamboraLogger->addEpayError($id, "PBS Error: {$message}");
             }
             return false;
         }
@@ -474,9 +446,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @return string
      */
     public function calcLanguage($lan = null)
-	{
-        if(!isset($lan))
-        {
+    {
+        if (!isset($lan)) {
             $lan = $this->getShopLocalCode();
         }
 
@@ -493,7 +464,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             );
 
         return key_exists($lan, $languageArray) ? $languageArray[$lan] : '0';
-	}
+    }
 
     /**
      * Convert card id to name
@@ -502,7 +473,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @return string
      */
     public function calcCardtype($cardid)
-	{
+    {
         $cardIdArray = array(
             '1' => 'Dankort / VISA/Dankort',
             '2' => 'eDankort',
@@ -528,7 +499,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             '25' => 'iDeal');
 
         return key_exists($cardid, $cardIdArray) ? $cardIdArray[$cardid] : '';
-	}
+    }
 
     /**
      * Convert Iso code
@@ -570,13 +541,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
            'VUV' => '548', 'XAF' => '950', 'XCD' => '951', 'XOF' => '952', 'XPF' => '953', 'YER' => '886',
            'YUM' => '891', 'ZAR' => '710', 'ZMK' => '894', 'ZWD' => '716');
 
-        if($isKey)
-        {
+        if ($isKey) {
             return $isoCodeArray[$code];
         }
 
         return array_search($code, $isoCodeArray);
     }
-
-
 }

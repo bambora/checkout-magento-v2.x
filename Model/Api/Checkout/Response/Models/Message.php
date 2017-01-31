@@ -25,5 +25,4 @@ class Message
      * @var string
      */
     public $merchant;
-
 }

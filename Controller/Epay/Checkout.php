@@ -42,19 +42,15 @@ class Checkout extends \Bambora\Online\Controller\AbstractActionController
      */
     public function getEPayPaymentWindowUrl($order)
     {
-        try
-        {
+        try {
             /** @var \Bambora\Online\Model\Method\Epay\Payment */
             $epayMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
             $response = $epayMethod->getPaymentWindow($order);
             return $response;
-        }
-        catch(\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->messageManager->addError(__("The payment window could not be retrived"));
             $this->_bamboraLogger->addEpayError($order->getId(), $ex->getMessage());
             return null;
         }
-
     }
 }

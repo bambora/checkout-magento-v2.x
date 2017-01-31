@@ -42,6 +42,4 @@ class TransactionHistoryInfo
      * @var \dateTime
      */
     public $created;
-
-
 }

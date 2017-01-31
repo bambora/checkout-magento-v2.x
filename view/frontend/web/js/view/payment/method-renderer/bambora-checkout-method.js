@@ -28,7 +28,7 @@ define(
                     ko.computed(function () {
                         evaluator.call(this).done(result);
                     });
-                    return result;               
+                    return result;
                 }()
             },
             getBamboraCheckoutTitle: function () {
@@ -49,4 +49,3 @@ define(
         });
     }
 );
-

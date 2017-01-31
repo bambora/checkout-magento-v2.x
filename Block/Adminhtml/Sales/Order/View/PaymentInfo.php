@@ -53,7 +53,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     protected function _toHtml()
     {
-        return ($this->getOrder()->getPayment()->getMethod() === CheckoutPayment::METHOD_CODE || $this->getOrder()->getPayment()->getMethod() === EpayPayment::METHOD_CODE ) ? parent::_toHtml() : '';
+        return ($this->getOrder()->getPayment()->getMethod() === CheckoutPayment::METHOD_CODE || $this->getOrder()->getPayment()->getMethod() === EpayPayment::METHOD_CODE) ? parent::_toHtml() : '';
     }
 
     /**
@@ -77,53 +77,38 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $payment = $order->getPayment();
         $paymentMethod = $payment->getMethod();
 
-        if($paymentMethod === CheckoutPayment::METHOD_CODE)
-        {
+        if ($paymentMethod === CheckoutPayment::METHOD_CODE) {
             /** @var \Bambora\Online\Model\Method\Checkout\Payment */
             $checkoutMethod = $payment->getMethodInstance();
 
-            if(isset($checkoutMethod))
-            {
+            if (isset($checkoutMethod)) {
                 $transactionId = $payment->getAdditionalInformation($checkoutMethod::METHOD_REFERENCE);
                 $message = "";
                 $transaction = $checkoutMethod->getTransaction($transactionId, $message);
 
-                if(isset($transaction))
-                {
+                if (isset($transaction)) {
                     $result = $this->createCheckoutTransactionHtml($transaction);
-                }
-                elseif($checkoutMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0)
-                {
+                } elseif ($checkoutMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0) {
                     $result .= ' '.__("Please enable remote payment processing from the module configuration");
-                }
-                else
-                {
+                } else {
                     $result .= ' - ' .  $message;
                 }
             }
-        }
-        elseif($paymentMethod === EpayPayment::METHOD_CODE)
-        {
+        } elseif ($paymentMethod === EpayPayment::METHOD_CODE) {
             /** @var \Bambora\Online\Model\Method\Epay\Payment */
             $ePayMethod = $payment->getMethodInstance();
 
-            if(isset($ePayMethod))
-            {
+            if (isset($ePayMethod)) {
                 $transactionId = $payment->getAdditionalInformation($ePayMethod::METHOD_REFERENCE);
 
                 $message = "";
                 $transaction = $ePayMethod->getTransaction($transactionId, $message);
 
-                if(isset($transaction))
-                {
-                    $result = $this->createEpayTransactionHtml($transaction,$order);
-                }
-                elseif($ePayMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0)
-                {
+                if (isset($transaction)) {
+                    $result = $this->createEpayTransactionHtml($transaction, $order);
+                } elseif ($ePayMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0) {
                     $result .= ' - '.__("Please enable remote payment processing from the module configuration");
-                }
-                else
-                {
+                } else {
                     $result .= ' - ' .  $message;
                 }
             }
@@ -149,7 +134,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $res .= '<td>' . $transaction->currency->code . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transaction->total->authorized, $transaction->currency->minorunits) . '</td></tr>';
 
         $res .= '<tr><td>' . __("Transaction date") . ':</td>';
-        $res .= '<td>' . $this->formatDate($transaction->createdDate,\IntlDateFormatter::SHORT,true) . '</td></tr>';
+        $res .= '<td>' . $this->formatDate($transaction->createdDate, \IntlDateFormatter::SHORT, true) . '</td></tr>';
 
         $res .= '<tr><td>' . __("Card type") . ':</td>';
         $res .= '<td>' . $transaction->information->paymentTypes[0]->displayName . $this->getPaymentLogoUrl($transaction->information->paymentTypes[0]->groupid). '</td></tr>';
@@ -183,13 +168,12 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     private function checkoutStatus($status)
     {
-        if(!isset($status))
-        {
+        if (!isset($status)) {
             return "";
         }
-        $firstLetter = substr($status,0,1);
+        $firstLetter = substr($status, 0, 1);
         $firstLetterToUpper = strtoupper($firstLetter);
-        $result = str_replace($firstLetter,$firstLetterToUpper,$status);
+        $result = str_replace($firstLetter, $firstLetterToUpper, $status);
 
         return $result;
     }
@@ -221,8 +205,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $res .= '<tr><td>' . __("Transaction status") . ':</td>';
         $res .= '<td>' . $this->_bamboraHelper->translatePaymentStatus($transactionInformation->status) . '</td></tr>';
 
-        if(strcmp($transactionInformation->status, 'PAYMENT_DELETED') == 0)
-        {
+        if (strcmp($transactionInformation->status, 'PAYMENT_DELETED') == 0) {
             $res .= '<tr><td>' . __("Deleted date") . ':</td>';
             $res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->deleteddate)) . '</td></tr>';
         }
@@ -246,38 +229,34 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $res .= '<td>' . $transactionInformation->cardholder . '</td></tr>';
 
         $res .= '<tr><td>' . __("Auth amount") . ':</td>';
-        $res .= '<td>' . $order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->authamount,$minorUnits) .  '</td></tr>';
+        $res .= '<td>' . $order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->authamount, $minorUnits) .  '</td></tr>';
 
-        if($transactionInformation->authamount > 0)
-        {
+        if ($transactionInformation->authamount > 0) {
             $res .= '<tr><td>' . __("Authorized date") . ':</td>';
-			$res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->authdate)) . '</td></tr>';
+            $res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->authdate)) . '</td></tr>';
         }
 
         $res .= '<tr><td>' . __("Captured amount") . ':</td>';
-        $res .= '<td>' .$order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->capturedamount,$minorUnits) . '</td></tr>';
+        $res .= '<td>' .$order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->capturedamount, $minorUnits) . '</td></tr>';
 
-        if($transactionInformation->capturedamount > 0)
-        {
+        if ($transactionInformation->capturedamount > 0) {
             $res .= '<tr><td>' . __("Captured date") . ':</td>';
-			$res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->captureddate)) . '</td></tr>';
+            $res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->captureddate)) . '</td></tr>';
         }
 
         $res .= '<tr><td>' . __("Credited amount") . ':</td>';
-        $res .= '<td>' . $order->getBaseCurrencyCode() . '&nbsp;' . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->creditedamount,$minorUnits). '</td></tr>';
+        $res .= '<td>' . $order->getBaseCurrencyCode() . '&nbsp;' . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->creditedamount, $minorUnits). '</td></tr>';
 
-        if($transactionInformation->creditedamount > 0)
-        {
+        if ($transactionInformation->creditedamount > 0) {
             $res .= '<tr><td>' . __("Credited date") . ':</td>';
             $res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->crediteddate)) . '</td></tr>';
         }
 
         $res .= '<tr><td>' . __("Surcharge fee") . ':</td>';
-        $res .= '<td>' . $order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->fee,$minorUnits) . '</td></tr>';
+        $res .= '<td>' . $order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->fee, $minorUnits) . '</td></tr>';
 
         //Fraud
-        if($transactionInformation->fraudStatus > 0)
-        {
+        if ($transactionInformation->fraudStatus > 0) {
             $res .= '<tr><td>' . __("Fraud status") . ':</td>';
             $res .= '<td>' .$transactionInformation->fraudStatus. '</td></tr>';
 
@@ -286,37 +265,32 @@ class PaymentInfo extends \Magento\Backend\Block\Template
 
             $res .= '<tr><td>' . __("Issued country code") . ':</td>';
             $res .= '<td>' .$transactionInformation->issuedCountryCode. '</td></tr>';
-            if(isset($transactionInformation->FraudMessage))
-            {
+            if (isset($transactionInformation->FraudMessage)) {
                 $res .= '<tr><td>' . __("Fraud message") . ':</td>';
                 $res .= '<td>' .$transactionInformation->FraudMessage. '</td></tr>';
             }
         }
 
-        if(isset($transactionInformation->history) && isset($transactionInformation->history->TransactionHistoryInfo) && count($transactionInformation->history->TransactionHistoryInfo) > 0)
-        {
+        if (isset($transactionInformation->history) && isset($transactionInformation->history->TransactionHistoryInfo) && count($transactionInformation->history->TransactionHistoryInfo) > 0) {
             // Important to convert this item to array. If only one item is to be found in the array of history items
             // the object will be handled as non-array but object only.
             $historyArray = $transactionInformation->history->TransactionHistoryInfo;
-            if(count($transactionInformation->history->TransactionHistoryInfo) == 1)
-            {
+            if (count($transactionInformation->history->TransactionHistoryInfo) == 1) {
                 // convert to array
                 $historyArray = array($transactionInformation->history->TransactionHistoryInfo);
             }
-            $res .= '<br/><br/>';
+            $res .= '<br /><br />';
             $res .= '<tr><td colspan="2" class="bambora_table_title bambora_table_title_padding">' . __("History") . '</td></tr>';
-            foreach($historyArray as $history)
-            {
+            foreach ($historyArray as $history) {
                 $res .= '<tr class="bambora_table_history_tr"><td class="bambora_table_history_td">' . str_replace('T', ' ', $history->created) . '</td>';
                 $res .= '<td>';
-                if(strlen($history->username) > 0)
-                {
+                if (strlen($history->username) > 0) {
                     $res .= ($history->username . ': ');
                 }
                 $res .= $history->eventMsg . '</td></tr>';
             }
         }
 
-		return $res;
+        return $res;
     }
 }

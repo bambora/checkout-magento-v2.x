@@ -29,5 +29,4 @@ class Capture
      * @var \Bambora\Online\Model\Api\Checkout\Request\Models\Line[]
      */
     public $invoicelines;
-
 }

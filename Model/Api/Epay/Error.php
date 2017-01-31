@@ -28,12 +28,11 @@ class Error extends Base
      * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
      * @return string
      */
-    function getEpayErrorText($errorcode, $language, $auth)
+    public function getEpayErrorText($errorcode, $language, $auth)
     {
         $res = "Unable to lookup errorcode";
-        try{
-            $param = array
-                (
+        try {
+            $param = array(
                     'merchantnumber' => $auth->merchantNumber,
                     'language' => $language,
                     'epayresponsecode' => $errorcode,
@@ -44,22 +43,18 @@ class Error extends Base
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
 
-			$result = $client->getEpayError($param);
+            $result = $client->getEpayError($param);
 
-            if($result->getEpayErrorResult == 1)
-			{
-				$res = $result->epayresponsestring;
-			}
-        }
-        catch (\Exception $ex)
-        {
-            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
+            if ($result->getEpayErrorResult == 1) {
+                $res = $result->epayresponsestring;
+            }
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
             return $res;
         }
 
         return $res;
     }
-
 
     /**
      * Get PBS error text
@@ -72,10 +67,8 @@ class Error extends Base
     public function getPbsErrorText($errorcode, $language, $auth)
     {
         $res = "Unable to lookup errorcode";
-		try
-		{
-            $param = array
-            (
+        try {
+            $param = array(
                 'merchantnumber' => $auth->merchantNumber,
                 'language' => $language,
                 'pbsresponsecode' => $errorcode,
@@ -87,17 +80,14 @@ class Error extends Base
             $client = $this->_initSoapClient($url);
             $result = $client->getPbsError($param);
 
-            if($result->getPbsErrorResult == 1)
-            {
+            if ($result->getPbsErrorResult == 1) {
                 $res = $result->pbsresponsestring;
             }
-		}
-		catch (\Exception $ex)
-		{
-            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
             return $res;
-		}
+        }
 
-	    return $res;
+        return $res;
     }
 }

@@ -17,14 +17,13 @@ namespace Bambora\Online\Model\Method;
 
 interface IPayment
 {
-     /**
+    /**
      * Get payment window
      *
      * @param \Magento\Sales\Model\Order
      * @return mixed
      */
     public function getPaymentWindow($order);
-
 
     /**
      * Capture payment
@@ -36,7 +35,6 @@ interface IPayment
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount);
 
-
     /**
      * Refund payment
      *
@@ -47,7 +45,6 @@ interface IPayment
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount);
 
-
     /**
      * Void payment
      *
@@ -55,7 +52,6 @@ interface IPayment
      * @return $this
      */
     public function void(\Magento\Payment\Model\InfoInterface $payment);
-
 
     /**
      * Cancel payment
@@ -73,5 +69,4 @@ interface IPayment
      * @return mixed
      */
     public function getTransaction($transactionId, &$message);
-
 }

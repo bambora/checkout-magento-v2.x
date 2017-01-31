@@ -16,6 +16,7 @@
 namespace Bambora\Online\Model\Method;
 
 use Bambora\Online\Helper\BamboraConstants;
+
 abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMethod
 {
     /**
@@ -86,13 +87,12 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Framework\App\RequestInterface $request,
-		\Magento\Checkout\Model\Cart $cart,
+        \Magento\Checkout\Model\Cart $cart,
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct(
             $context,
             $registry,
@@ -110,7 +110,7 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
         $this->_bamboraHelper = $bamboraHelper;
         $this->_storeManager = $storeManager;
         $this->_request = $request;
-		$this->_cart = $cart;
+        $this->_cart = $cart;
         $this->_messageManager = $messageManager;
     }
 
@@ -141,8 +141,7 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
      */
     public function getOrder()
     {
-        if(!$this->_order)
-        {
+        if (!$this->_order) {
             $paymentInfo = $this->getInfoInstance();
             $this->_order = $paymentInfo->getOrder();
         }
@@ -170,8 +169,7 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
     protected function canOnlineAction($payment)
     {
         $storeId = $payment->getOrder()->getStoreId();
-        if (intval($this->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId)) === 1)
-        {
+        if (intval($this->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId)) === 1) {
             return true;
         }
 
@@ -187,11 +185,10 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
     {
         $infoInstance = $this->getInfoInstance();
         $payment = $infoInstance->getOrder()->getPayment();
-		$transactionId = $payment->getAdditionalInformation($reference);
-        if(!empty($transactionId))
-		{
-			return true;
-		}
+        $transactionId = $payment->getAdditionalInformation($reference);
+        if (!empty($transactionId)) {
+            return true;
+        }
 
         return false;
     }
@@ -205,13 +202,10 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
     {
         /** @var \Magento\Sales\Model\Order */
         $order = $payment->getOrder();
-        foreach($order->getItems() as $item)
-        {
-            if($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE)
-            {
+        foreach ($order->getItems() as $item) {
+            if ($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE) {
                 $item->setQtyCanceled(1);
             }
         }
     }
-
 }

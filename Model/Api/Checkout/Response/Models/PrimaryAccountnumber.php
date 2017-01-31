@@ -21,5 +21,4 @@ class PrimaryAccountnumber
      * @var string
      */
     public $number;
-
 }

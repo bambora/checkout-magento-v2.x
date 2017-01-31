@@ -29,7 +29,7 @@ class Checkout extends Base
      */
     public function setCheckout($setcheckoutrequest, $apiKey)
     {
-        try{
+        try {
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_CHECKOUT) . '/checkout';
             $jsonData = json_encode($setcheckoutrequest);
             $checkoutResponseJson = $this->_callRestService($serviceUrl, $jsonData, "POST", $apiKey);
@@ -42,14 +42,9 @@ class Checkout extends Base
             $checkoutResponse->url = $checkoutResponseArray['url'];
 
             return $checkoutResponse;
-        }
-        catch(\Exception $ex)
-        {
-            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
             return null;
         }
     }
-
-
-
 }

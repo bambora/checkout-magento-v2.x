@@ -17,5 +17,4 @@ namespace Bambora\Online\Model\Api\Epay\Response;
 
 class Delete extends Base
 {
-
 }

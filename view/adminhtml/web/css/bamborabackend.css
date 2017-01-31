@@ -21,7 +21,7 @@
 .bambora_action_container td {
     width: 50%;
     padding-left: 5px;
-    padding-right: 5px; 
+    padding-right: 5px;
 }
 
 .bambora_table_title {
@@ -44,7 +44,6 @@
     position: relative;
     vertical-align: middle;
 }
-
 
 .bambora-checkout-method > .entry-edit-head > .config-heading .heading strong {
     padding-left: 134px;

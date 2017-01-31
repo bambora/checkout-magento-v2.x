@@ -42,8 +42,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
      */
     public function __construct(
         \Magento\Payment\Helper\Data $paymentHelper
-    )
-    {
+    ) {
         $this->_paymentHelper = $paymentHelper;
         $this->_ePayMethod = $this->_paymentHelper->getMethodInstance($this->methodCode);
     }

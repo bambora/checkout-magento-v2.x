@@ -20,5 +20,4 @@ class ApiEndpoints
     const ENDPOINT_REMOTE = 'remote';
     const ENDPOINT_EPAY_INTEGRATION = 'integration';
     const ENDPOINT_EPAY_ASSETS = 'assets';
-
 }

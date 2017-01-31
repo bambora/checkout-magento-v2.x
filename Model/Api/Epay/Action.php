@@ -57,7 +57,6 @@ class Action extends Base
         return $url;
     }
 
-
     /**
      * Get ePay payment window js url
      *
@@ -96,8 +95,6 @@ class Action extends Base
         return $url;
     }
 
-
-
     /**
      * Capture transaction
      *
@@ -106,12 +103,10 @@ class Action extends Base
      * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
      * @return \Bambora\Online\Model\Api\Epay\Response\Capture
      */
-    public function capture($amount,$transactionId,$auth)
+    public function capture($amount, $transactionId, $auth)
     {
-        try
-        {
-            $param = array
-            (
+        try {
+            $param = array(
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'amount' => (string)$amount,
@@ -133,14 +128,11 @@ class Action extends Base
             $captureResponse->pbsResponse = $result->pbsResponse;
 
             return $captureResponse;
-        }
-        catch(\Exception $ex)
-        {
-            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
             return null;
         }
     }
-
 
     /**
      * Credit transaction
@@ -150,15 +142,13 @@ class Action extends Base
      * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
      * @return \Bambora\Online\Model\Api\Epay\Response\Credit
      */
-    public function credit($amount,$transactionId,$auth)
+    public function credit($amount, $transactionId, $auth)
     {
         /** @var \Bambora\Online\Model\Api\Epay\Response\Credit */
         $creditResponse = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::RESPONSE_CREDIT);
 
-        try
-        {
-            $param = array
-            (
+        try {
+            $param = array(
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'amount' => (string)$amount,
@@ -176,10 +166,8 @@ class Action extends Base
             $creditResponse->pbsResponse = $result->pbsresponse;
 
             return $creditResponse;
-        }
-        catch(\Exception $ex)
-        {
-            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
             return null;
         }
     }
@@ -191,12 +179,10 @@ class Action extends Base
      * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
      * @return \Bambora\Online\Model\Api\Epay\Response\Delete
      */
-    public function delete($transactionId,$auth)
+    public function delete($transactionId, $auth)
     {
-        try
-        {
-            $param = array
-            (
+        try {
+            $param = array(
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'group' => '',
@@ -213,10 +199,8 @@ class Action extends Base
             $deleteResponse->epayResponse = $result->epayresponse;
 
             return $deleteResponse;
-        }
-        catch(\Exception $ex)
-        {
-            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
             return null;
         }
     }
@@ -230,10 +214,8 @@ class Action extends Base
      */
     public function getTransaction($transactionId, $auth)
     {
-        try
-        {
-            $param = array
-            (
+        try {
+            $param = array(
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'epayresponse' => -1,
@@ -251,14 +233,10 @@ class Action extends Base
             $getTransactionResponse->epayResponse = $result->epayresponse;
             $getTransactionResponse->transactionInformation = $result->transactionInformation;
 
-
             return $getTransactionResponse;
-        }
-        catch(\Exception $ex)
-        {
-            $this->_bamboraLogger->addEpayError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
             return null;
         }
     }
-
 }

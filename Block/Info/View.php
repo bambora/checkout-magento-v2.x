@@ -31,32 +31,25 @@ class View extends \Magento\Payment\Block\Info
         $transport = parent::_prepareSpecificInformation($transport);
         $data = [];
 
-        if ($this->getInfo()->getLastTransId())
-        {
+        if ($this->getInfo()->getLastTransId()) {
             $ccType = $this->getInfo()->getOrder()->getPayment()->getCcType();
-            if($ccType)
-            {
+            if ($ccType) {
                 $data[(string)__("Payment type")] = $ccType;
             }
             $ccNumber = $this->getInfo()->getOrder()->getPayment()->getCcNumberEnc();
-            if($ccNumber)
-            {
+            if ($ccNumber) {
                 $data[(string)__("Card number")] = $ccNumber;
             }
 
             $txnId = "";
             $payment = $this->getInfo()->getOrder()->getPayment();
-            if($payment->getMethod() === CheckoutPayment::METHOD_CODE)
-            {
+            if ($payment->getMethod() === CheckoutPayment::METHOD_CODE) {
                 $txnId = $payment->getAdditionalInformation(CheckoutPayment::METHOD_REFERENCE);
-            }
-            elseif($payment->getMethod() === EpayPayment::METHOD_CODE)
-            {
+            } elseif ($payment->getMethod() === EpayPayment::METHOD_CODE) {
                 $txnId = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
             }
 
-            if($txnId)
-            {
+            if ($txnId) {
                 $data[(string)__("Transaction Id")] = $txnId;
             }
         }

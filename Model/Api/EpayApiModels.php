@@ -38,6 +38,4 @@ class EpayApiModels
     //Response Models
     const RESPONSE_MODEL_TRANSACTIONHISTORYINFO = 'Response\Models\TransactionHistoryInfo';
     const RESPONSE_MODEL_TRANSACTIONINFORMATIONTYPE = 'Response\Models\TransactionInformationType';
-
-
 }

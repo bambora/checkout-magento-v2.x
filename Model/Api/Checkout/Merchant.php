@@ -30,7 +30,7 @@ class Merchant extends Base
      */
     public function getPaymentTypes($currency, $amount, $apiKey)
     {
-        try{
+        try {
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_MERCHANT) . '/paymenttypes?currency='. $currency . '&amount=' . $amount;
             $resultJson = $this->_callRestService($serviceUrl, null, "GET", $apiKey);
             $result = json_decode($resultJson, true);
@@ -39,12 +39,10 @@ class Merchant extends Base
             $listPaymentTypesResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_LISTPAYMENTTYPES);
             $listPaymentTypesResponse->meta = $this->_mapMeta($result);
 
-            if($listPaymentTypesResponse->meta->result)
-            {
+            if ($listPaymentTypesResponse->meta->result) {
                 $listPaymentTypesResponse->paymentCollections = array();
 
-                foreach($result['paymentcollections'] as $payment)
-                {
+                foreach ($result['paymentcollections'] as $payment) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentCollection */
                     $paymentCollection = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_PAYMENTCOLLECTION);
                     $paymentCollection->displayName = $payment['displayname'];
@@ -52,8 +50,7 @@ class Merchant extends Base
                     $paymentCollection->name = $payment['name'];
                     $paymentCollection->paymentGroups = array();
 
-                    foreach($payment['paymentgroups'] as $group)
-                    {
+                    foreach ($payment['paymentgroups'] as $group) {
                         /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentGroup */
                         $paymentGroup = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_PAYMENTGROUP);
                         $paymentGroup->displayName = $group['displayname'];
@@ -61,8 +58,7 @@ class Merchant extends Base
                         $paymentGroup->name = $group['name'];
                         $paymentGroup->paymentTypes = array();
 
-                        foreach($group['paymenttypes'] as $type)
-                        {
+                        foreach ($group['paymenttypes'] as $type) {
                             /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentType */
                             $paymentType = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_PAYMENTYPE);
                             $paymentType->displayName = $type['displayname'];
@@ -87,10 +83,8 @@ class Merchant extends Base
             }
 
             return $listPaymentTypesResponse;
-        }
-        catch(\Exception $ex)
-        {
-            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
             return null;
         }
     }
@@ -103,19 +97,18 @@ class Merchant extends Base
      * @return \Bambora\Online\Model\Api\Checkout\Response\Transaction
      */
     public function getTransaction($transactionId, $apiKey)
-	{
-        try{
+    {
+        try {
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_MERCHANT) . '/transactions/' . sprintf('%.0F', $transactionId);
 
             $resultJson = $this->_callRestService($serviceUrl, null, "GET", $apiKey);
             $result = json_decode($resultJson, true);
 
-             /** @var \Bambora\Online\Model\Api\Checkout\Response\Transaction */
+            /** @var \Bambora\Online\Model\Api\Checkout\Response\Transaction */
             $transactionResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_TRANSACTION);
             $transactionResponse->meta = $this->_mapMeta($result);
 
-            if($transactionResponse->meta->result)
-            {
+            if ($transactionResponse->meta->result) {
                 $result = $result['transaction'];
 
                 /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\Transaction */
@@ -143,16 +136,14 @@ class Merchant extends Base
                 /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\Information */
                 $information = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_INFORMATION);
                 $information->acquirers = array();
-                foreach($result['information']['acquirers'] as $acq)
-                {
+                foreach ($result['information']['acquirers'] as $acq) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\Acquirer */
                     $acquirer = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_ACQUIRER);
                     $acquirer->name = $acq['name'];
                     $information->acquirers[] = $acquirer;
                 }
                 $information->paymentTypes = array();
-                foreach($result['information']['paymenttypes'] as $type)
-                {
+                foreach ($result['information']['paymenttypes'] as $type) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentType */
                     $paymentType = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_PAYMENTYPE);
                     $paymentType->displayName = $type['displayname'];
@@ -161,8 +152,7 @@ class Merchant extends Base
                     $information->paymentTypes[] = $paymentType;
                 }
                 $information->primaryAccountnumbers = array();
-                foreach($result['information']['primaryaccountnumbers'] as $accountNumber)
-                {
+                foreach ($result['information']['primaryaccountnumbers'] as $accountNumber) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\PrimaryAccountnumber */
                     $primaryAccountnumber = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_PRIMARYACCOUNTNUMBER);
                     $primaryAccountnumber->number = $accountNumber['number'];
@@ -202,11 +192,9 @@ class Merchant extends Base
             }
 
             return $transactionResponse;
-        }
-        catch(\Exception $ex)
-        {
-            $this->_bamboraLogger->addCheckoutError("-1",$ex->getMessage());
+        } catch (\Exception $ex) {
+            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
             return null;
         }
-	}
+    }
 }

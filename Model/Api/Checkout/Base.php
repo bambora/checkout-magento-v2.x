@@ -54,8 +54,7 @@ abstract class Base extends DataObject
         \Bambora\Online\Helper\Data $bamboraHelper,
         \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
          array $data = []
-    )
-    {
+    ) {
         parent::__construct($data);
         $this->_bamboraHelper = $bamboraHelper;
         $this->_bamboraLogger = $bamboraLogger;
@@ -92,7 +91,7 @@ abstract class Base extends DataObject
        );
 
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST,$postOrGet);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $postOrGet);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $jsonData);
         curl_setopt($curl, CURLOPT_URL, $serviceUrl);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -114,8 +113,7 @@ abstract class Base extends DataObject
      */
     protected function _mapMeta($response)
     {
-        if(!isset($response))
-        {
+        if (!isset($response)) {
             return null;
         }
         /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\Message */
@@ -130,5 +128,4 @@ abstract class Base extends DataObject
 
         return $meta;
     }
-
 }
