@@ -32,7 +32,7 @@ class Checkout extends Base
         try {
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_CHECKOUT) . '/checkout';
             $jsonData = json_encode($setcheckoutrequest);
-            $checkoutResponseJson = $this->_callRestService($serviceUrl, $jsonData, "POST", $apiKey);
+            $checkoutResponseJson = $this->_callRestService($serviceUrl, $jsonData, Base::POST, $apiKey);
             $checkoutResponseArray = json_decode($checkoutResponseJson, true);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Response\Checkout */

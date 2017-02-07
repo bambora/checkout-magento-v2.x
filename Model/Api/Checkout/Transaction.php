@@ -33,7 +33,7 @@ class Transaction extends Base
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION) .'/transactions/'.  sprintf('%.0F', $transactionId) . '/capture';
             $captureRequestJson = json_encode($captureRequest);
 
-            $resultJson = $this->_callRestService($serviceUrl, $captureRequestJson, "POST", $apikey);
+            $resultJson = $this->_callRestService($serviceUrl, $captureRequestJson, Base::POST, $apikey);
             $result = json_decode($resultJson, true);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Response\Capture */
@@ -70,7 +70,7 @@ class Transaction extends Base
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION).'/transactions/'.  sprintf('%.0F', $transactionId) . '/credit';
             $creditRequestJson = json_encode($creditRequest);
 
-            $resultJson = $this->_callRestService($serviceUrl, $creditRequestJson, "POST", $apikey);
+            $resultJson = $this->_callRestService($serviceUrl, $creditRequestJson, Base::POST, $apikey);
             $result = json_decode($resultJson, true);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Response\Credit */
@@ -105,7 +105,7 @@ class Transaction extends Base
     {
         try {
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION).'/transactions/'.  sprintf('%.0F', $transactionId) . '/delete';
-            $resultJson = $this->_callRestService($serviceUrl, null, "POST", $apikey);
+            $resultJson = $this->_callRestService($serviceUrl, null, Base::POST, $apikey);
             $result = json_decode($resultJson, true);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Response\Delete */

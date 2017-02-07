@@ -20,6 +20,8 @@ use \Bambora\Online\Model\Api\CheckoutApiModels;
 
 abstract class Base extends DataObject
 {
+    const GET = 'GET';
+    const POST = 'POST';
     /**
      * List of Checkout endpoints
      *
@@ -44,20 +46,28 @@ abstract class Base extends DataObject
     protected $_bamboraLogger;
 
     /**
+     * @var \Magento\Framework\HTTP\Client\Curl
+     */
+    protected $_curl;
+
+    /**
      * ePay Api
      *
      * @param \Bambora\Online\Helper\Data $bamboraHelper
      * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
+     * @param \Magento\Framework\HTTP\Client\Curl $curl
      * @param array $data
      */
     public function __construct(
         \Bambora\Online\Helper\Data $bamboraHelper,
         \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
+        \Magento\Framework\HTTP\Client\Curl $curl,
          array $data = []
     ) {
         parent::__construct($data);
         $this->_bamboraHelper = $bamboraHelper;
         $this->_bamboraLogger = $bamboraLogger;
+        $this->_curl = $curl;
     }
 
     /**
@@ -76,33 +86,42 @@ abstract class Base extends DataObject
      *
      * @param string $serviceUrl
      * @param mixed $jsonData
-     * @param string $postOrGet
+     * @param string $method
      * @param string $apiKey
      * @return mixed
      */
-    protected function _callRestService($serviceUrl, $jsonData, $postOrGet, $apiKey)
+    protected function _callRestService($serviceUrl, $jsonData, $method, $apiKey)
     {
+        $contentLength = isset($jsonData) ? strlen($jsonData) : 0;
         $headers = array(
-           'Content-Type: application/json',
-           'Content-Length: ' . isset($jsonData) ? strlen($jsonData) : 0,
-           'Accept: application/json',
-           'Authorization: ' . $apiKey,
-           'X-EPay-System: ' .$this->_bamboraHelper->getModuleHeaderInfo()
+           'Content-Type' => 'application/json',
+           'Content-Length' => $contentLength,
+           'Accept' => 'application/json',
+           'Authorization' => $apiKey,
+           'X-EPay-System' => $this->_bamboraHelper->getModuleHeaderInfo()
        );
 
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $postOrGet);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $jsonData);
-        curl_setopt($curl, CURLOPT_URL, $serviceUrl);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_FAILONERROR, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        $this->_curl->setHeaders($headers);
+        $this->_curl->setOption(CURLOPT_HEADER, false);
+        $this->_curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
+        $this->_curl->setOption(CURLOPT_FAILONERROR, false);
 
-        $result = curl_exec($curl);
+        if($method === Base::GET)
+        {
+            $this->_curl->get($serviceUrl);
+        }
+        else if($method === Base::POST)
+        {
+            //For overwriting build in method and allow json encoded data as post fields
+            $this->_curl->setOption(CURLOPT_POSTFIELDS, $jsonData);
+            $this->_curl->post($serviceUrl, array());
+        }
+        else
+        {
+            return null;
+        }
 
-        curl_close($curl);
-        return $result;
+        return $this->_curl->getBody();
     }
 
     /**

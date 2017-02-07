@@ -32,7 +32,7 @@ class Merchant extends Base
     {
         try {
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_MERCHANT) . '/paymenttypes?currency='. $currency . '&amount=' . $amount;
-            $resultJson = $this->_callRestService($serviceUrl, null, "GET", $apiKey);
+            $resultJson = $this->_callRestService($serviceUrl, null, Base::GET, $apiKey);
             $result = json_decode($resultJson, true);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Response\ListPaymentTypes */
@@ -101,7 +101,7 @@ class Merchant extends Base
         try {
             $serviceUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_MERCHANT) . '/transactions/' . sprintf('%.0F', $transactionId);
 
-            $resultJson = $this->_callRestService($serviceUrl, null, "GET", $apiKey);
+            $resultJson = $this->_callRestService($serviceUrl, null, Base::GET, $apiKey);
             $result = json_decode($resultJson, true);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Response\Transaction */
