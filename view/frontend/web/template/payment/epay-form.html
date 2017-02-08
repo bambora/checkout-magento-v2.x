@@ -20,7 +20,7 @@
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()" />
-        <span data-bind="text: getBamboraEpayTitle()" class="bambora_payment_title"></span>
+        <label data-bind="text: getBamboraEpayTitle()" class="bambora_payment_title"></label>
         <iframe data-bind="attr: {src: getBamboraEpayPaymentLogoSrc()}" frameborder="0" class="bambora_epay_paymenttype" alt="ePay payment type"></iframe>
     </div>
     <div class="payment-method-content">
