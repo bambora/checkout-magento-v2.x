@@ -36,48 +36,56 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     {
         $posted = $this->getRequest()->getParams();
 
-        /** @var \Bambora\Online\Model\Api\Checkout\Response\Transaction */
-        $transactionResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_TRANSACTION);
-
         /** @var \Magento\Sales\Model\Order */
         $order = null;
-        $message = "";
-        $isValid = $this->validateCallback($posted, $transactionResponse, $order, $message);
-        if ($isValid) {
-            $this->processCallback($posted, $transactionResponse, $order);
-        } else {
+        $transactionResponse = null;
+        $message = "Callback Failed: ";
+        $responseCode = Exception::HTTP_BAD_REQUEST;
+        if ($this->validateCallback($posted, $transactionResponse, $order, $message)) {
+            $message = $this->processCallback($posted, $transactionResponse, $order, $responseCode);
+        }
+
+        $id = isset($order) ? $order->getIncrementId() : 0;
+        $callBackResult = $this->_createCallbackResult($responseCode, $message, $id);
+        if ($responseCode !== Response::HTTP_OK) {
+            $this->_logError(CheckoutPayment::METHOD_CODE, $id, $message);
             if (isset($order)) {
                 $order->addStatusHistoryComment($message);
                 $order->save();
             }
         }
 
-        return $this->_callbackResult;
+        return $callBackResult;
     }
 
     /**
      * Validate the callback
      *
      * @param mixed $posted
-     * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction &$transactionResponse
-     * @param \Magento\Sales\Model\Order &$order
-     * @param string &$message
+     * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
+     * @param \Magento\Sales\Model\Order $order
+     * @param string $message
      * @return bool
      */
     private function validateCallback($posted, &$transactionResponse, &$order, &$message)
     {
         //Validate response
         if (!isset($posted) || !$posted['txnid']) {
-            $message = isset($posted) ? "TransactionId is missing" : "Response is null";
-            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, $posted['orderid']);
+            $message .= isset($posted) ? "TransactionId is missing" : "Response is null";
             return false;
         }
 
         //Validate Order
         $order = $this->_getOrderByIncrementId($posted['orderid']);
         if (!isset($order)) {
-            $message = "The Order could be found or created";
-            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, $posted['orderid']);
+            $message .= "The Order could be found or created";
+            return false;
+        }
+
+        $payment = $order->getPayment();
+        //Validate Payment
+        if (!isset($payment)) {
+            $message .= "The Payment object is null";
             return false;
         }
 
@@ -93,8 +101,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
             $genstamp = md5($var . $shopMd5);
 
             if ($genstamp != $posted["hash"]) {
-                $message = "Bambora MD5 check failed";
-                $this->_callbackResult = $this->setResult(Exception::HTTP_BAD_REQUEST, $message, $order->getIncrementId());
+                $message .= "Bambora MD5 check failed";
                 return false;
             }
         }
@@ -110,14 +117,12 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
 
         //Validate transaction
         if (!$this->_bamboraHelper->validateCheckoutApiResult($transactionResponse, $order->getIncrementId(), true, $message)) {
-            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, $order->getIncrementId());
             return false;
         }
 
         //Validate orderId
         if ($order->getIncrementId() != $transactionResponse->transaction->orderid) {
-            $message = "The posted ordernumber does not match the transaction";
-            $this->_callbackResult = $this->_getResult(Exception::HTTP_BAD_REQUEST, $message, $order->getIncrementId());
+            $message .= "The posted ordernumber does not match the transaction";
             return false;
         }
 
@@ -130,9 +135,10 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
      * @param mixed $posted
      * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
      * @param \Magento\Sales\Model\Order $order
+     * @param int $responseCode
      * @return void
      */
-    private function processCallback($posted, $transactionResponse, $order)
+    private function processCallback($posted, $transactionResponse, $order, &$responseCode)
     {
         $bamboraTransactionId = $transactionResponse->transaction->id;
         $payment = $order->getPayment();
@@ -156,15 +162,22 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
 
                 );
 
-                $this->_callbackResult = $this->_getResult(Response::HTTP_OK, "Callback Success - Order created", $bamboraTransactionId, $payment->getMethod());
+                $message = "Callback Success - Order created";
             } else {
-                $this->_callbackResult = $this->_getResult(Response::HTTP_OK, "Callback Success - Order already created", $bamboraTransactionId, $payment->getMethod());
+                $message = "Callback Success - Order already created";
             }
+            $responseCode = Response::HTTP_OK;
         } catch (\Exception $ex) {
+            $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
+            $order->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
             $payment->setAdditionalInformation(array(CheckoutPayment::METHOD_REFERENCE => ""));
             $payment->save();
-            $message = "Callback Failed: " .$ex->getMessage();
-            $this->_callbackResult = $this->_getResult(Exception::HTTP_INTERNAL_ERROR, $message, $bamboraTransactionId);
+            $order->save();
+
+            $message = "Callback Failed - " .$ex->getMessage();
+            $responseCode = Exception::HTTP_INTERNAL_ERROR;
         }
+
+        return $message;
     }
 }

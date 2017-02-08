@@ -106,18 +106,13 @@ abstract class Base extends DataObject
         $this->_curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
         $this->_curl->setOption(CURLOPT_FAILONERROR, false);
 
-        if($method === Base::GET)
-        {
+        if ($method === Base::GET) {
             $this->_curl->get($serviceUrl);
-        }
-        else if($method === Base::POST)
-        {
+        } elseif ($method === Base::POST) {
             //For overwriting build in method and allow json encoded data as post fields
             $this->_curl->setOption(CURLOPT_POSTFIELDS, $jsonData);
             $this->_curl->post($serviceUrl, array());
-        }
-        else
-        {
+        } else {
             return null;
         }
 

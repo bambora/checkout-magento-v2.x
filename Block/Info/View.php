@@ -33,11 +33,11 @@ class View extends \Magento\Payment\Block\Info
 
         if ($this->getInfo()->getLastTransId()) {
             $ccType = $this->getInfo()->getOrder()->getPayment()->getCcType();
-            if ($ccType) {
+            if (!empty($ccType)) {
                 $data[(string)__("Payment type")] = $ccType;
             }
             $ccNumber = $this->getInfo()->getOrder()->getPayment()->getCcNumberEnc();
-            if ($ccNumber) {
+            if (!empty($ccNumber)) {
                 $data[(string)__("Card number")] = $ccNumber;
             }
 
@@ -49,7 +49,7 @@ class View extends \Magento\Payment\Block\Info
                 $txnId = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
             }
 
-            if ($txnId) {
+            if (!empty($txnId)) {
                 $data[(string)__("Transaction Id")] = $txnId;
             }
         }

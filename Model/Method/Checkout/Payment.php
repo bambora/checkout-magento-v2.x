@@ -15,7 +15,6 @@
  */
 namespace Bambora\Online\Model\Method\Checkout;
 
-use Magento\Framework\DataObject;
 use Bambora\Online\Model\Api\CheckoutApi;
 use Bambora\Online\Model\Api\CheckoutApiModels;
 use \Magento\Sales\Model\Order\Payment\Transaction;
