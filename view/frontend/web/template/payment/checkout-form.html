@@ -21,7 +21,7 @@
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()" />
 
-        <span data-bind="text: getBamboraCheckoutTitle()" class="bambora_payment_title"></span>
+        <label for="bambora_checkout" data-bind="text: getBamboraCheckoutTitle()" class="bambora_payment_title"></label>
         <span class="bambora_paymentcards_container" data-bind="foreach: paymentLogos">
             <img class="bambora_checkout_paymenttype" alt="Bambora Payment type" data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + $data + '.png'}" />
         </span>
