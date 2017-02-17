@@ -20,11 +20,9 @@
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()" />
-
-        <label for="bambora_checkout" data-bind="text: getBamboraCheckoutTitle()" class="bambora_payment_title"></label>
-        <span class="bambora_paymentcards_container" data-bind="foreach: paymentLogos">
-            <img class="bambora_checkout_paymenttype" alt="Bambora Payment type" data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + $data + '.png'}" />
-        </span>
+        <label data-bind="attr: {'for': getCode()}" class="label bambora_payment_title">
+            <span data-bind="text: getBamboraCheckoutTitle()"></span>
+        </label>
     </div>
     <div class="payment-method-content">
         <!-- ko foreach: getRegion('messages') -->
@@ -34,6 +32,9 @@
             <div class="payment-method-note">
                 <!-- ko i18n: 'You will be redirected to Bambora Checkout.' --><!-- /ko -->
             </div>
+            <span class="bambora_paymentcards_container" data-bind="foreach: paymentLogos">
+                <img class="bambora_checkout_paymenttype" alt="Bambora Payment type" data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + $data + '.png'}" />
+            </span>
             <div class="payment-method-billing-address">
                 <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
                 <!-- ko template: getTemplate() --><!-- /ko -->

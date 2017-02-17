@@ -15,7 +15,6 @@
 
 .bambora_paymentcards_container {
     display: block;
-    padding-left: 18px;
 }
 
 .bambora_checkout_paymenttype {
@@ -31,7 +30,6 @@
     width: 100%;
     height: 60px;
     display: block;
-    padding-left: 18px;
 }
 
 .bambora_info_title {
