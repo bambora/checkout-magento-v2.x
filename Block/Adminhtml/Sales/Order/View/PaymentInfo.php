@@ -92,7 +92,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     } elseif ($checkoutMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0) {
                         $result .= ' '.__("Please enable remote payment processing from the module configuration");
                     } else {
-                        $result .= ' - ' .  $message;
+                        $result .= ': ' .  $message;
                     }
                 }
             }
@@ -111,7 +111,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     } elseif ($ePayMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0) {
                         $result .= ' - '.__("Please enable remote payment processing from the module configuration");
                     } else {
-                        $result .= ' - ' .  $message;
+                        $result .= ': ' .  $message;
                     }
                 }
             }

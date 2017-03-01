@@ -462,7 +462,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             return $this;
         } catch (\Exception $ex) {
-            $errorMessage = "({$order->getIncrementId()}) " . $ex->getMessage();
+            $errorMessage = "(OrderId: {$order->getIncrementId()}) " . $ex->getMessage();
             $this->_messageManager->addError($errorMessage);
             throw $ex;
         }
@@ -492,6 +492,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             return $transactionResponse->transaction;
         } catch (\Exception $ex) {
+            $errorMessage = "(TransactionId: {$transactionId}) " . $ex->getMessage();
+            $this->_messageManager->addError($errorMessage);
             return null;
         }
     }

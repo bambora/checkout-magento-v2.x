@@ -427,7 +427,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 if ($response->epayResponse == -1019) {
                     $message = __("Invalid password used for webservice access!");
                 } else {
-                    $message = "({$response->epayrespons}: ".$errorProvicer->getEpayErrorText($response->epayrespons, $this->calcLanguage($this->getShopLocalCode()), $auth);
+                    $message = "({$response->epayResponse}) ".$errorProvicer->getEpayErrorText($response->epayResponse, $this->calcLanguage($this->getShopLocalCode()), $auth);
                 }
                 $this->_bamboraLogger->addEpayError($id, "Epay Error: {$message}");
             } elseif (isset($response->pbsResponse) && $response->pbsResponse != -1) {
