@@ -4,4 +4,4 @@
  - Bambora Checkout
  - ePay | Payment solutions
 
-Documentation: http://dev.bambora.com/carts.html#magento-v2
+Documentation: http://dev.bambora.com/shopping-carts/guides/shopping-carts/magento2

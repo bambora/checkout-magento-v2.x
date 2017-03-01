@@ -20,7 +20,7 @@
     <label>ePay | Payment Solutions</label>
     <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
     <fieldset_css>bambora-epay-method</fieldset_css>
-    <comment><![CDATA[Accept online payments in Magento 2 using the ePay payment window..<br /> Go to <a href='http://dev.bambora.com/carts.html#magento-v2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
+    <comment><![CDATA[Accept online payments in Magento 2 using the ePay payment window..<br /> Go to <a href='http://dev.bambora.com/shopping-carts/guides/shopping-carts/magento2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
     <field id="version" type="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Module version:</b>]]></label>
       <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Field\Version</frontend_model>
