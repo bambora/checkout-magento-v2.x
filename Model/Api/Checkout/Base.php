@@ -1,17 +1,16 @@
 <?php
 /**
- * 888                             888
- * 888                             888
- * 88888b.   8888b.  88888b.d88b.  88888b.   .d88b.  888d888  8888b.
- * 888 "88b     "88b 888 "888 "88b 888 "88b d88""88b 888P"       "88b
- * 888  888 .d888888 888  888  888 888  888 888  888 888     .d888888
- * 888 d88P 888  888 888  888  888 888 d88P Y88..88P 888     888  888
- * 88888P"  "Y888888 888  888  888 88888P"   "Y88P"  888     "Y888888
+ * Copyright (c) 2017. All rights reserved Bambora Online.
  *
- * @category    Online Payment Gatway
- * @package     Bambora_Online
- * @author      Bambora Online
- * @copyright   Bambora (http://bambora.com)
+ * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
+ * It is also not legal to do any changes to the software and distribute it in your own name / brand.
+ *
+ * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
+ *
+ * @author    Bambora Online
+ * @copyright Bambora Online (http://bambora.com)
+ * @license   Bambora Online
+ *
  */
 namespace Bambora\Online\Model\Api\Checkout;
 
@@ -28,9 +27,9 @@ abstract class Base extends DataObject
      * @return array
      */
     private $endpoints = array(
-        'merchant' => 'https://merchant-v1.api.epay.eu',
+        'merchant' => 'https://merchant-v1.api-eu.bambora.com',
         'checkout' => 'https://api.v1.checkout.bambora.com',
-        'transaction' => 'https://transaction-v1.api.epay.eu',
+        'transaction' => 'https://transaction-v1.api-eu.bambora.com',
         'checkoutAssets' => 'https://v1.checkout.bambora.com/Assets',
         'globalAssets' => 'https://d3r1pwhfz7unl9.cloudfront.net/bambora'
     );
@@ -51,7 +50,7 @@ abstract class Base extends DataObject
     protected $_curl;
 
     /**
-     * ePay Api
+     * Bambora Api
      *
      * @param \Bambora\Online\Helper\Data $bamboraHelper
      * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger

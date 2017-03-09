@@ -2,12 +2,12 @@
   "name": "bambora/module-payment-magento2",
   "description": "Magento 2 payment module for Bambora Online",
   "type": "magento2-module",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "license": [
     "OSL-3.0"
   ],
   "require": {
-    "php": "~5.5.22 | ~5.6.0 | 7.0.2 | ~7.0.6",
+    "php": "~5.5.22|~5.6.0|7.0.2|7.0.4|~7.0.6",
     "zendframework/zend-soap": ">=2.4.6"
   },
   "autoload": {

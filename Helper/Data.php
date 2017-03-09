@@ -1,17 +1,16 @@
 <?php
 /**
- * 888                             888
- * 888                             888
- * 88888b.   8888b.  88888b.d88b.  88888b.   .d88b.  888d888  8888b.
- * 888 "88b     "88b 888 "888 "88b 888 "88b d88""88b 888P"       "88b
- * 888  888 .d888888 888  888  888 888  888 888  888 888     .d888888
- * 888 d88P 888  888 888  888  888 888 d88P Y88..88P 888     888  888
- * 88888P"  "Y888888 888  888  888 88888P"   "Y88P"  888     "Y888888
+ * Copyright (c) 2017. All rights reserved Bambora Online.
  *
- * @category    Online Payment Gatway
- * @package     Bambora_Online
- * @author      Bambora Online
- * @copyright   Bambora (http://bambora.com)
+ * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
+ * It is also not legal to do any changes to the software and distribute it in your own name / brand.
+ *
+ * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
+ *
+ * @author    Bambora Online
+ * @copyright Bambora Online (http://bambora.com)
+ * @license   Bambora Online
+ *
  */
 namespace Bambora\Online\Helper;
 
@@ -248,7 +247,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         'IQD' => 3, 'TND' => 3, 'BHD' => 3, 'JOD' => 3, 'OMR' => 3,
         'KWD' => 3, 'LYD' => 3);
 
-        return key_exists($currencyCode, $currencyArray) ? $currencyArray[$currencyCode] : 2;
+        return array_key_exists($currencyCode, $currencyArray) ? $currencyArray[$currencyCode] : 2;
     }
 
     /**
@@ -463,7 +462,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'nn_NO' => '4',
             );
 
-        return key_exists($lan, $languageArray) ? $languageArray[$lan] : '0';
+        return array_key_exists($lan, $languageArray) ? $languageArray[$lan] : '0';
     }
 
     /**
@@ -498,7 +497,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             '24' => 'NemPay',
             '25' => 'iDeal');
 
-        return key_exists($cardid, $cardIdArray) ? $cardIdArray[$cardid] : '';
+        return array_key_exists($cardid, $cardIdArray) ? $cardIdArray[$cardid] : '';
     }
 
     /**

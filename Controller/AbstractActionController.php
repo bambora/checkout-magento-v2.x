@@ -1,25 +1,22 @@
 <?php
 /**
- * 888                             888
- * 888                             888
- * 88888b.   8888b.  88888b.d88b.  88888b.   .d88b.  888d888  8888b.
- * 888 "88b     "88b 888 "888 "88b 888 "88b d88""88b 888P"       "88b
- * 888  888 .d888888 888  888  888 888  888 888  888 888     .d888888
- * 888 d88P 888  888 888  888  888 888 d88P Y88..88P 888     888  888
- * 88888P"  "Y888888 888  888  888 88888P"   "Y88P"  888     "Y888888
+ * Copyright (c) 2017. All rights reserved Bambora Online.
  *
- * @category    Online Payment Gatway
- * @package     Bambora_Online
- * @author      Bambora Online
- * @copyright   Bambora (http://bambora.com)
+ * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
+ * It is also not legal to do any changes to the software and distribute it in your own name / brand.
+ *
+ * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
+ *
+ * @author    Bambora Online
+ * @copyright Bambora Online (http://bambora.com)
+ * @license   Bambora Online
+ *
  */
 namespace Bambora\Online\Controller;
 
 use \Magento\Sales\Model\Order;
 use \Magento\Sales\Model\Order\Payment\Transaction;
 use \Bambora\Online\Helper\BamboraConstants;
-use \Magento\Framework\Webapi\Exception;
-use \Magento\Framework\Webapi\Response;
 use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
 use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
@@ -242,12 +239,14 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             }
 
             if ($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_INVOICE, $storeId) == 1) {
-                if ($paymentMethodInstance->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 1 || $paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) == 1) {
-                    $this->createInvoice($order, $paymentMethodInstance, $txnId);
-                } else {
-                    $order->addStatusHistoryComment(__("Could not use instant invoice.") . ' - ' . __("Please enable remote payment processing from the module configuration"));
-                    $order->save();
-                }
+
+                $this->createInvoice($order, $paymentMethodInstance, $txnId);
+                //if ($paymentMethodInstance->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 1 || $paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) == 1) {
+                //    $this->createInvoice($order, $paymentMethodInstance, $txnId);
+                //} else {
+                //    $order->addStatusHistoryComment(__("Could not use instant invoice.") . ' - ' . __("Please enable remote payment processing from the module configuration"));
+                //    $order->save();
+                //}
             }
         }
         catch (\Exception $ex) {
@@ -398,7 +397,14 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             if ($order->canInvoice()) {
                 /** @var \Magento\Sales\Model\Order\Invoice */
                 $invoice = $order->prepareInvoice();
-                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+                $storeId = $order->getStoreId();
+
+                if ((int)$paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) === 0 && (int)$paymentMethodInstance->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) === 1) {
+                    $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+                } else {
+                    $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
+                }
+
                 $invoice->register();
                 $invoice->save();
                 $transactionSave = $this->_objectManager->create('Magento\Framework\DB\Transaction')
