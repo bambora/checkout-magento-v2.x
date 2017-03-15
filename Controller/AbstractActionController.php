@@ -239,14 +239,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             }
 
             if ($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_INVOICE, $storeId) == 1) {
-
                 $this->createInvoice($order, $paymentMethodInstance, $txnId);
-                //if ($paymentMethodInstance->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 1 || $paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) == 1) {
-                //    $this->createInvoice($order, $paymentMethodInstance, $txnId);
-                //} else {
-                //    $order->addStatusHistoryComment(__("Could not use instant invoice.") . ' - ' . __("Please enable remote payment processing from the module configuration"));
-                //    $order->save();
-                //}
             }
         }
         catch (\Exception $ex) {
@@ -279,13 +272,12 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             if ($fraudStatus == 1) {
                 $payment->setIsFraudDetected(true);
                 $order->setStatus(Order::STATUS_FRAUD);
-                $order->setState(Order::STATE_PAYMENT_REVIEW);
                 $transactionComment = __("Fraud was detected on the payment");
             } else {
                 $order->setStatus($status);
-                $order->setState(Order::STATE_PROCESSING);
             }
 
+            $order->setState(Order::STATE_PROCESSING);
             $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
             $payment->addTransactionCommentsToOrder($transaction, $transactionComment);
             $payment->setCcType($ccType);
