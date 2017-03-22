@@ -80,7 +80,7 @@ class Action extends Base
      */
     public function getPaymentLogoUrl($merchantNumber)
     {
-        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_INTEGRATION)."/paymentlogos/PaymentLogos.aspx?merchantnumber={$merchantNumber}&direction=2&padding=1&rows=2&logo=0&showdivs=0&iframe=1&cardwidth=50";
+        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_INTEGRATION)."/paymentlogos/PaymentLogos.aspx?merchantnumber={$merchantNumber}&direction=2&padding=1&rows=1&logo=0&showdivs=0&iframe=1&cardwidth=50";
         return $url;
     }
     /**
