@@ -15,7 +15,7 @@
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-  <module name="Bambora_Online" setup_version="1.2.0">
+  <module name="Bambora_Online" setup_version="1.1.91">
     <sequence>
       <module name="Magento_Sales" />
       <module name="Magento_Quote" />
