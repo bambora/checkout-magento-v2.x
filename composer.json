@@ -2,7 +2,7 @@
   "name": "bambora/module-payment-magento2",
   "description": "Magento 2 payment module for Bambora Online",
   "type": "magento2-module",
-  "version": "1.1.9.1",
+  "version": "1.2.0",
   "license": [
     "OSL-3.0"
   ],
