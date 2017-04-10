@@ -153,6 +153,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $invoice->lines = array();
 
             $items = $order->getAllVisibleItems();
+            /** @var \Magento\Sales\Api\Data\OrderItemInterface $item */
             foreach ($items as $item) {
                 $description = empty($item->getDescription()) ? $item->getName() : $item->getDescription();
                 $invoice->lines[] = array(
@@ -160,7 +161,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                         "description" => $this->removeSpecialCharacters($description),
                         "quantity" => intval($item->getQtyOrdered()),
                         "price" => $this->_bamboraHelper->convertPriceToMinorUnits($item->getBasePrice() - ($item->getBaseDiscountAmount() / intval($item->getQtyOrdered())), $minorUnits),
-                        "vat" => floatval($item->getTaxPercent())
+                        "vat" => $item->getBaseTaxAmount() > 0 ? floatval($item->getBaseTaxAmount() / ($item->getBasePrice() - ($item->getBaseDiscountAmount() / intval($item->getQtyOrdered())))) : 0
                     );
             }
             // add shipment as line
