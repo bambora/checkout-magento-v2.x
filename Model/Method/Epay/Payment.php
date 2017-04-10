@@ -171,7 +171,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                        "description" => isset($shippingDescription) ? $shippingDescription : $shippingText,
                        "quantity" => 1,
                        "price" =>$this->_bamboraHelper->convertPriceToMinorUnits(($order->getBaseShippingAmount() - $order->getBaseShippingDiscountAmount()), $minorUnits),
-                       "vat" =>$order->getBaseShippingTaxAmount() > 0 ? round(($order->getBaseShippingTaxAmount() / ($order->getBaseShippingInclTax() - $order->getBaseShippingDiscountAmount())) * 100) : 0
+                       "vat" =>$order->getBaseShippingTaxAmount() > 0 ? round(($order->getBaseShippingTaxAmount() / ($order->getBaseShippingAmount() - $order->getBaseShippingDiscountAmount())) * 100) : 0
                    );
 
             return json_encode($invoice, JSON_UNESCAPED_UNICODE);
