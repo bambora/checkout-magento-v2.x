@@ -56,7 +56,9 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
                  $this->methodCode => [
                     'paymentTitle' => $this->_ePayMethod->getConfigData(BamboraConstants::TITLE),
                     'paymentLogoSrc' => $this->_ePayMethod->getEpayLogoUrl(),
+                    'paymentWindowJsUrl' => $this->_ePayMethod->getEPayPaymentWindowJsUrl(),
                     'paymentTypeLogoSrc' => $this->_ePayMethod->getEpayPaymentTypeUrl(),
+                    'windowState' => $this->_ePayMethod->getConfigData(BamboraConstants::WINDOW_STATE),
                     'checkoutUrl'=> $this->_ePayMethod->getCheckoutUrl(),
                     'cancelUrl'=> $this->_ePayMethod->getCancelUrl()
                 ]

@@ -158,7 +158,6 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                     $transactionResponse->transaction->currency->minorunits,
                     $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::ORDER_STATUS),
                     $payment
-
                 );
 
                 $message = "Callback Success - Order created";

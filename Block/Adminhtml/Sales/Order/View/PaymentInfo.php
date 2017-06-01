@@ -125,7 +125,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      * @param \Bambora\Online\Model\Api\Checkout\Response\Models\Transaction $transaction
      * @return string
      */
-    private function createCheckoutTransactionHtml($transaction)
+    public function createCheckoutTransactionHtml($transaction)
     {
         $res = '<tr><td colspan="2" class="bambora_table_title">Bambora Checkout</td></tr>';
 
@@ -168,7 +168,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      * @param string $status
      * @return string
      */
-    private function checkoutStatus($status)
+    public function checkoutStatus($status)
     {
         if (!isset($status)) {
             return "";
@@ -186,7 +186,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      * @param mixed $paymentId
      * @return string
      */
-    private function getPaymentLogoUrl($paymentId)
+    public function getPaymentLogoUrl($paymentId)
     {
         return '<img class="bambora_paymentcard" src="https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/'.$paymentId . '.png"';
     }
@@ -198,7 +198,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      * @param \Magento\Sales\Model\Order $order
      * @return string
      */
-    private function createEpayTransactionHtml($transactionInformation, $order)
+    public function createEpayTransactionHtml($transactionInformation, $order)
     {
         $minorUnits = $this->_bamboraHelper->getCurrencyMinorunits($order->getBaseCurrencyCode());
 

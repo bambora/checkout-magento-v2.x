@@ -29,7 +29,7 @@ class Payment
     /**
      * @var string
      */
-    public $windowState;
+    public $windowstate;
 
     /**
      * @var string
@@ -39,12 +39,12 @@ class Payment
     /**
      * @var string
      */
-    public $merchantNumber;
+    public $merchantnumber;
 
     /**
      * @var string
      */
-    public $windowId;
+    public $windowid;
 
     /**
      * @var string
@@ -59,32 +59,27 @@ class Payment
     /**
      * @var string
      */
-    public $orderId;
+    public $orderid;
 
     /**
      * @var string
      */
-    public $acceptUrl;
+    public $accepturl;
 
     /**
      * @var string
      */
-    public $cancelUrl;
+    public $cancelurl;
 
     /**
      * @var string
      */
-    public $callbackUrl;
+    public $callbackurl;
 
     /**
      * @var string
      */
-    public $instantCapture;
-
-    /**
-     * @var string
-     */
-    public $group;
+    public $instantcapture;
 
     /**
      * @var string
@@ -94,7 +89,7 @@ class Payment
     /**
      * @var string
      */
-    public $ownReceipt;
+    public $ownreceipt;
 
     /**
      * @var string

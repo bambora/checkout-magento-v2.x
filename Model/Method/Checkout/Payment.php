@@ -85,19 +85,15 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $paymentTypeResponse = $merchantApi->getPaymentTypes($currency, $amountMinorunits, $this->getApiKey());
 
         $message = "";
+        $paymentCardIdsArray = array();
         if ($this->_bamboraHelper->validateCheckoutApiResult($paymentTypeResponse, $this->getQuote()->getId(), false, $message)) {
-            $paymentCardIdsArray = array();
-
             foreach ($paymentTypeResponse->paymentCollections as $payment) {
                 foreach ($payment->paymentGroups as $group) {
                     $paymentCardIdsArray[] = $group->id;
                 }
             }
-            return $paymentCardIdsArray;
-        } else {
-            $this->_messageManager->addError(__("The allowed payment types could not be loaded").": ".$message);
-            return null;
         }
+        return $paymentCardIdsArray;
     }
 
     /**
@@ -237,8 +233,22 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             __("Shipping"),
              $order->getBaseShippingAmount(),
             $order->getBaseShippingTaxAmount(),
-            $order->getBaseCurrencyCode(),
-            $order->getBaseShippingDiscountAmount());
+            $order->getBaseCurrencyCode());
+
+        // Fix for bug in Magento 2 shipment discont calculation
+        $baseShipmentDiscountAmount = $order->getBaseShippingDiscountAmount();
+        if($baseShipmentDiscountAmount > 0) {
+            $bamboraOrderLines[] = $this->createInvoiceLine(
+                 __("Shipping discount"),
+                 "shipping_discount",
+                 $lineNumber++,
+                  1,
+                  __("Shipping discount"),
+                  $order->getBaseShippingDiscountAmount() * -1,
+                  0,
+                  $order->getBaseCurrencyCode());
+        }
+
 
         $bamboraOrder->lines = $bamboraOrderLines;
         $checkoutRequest->order = $bamboraOrder;
@@ -347,7 +357,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                     ->setParentTransactionId($transactionId);
 
             return $this;
-        } catch (\Exception $ex) {
+        }
+        catch (\Exception $ex) {
             $errorMessage = "({$order->getIncrementId()}) " . $ex->getMessage();
             $this->_messageManager->addError($errorMessage);
             throw $ex;
@@ -401,7 +412,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                     ->setParentTransactionId($transactionId);
 
             return $this;
-        } catch (\Exception $ex) {
+        }
+        catch (\Exception $ex) {
             $errorMessage = "({$id}) " . $ex->getMessage();
             $this->_messageManager->addError($errorMessage);
             throw $ex;
@@ -419,7 +431,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         try {
             $this->void($payment);
             $this->_messageManager->addSuccess(__("The payment have been voided").' ('.$payment->getOrder()->getIncrementId().')');
-        } catch (\Exception $ex) {
+        }
+        catch (\Exception $ex) {
             $this->_messageManager->addError($ex->getMessage());
         }
 
@@ -460,7 +473,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $this->cancelSurchargeFeeItem($payment);
 
             return $this;
-        } catch (\Exception $ex) {
+        }
+        catch (\Exception $ex) {
             $errorMessage = "(OrderId: {$order->getIncrementId()}) " . $ex->getMessage();
             $this->_messageManager->addError($errorMessage);
             throw $ex;
@@ -490,7 +504,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
 
             return $transactionResponse->transaction;
-        } catch (\Exception $ex) {
+        }
+        catch (\Exception $ex) {
             $errorMessage = "(TransactionId: {$transactionId}) " . $ex->getMessage();
             $this->_messageManager->addError($errorMessage);
             return null;
@@ -705,8 +720,22 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function getCheckoutIconUrl()
     {
+        /** @var \Bambora\Online\Model\Api\Checkout\Assets */
         $assetsApi = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_ASSETS);
 
         return $assetsApi->getCheckoutIconUrl();
+    }
+
+    /**
+     * Retrieve an url for the Bambora Checkout Paymentwindow Js
+     *
+     * @return string
+     */
+    public function getCheckoutPaymentWindowJsUrl()
+    {
+        /** @var \Bambora\Online\Model\Api\Checkout\Assets */
+        $assetsApi = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_ASSETS);
+
+        return $assetsApi->getCheckoutPaymentWindowJSUrl();
     }
 }

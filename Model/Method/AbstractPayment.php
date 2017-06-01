@@ -24,6 +24,11 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
     protected $_bamboraHelper;
 
     /**
+     * @var \Magento\Tax\Helper\Data
+     */
+    protected $_taxHelper;
+
+    /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
@@ -58,6 +63,7 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
      *
      * @param \Magento\Framework\UrlInterface $urlBuilder
      * @param \Bambora\Online\Helper\Data $bamboraHelper
+     * @param \Magento\Tax\Helper\Data $taxHelper
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -77,6 +83,7 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
     public function __construct(
         \Magento\Framework\UrlInterface $urlBuilder,
         \Bambora\Online\Helper\Data $bamboraHelper,
+        \Magento\Tax\Helper\Data $taxHelper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
@@ -107,6 +114,7 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
 
         $this->_urlBuilder = $urlBuilder;
         $this->_bamboraHelper = $bamboraHelper;
+        $this->_taxHelper = $taxHelper;
         $this->_storeManager = $storeManager;
         $this->_request = $request;
         $this->_cart = $cart;

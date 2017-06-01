@@ -56,7 +56,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
      * @param string $message
      * @return bool
      */
-    private function validateCallback($posted, &$order, &$message)
+    public function validateCallback($posted, &$order, &$message)
     {
         //Validate response
         if (!isset($posted)) {
@@ -112,7 +112,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
      * @param int $responseCode
      * @return void
      */
-    private function processCallback($posted, $order, &$responseCode)
+    public function processCallback($posted, $order, &$responseCode)
     {
         $ePayTransactionId = $posted['txnid'];
         $payment = $order->getPayment();
@@ -141,7 +141,6 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                      $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::ORDER_STATUS),
                      $payment,
                      $fraud
-
                  );
 
                 $message = "Callback Success - Order created";

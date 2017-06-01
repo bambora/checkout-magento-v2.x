@@ -23,7 +23,7 @@ class Checkout extends \Bambora\Online\Controller\AbstractActionController
     {
         $order = $this->_getOrder();
         $this->setOrderDetails($order);
-        $result = $this->getEPayPaymentWindowUrl($order);
+        $result = $this->getEPayPaymentWindowRequest($order);
         $resultJson = json_encode($result);
 
         return $this->_resultJsonFactory->create()->setData($resultJson);
@@ -35,15 +35,15 @@ class Checkout extends \Bambora\Online\Controller\AbstractActionController
      * @param \Magento\Sales\Model\Order
      * @return string|null
      */
-    public function getEPayPaymentWindowUrl($order)
+    public function getEPayPaymentWindowRequest($order)
     {
         try {
             /** @var \Bambora\Online\Model\Method\Epay\Payment */
             $epayMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
             $response = $epayMethod->getPaymentWindow($order);
             return $response;
-        } catch (\Exception $ex) {
-            $this->messageManager->addError(__("The payment window could not be retrived"));
+        }
+        catch (\Exception $ex) {
             $this->_bamboraLogger->addEpayError($order->getId(), $ex->getMessage());
             return null;
         }

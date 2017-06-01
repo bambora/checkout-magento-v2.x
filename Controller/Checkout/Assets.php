@@ -33,20 +33,20 @@ class Assets extends \Bambora\Online\Controller\AbstractActionController
      */
     public function getPaymentcardIds()
     {
+        $paymentCardIds = array();
         try {
             /** @var \Bambora\Online\Model\Method\Checkout\Payment */
             $checkoutMethod =  $this->_getPaymentMethodInstance(CheckoutPayment::METHOD_CODE);
-            $paymentCardIds = array();
+
 
             if ($checkoutMethod) {
                 $paymentCardIds = $checkoutMethod->getPaymentCardIds();
-            }
-
-            return $paymentCardIds;
+        }
         } catch (\Exception $ex) {
-            $this->messageManager->addError(__("The allowed payment types could not be loaded"));
             $this->_bamboraLogger->addCheckoutError(-1, $ex->getMessage());
             return null;
         }
+
+        return $paymentCardIds;
     }
 }

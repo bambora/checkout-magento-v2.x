@@ -34,19 +34,19 @@ class Action extends Base
 
         $paramString = "?encoding=".urlencode($paymentRequest->encoding).
                        "&cms=".urlencode($paymentRequest->cms).
-                       "&windowstate=".urlencode($paymentRequest->windowState).
+                       "&windowstate=".urlencode($paymentRequest->windowstate).
                        "&mobile=".urlencode($paymentRequest->mobile).
-                       "&merchantnumber=".urlencode($paymentRequest->merchantNumber).
-                       "&windowid=".urlencode($paymentRequest->windowId).
+                       "&merchantnumber=".urlencode($paymentRequest->merchantnumber).
+                       "&windowid=".urlencode($paymentRequest->windowid).
                        "&amount=".urlencode($paymentRequest->amount).
                        "&currency=".urlencode($paymentRequest->currency).
-                       "&orderid=".urlencode($paymentRequest->orderId).
-                       "&accepturl=".urlencode($paymentRequest->acceptUrl).
-                       "&cancelurl=".urlencode($paymentRequest->cancelUrl).
-                       "&callbackurl=".urlencode($paymentRequest->callbackUrl).
-                       "&instantcapture=".urlencode($paymentRequest->instantCapture).
+                       "&orderid=".urlencode($paymentRequest->orderid).
+                       "&accepturl=".urlencode($paymentRequest->accepturl).
+                       "&cancelurl=".urlencode($paymentRequest->cancelurl).
+                       "&callbackurl=".urlencode($paymentRequest->callbackurl).
+                       "&instantcapture=".urlencode($paymentRequest->instantcapture).
                        "&language=".urlencode($paymentRequest->language).
-                       "&ownreceipt=".urlencode($paymentRequest->ownReceipt).
+                       "&ownreceipt=".urlencode($paymentRequest->ownreceipt).
                        "&timeout=".urlencode($paymentRequest->timeout).
                        "&invoice=".urlencode($paymentRequest->invoice).
                        "&hash=".urlencode($paymentRequest->hash);
@@ -56,19 +56,29 @@ class Action extends Base
         return $url;
     }
 
+    ///**
+    // * Get ePay payment window js url
+    // *
+    // * @return \Bambora\Online\Model\Api\Epay\Request\Models\Url
+    // */
+    //public function getPaymentWindowJSUrl()
+    //{
+    //    $result = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_INTEGRATION).'/ewindow/paymentwindow.js';
+
+    //    /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Url */
+    //    $url = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_URL);
+    //    $url->url = $result;
+
+    //    return $url;
+    //}
     /**
      * Get ePay payment window js url
      *
-     * @return \Bambora\Online\Model\Api\Epay\Request\Models\Url
+     * @return string
      */
     public function getPaymentWindowJSUrl()
     {
-        $result = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_INTEGRATION).'/ewindow/paymentwindow.js';
-
-        /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Url */
-        $url = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_URL);
-        $url->url = $result;
-
+        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_INTEGRATION).'/ewindow/paymentwindow.js';
         return $url;
     }
 

@@ -124,7 +124,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param mixed $incrementId
      * @return \Magento\Sales\Model\Order
      */
-    private function getOrder($incrementId)
+    public function getOrder($incrementId)
     {
         return $this->_orderFactory->create()->loadByIncrementId($incrementId);
     }
@@ -260,7 +260,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param mixed $fraudStatus
      * @return void
      */
-    private function updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $fraudStatus)
+    public function updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $fraudStatus)
     {
         try {
             /** @var \Magento\Sales\Model\Order\Payment */
@@ -303,7 +303,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param mixed $ccType
      * @return void
      */
-    private function addSurchargeItemToOrder($order, $feeAmountInMinorUnits, $minorUnits, $ccType)
+    public function addSurchargeItemToOrder($order, $feeAmountInMinorUnits, $minorUnits, $ccType)
     {
         try {
             foreach ($order->getAllItems() as $item) {
@@ -362,7 +362,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param \Magento\Sales\Model\Order $order
      * @return void
      */
-    private function sendOrderEmail($order)
+    public function sendOrderEmail($order)
     {
         try {
             $this->_orderSender->send($order);
@@ -383,7 +383,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param \Magento\Sales\Model\Order $order
      * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
      */
-    private function createInvoice($order, $paymentMethodInstance, $txnId)
+    public function createInvoice($order, $paymentMethodInstance, $txnId)
     {
         try {
             if ($order->canInvoice()) {

@@ -40,27 +40,6 @@ define(
 
             return storage.post(
                 serviceUrl, JSON.stringify(payload)
-            ).done(
-                function () {
-                    var url = window.checkoutConfig.payment[quote.paymentMethod().method].checkoutUrl;
-                    var cancelUrl = window.checkoutConfig.payment[quote.paymentMethod().method].cancelUrl;
-                    $.get(url)
-                        .done(function (data) {
-                            try {
-                                data = JSON.parse(data);
-                                if (data == null) {
-                                    $.mage.redirect(cancelUrl);
-                                }
-                                $.mage.redirect(data["url"]);
-                            } catch (err) {
-                                $.mage.redirect(cancelUrl);
-                            }
-                        }).fail(function (response) {
-                            errorProcessor.process(response, messageContainer);
-                            fullScreenLoader.stopLoader();
-                            $.mage.redirect(cancelUrl);
-                        });
-                }
             ).fail(
                 function (response) {
                     errorProcessor.process(response, messageContainer);

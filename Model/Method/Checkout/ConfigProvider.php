@@ -56,7 +56,8 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
                 $this->methodCode => [
                     'paymentTitle' => $this->_checkoutMethod->getConfigData(BamboraConstants::TITLE),
                     'paymentIconSrc' => $this->_checkoutMethod->getCheckoutIconUrl(),
-                    'windowState' => 1,
+                    'paymentWindowJsUrl' => $this->_checkoutMethod->getCheckoutPaymentWindowJsUrl(),
+                    'windowState' => $this->_checkoutMethod->getConfigData(BamboraConstants::WINDOW_STATE),
                     'checkoutUrl'=> $this->_checkoutMethod->getCheckoutUrl(),
                     'assetsUrl'=> $this->_checkoutMethod->getAssetsUrl(),
                     'cancelUrl'=> $this->_checkoutMethod->getCancelUrl()

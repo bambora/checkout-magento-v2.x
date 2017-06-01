@@ -337,20 +337,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $md5stamp = md5(
                     $paymentRequest->encoding.
                     $paymentRequest->cms.
-                    $paymentRequest->windowState.
+                    $paymentRequest->windowstate.
                     $paymentRequest->mobile.
-                    $paymentRequest->merchantNumber.
-                    $paymentRequest->windowId.
+                    $paymentRequest->merchantnumber.
+                    $paymentRequest->windowid.
                     $paymentRequest->amount.
                     $paymentRequest->currency.
-                    $paymentRequest->orderId.
-                    $paymentRequest->acceptUrl.
-                    $paymentRequest->cancelUrl.
-                    $paymentRequest->callbackUrl.
-                    $paymentRequest->instantCapture.
-                    $paymentRequest->group.
+                    $paymentRequest->orderid.
+                    $paymentRequest->accepturl.
+                    $paymentRequest->cancelurl.
+                    $paymentRequest->callbackurl.
+                    $paymentRequest->instantcapture.
                     $paymentRequest->language.
-                    $paymentRequest->ownReceipt.
+                    $paymentRequest->ownreceipt.
                     $paymentRequest->timeout.
                     $paymentRequest->invoice.
                     $shopMd5);

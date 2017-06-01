@@ -67,13 +67,12 @@
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/instantcapture</config_path>
     </field>
-    <!--Intended out-comment for later release
-    <field id="windowstate" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-          <label><![CDATA[<b>Windows state:</b>]]></label>
-          <comment><![CDATA[Set to <b>Overlay</b> for the Payment Window to open as a overlayed window on top of the store. The store will be visible behind the payment window. Set to <b>Full Screen</b> to open the payment window in the same window but in full-screen. The store will not be visible in this setting.]]></comment>
-          <source_model>Bambora\Payment\Model\Config\Source\CheckoutWindowstate</source_model>
-        <config_path>payment/bambora_checkout/windowstate</config_path>
-        </field>-->
+    <field id="windowstate" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Window state:</b>]]></label>
+      <comment><![CDATA[Set to <b>Overlay</b> for the Payment Window to open as a overlayed window on top of the store. The store will be visible behind the payment window. Set to <b>Full Screen</b> to open the payment window in the same window but in full-screen. The store will not be visible in this setting.]]></comment>
+      <source_model>Bambora\Online\Model\Config\Source\CheckoutWindowstate</source_model>
+      <config_path>payment/bambora_checkout/windowstate</config_path>
+    </field>
     <field id="immediateredirecttoaccept" type="select" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Immediate Redirect</b>]]></label>
       <comment><![CDATA[Immediately redirect your customer back to you shop after the payment completed.]]></comment>

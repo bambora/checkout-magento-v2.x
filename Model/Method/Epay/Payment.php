@@ -37,6 +37,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     protected $_canRefund                   = true;
     protected $_canRefundInvoicePartial     = true;
     protected $_canVoid                     = true;
+    protected $_canDelete                   = true;
 
     /**
      * @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth
@@ -62,7 +63,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * Get Bambora Checkout payment window
      *
      * @param \Magento\Sales\Model\Order
-     * @return \Bambora\Online\Model\Api\Epay\Request\Models\Url
+     * @return \Bambora\Online\Model\Api\Epay\Request\Payment
      */
     public function getPaymentWindow($order)
     {
@@ -76,7 +77,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * Create the ePay payment window Request url
      *
      * @param \Magento\Sales\Model\Order
-     * @return \Bambora\Online\Model\Api\Epay\Request\Models\Url
+     * @return \Bambora\Online\Model\Api\Epay\Request\Payment
      */
     public function createPaymentRequest($order)
     {
@@ -89,28 +90,24 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $paymentRequest = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_PAYMENT);
         $paymentRequest->encoding = "UTF-8";
         $paymentRequest->cms = $this->_bamboraHelper->getModuleHeaderInfo();
-        $paymentRequest->windowState = $this->getConfigData(BamboraConstants::WINDOW_STATE, $storeId);
+        $paymentRequest->windowstate = $this->getConfigData(BamboraConstants::WINDOW_STATE, $storeId);
         $paymentRequest->mobile = $this->getConfigData(BamboraConstants::ENABLE_MOBILE_PAYMENT_WINDOW, $storeId);
-        $paymentRequest->merchantNumber = $this->getAuth()->merchantNumber;
-        $paymentRequest->windowId = $this->getConfigData(BamboraConstants::PAYMENT_WINDOW_ID, $storeId);
+        $paymentRequest->merchantnumber = $this->getAuth()->merchantNumber;
+        $paymentRequest->windowid = $this->getConfigData(BamboraConstants::PAYMENT_WINDOW_ID, $storeId);
         $paymentRequest->amount = $totalAmountMinorUnits;
         $paymentRequest->currency = $currency;
-        $paymentRequest->orderId = $order->getIncrementId();
-        $paymentRequest->acceptUrl = $this->_urlBuilder->getUrl('bambora/epay/accept', ['_secure' => $this->_request->isSecure()]);
-        $paymentRequest->cancelUrl = $this->_urlBuilder->getUrl('bambora/epay/cancel', ['_secure' => $this->_request->isSecure()]);
-        $paymentRequest->callbackUrl = $this->_urlBuilder->getUrl('bambora/epay/callback', ['_secure' => $this->_request->isSecure()]);
-        $paymentRequest->instantCapture = $this->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId);
+        $paymentRequest->orderid = $order->getIncrementId();
+        $paymentRequest->accepturl = $this->_urlBuilder->getUrl('bambora/epay/accept', ['_secure' => $this->_request->isSecure()]);
+        $paymentRequest->cancelurl = $this->_urlBuilder->getUrl('bambora/epay/cancel', ['_secure' => $this->_request->isSecure()]);
+        $paymentRequest->callbackurl = $this->_urlBuilder->getUrl('bambora/epay/callback', ['_secure' => $this->_request->isSecure()]);
+        $paymentRequest->instantcapture = $this->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId);
         $paymentRequest->language = $this->_bamboraHelper->calcLanguage();
-        $paymentRequest->ownReceipt = $this->getConfigData(BamboraConstants::OWN_RECEIPT, $storeId);
+        $paymentRequest->ownreceipt = $this->getConfigData(BamboraConstants::OWN_RECEIPT, $storeId);
         $paymentRequest->timeout = 60;
         $paymentRequest->invoice = $this->createInvoice($order, $minorUnits);
         $paymentRequest->hash = $this->_bamboraHelper->calcEpayMd5Key($order, $paymentRequest);
 
-        /** @var \Bambora\Online\Model\Api\Epay\Action */
-        $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
-        $paymentUrl = $actionProvider->getPaymentWindowUrl($paymentRequest);
-
-        return $paymentUrl;
+        return $paymentRequest;
     }
 
     /**
@@ -152,6 +149,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $invoice->shippingaddress = $shippingAddress;
             $invoice->lines = array();
 
+            /** @var \Magento\Sales\Model\Order\Item[] */
             $items = $order->getAllVisibleItems();
             foreach ($items as $item) {
                 $description = empty($item->getDescription()) ? $item->getName() : $item->getDescription();
@@ -159,7 +157,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                         "id" =>$item->getSku(),
                         "description" => $this->removeSpecialCharacters($description),
                         "quantity" => intval($item->getQtyOrdered()),
-                        "price" => $this->_bamboraHelper->convertPriceToMinorUnits($item->getBasePrice() - ($item->getBaseDiscountAmount() / intval($item->getQtyOrdered())), $minorUnits),
+                        "price" => $this->calculateItemPrice($item, $minorUnits),
                         "vat" => floatval($item->getTaxPercent())
                     );
             }
@@ -170,9 +168,20 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                        "id" => $shippingText,
                        "description" => isset($shippingDescription) ? $shippingDescription : $shippingText,
                        "quantity" => 1,
-                       "price" =>$this->_bamboraHelper->convertPriceToMinorUnits(($order->getBaseShippingAmount() - $order->getBaseShippingDiscountAmount()), $minorUnits),
-                       "vat" =>$order->getBaseShippingTaxAmount() > 0 ? round(($order->getBaseShippingTaxAmount() / ($order->getBaseShippingInclTax() - $order->getBaseShippingDiscountAmount())) * 100) : 0
+                       "price" => $this->_bamboraHelper->convertPriceToMinorUnits($order->getBaseShippingAmount(), $minorUnits),
+                       "vat" => $this->calculateShippingVat($order)
                    );
+
+            // Fix for bug in Magento 2 shipment discont calculation
+            $baseShipmentDiscountAmount = $order->getBaseShippingDiscountAmount();
+            if($baseShipmentDiscountAmount > 0) {
+                     $invoice->lines[] = array(
+                          "id" => "shipping_discount",
+                          "description" => __("Shipping discount"),
+                          "quantity" => 1,
+                          "price" =>$this->_bamboraHelper->convertPriceToMinorUnits(($baseShipmentDiscountAmount * -1) , $minorUnits),
+                      );
+            }
 
             return json_encode($invoice, JSON_UNESCAPED_UNICODE);
         } else {
@@ -181,12 +190,46 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     }
 
     /**
+     * Calculate a single item price and convert into minorunits
+     *
+     * @param \Magento\Sales\Model\Order\Item $item
+     * @param int $minorUnits
+     * @return integer
+     */
+    public function calculateItemPrice($item, $minorUnits)
+    {
+        $itemPrice = $item->getBaseRowTotal() /  intval($item->getQtyOrdered());
+
+        if($item->getBaseDiscountAmount() > 0) {
+            $itemDiscount =  $item->getBaseDiscountAmount() / intval($item->getQtyOrdered());
+            $itemPrice = $itemPrice - $itemDiscount;
+        }
+        $itemPriceMinorUnits = $this->_bamboraHelper->convertPriceToMinorUnits($itemPrice, $minorUnits);
+        return $itemPriceMinorUnits;
+    }
+
+    /**
+     * Calculate the shipment Vat based on shipment tax and base shipment price
+     *
+     * @param \Magento\Sales\Model\Order $order
+     * @return int
+     */
+    public function calculateShippingVat($order)
+    {
+        if($order->getBaseShippingTaxAmount() <= 0 || $order->getBaseShippingAmount() <= 0) {
+            return 0;
+        }
+        $shippingVat = round(($order->getBaseShippingTaxAmount() / $order->getBaseShippingAmount()) * 100);
+        return $shippingVat;
+    }
+
+    /**
      * Remove special characters
      *
      * @param string $value
      * @return string
      */
-    private function removeSpecialCharacters($value)
+    public function removeSpecialCharacters($value)
     {
         return preg_replace('/[^\p{Latin}\d ]/u', '', $value);
     }
@@ -457,5 +500,18 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     public function getCancelUrl()
     {
         return $this->_urlBuilder->getUrl('bambora/epay/cancel', ['_secure' => $this->_request->isSecure()]);
+    }
+
+    /**
+     * Retrieve an url for the Bambora Checkout Paymentwindow Js
+     *
+     * @return string
+     */
+    public function getEPayPaymentWindowJsUrl()
+    {
+        /** @var \Bambora\Online\Model\Api\Epay\Action */
+        $assetsApi = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
+
+        return $assetsApi->getPaymentWindowJSUrl();
     }
 }
