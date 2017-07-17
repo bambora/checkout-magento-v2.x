@@ -33,7 +33,7 @@
                 <!-- ko i18n: 'You will be redirected to Bambora Checkout.' --><!-- /ko -->
             </div>
             <span class="bambora_paymentcards_container" data-bind="foreach: paymentLogos">
-                <img class="bambora_checkout_paymenttype" alt="Bambora Payment type" data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + $data + '.png'}" />
+                <img class="bambora_checkout_paymenttype" alt="Bambora Payment type" data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + $data + '.svg'}" />
             </span>
             <div class="payment-method-billing-address">
                 <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->

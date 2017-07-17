@@ -18,6 +18,13 @@ class BamboraConstants
 {
     //Surcharge
     const BAMBORA_SURCHARGE = 'surcharge_fee';
+    const SURCHARGE_SHIPMENT = "surcharge_shipment";
+    const SURCHARGE_ORDER_LINE = "surcharge_order_line";
+
+    //Rounding
+    const ROUND_UP = "round_up";
+    const ROUND_DOWN = "round_down";
+    const ROUND_DEFAULT = "round_default";
 
     //Config constants
     const ORDER_STATUS = 'order_status';
@@ -33,6 +40,7 @@ class BamboraConstants
     const INSTANT_INVOICE_MAIL = 'instantinvoicemail';
     const IMMEDIATEREDI_REDIRECT_TO_ACCEPT = 'immediateredirecttoaccept';
     const ADD_SURCHARGE_TO_PAYMENT = 'addsurchargetopayment';
+    const SURCHARGE_MODE = 'surchargemode';
     const SEND_MAIL_ORDER_CONFIRMATION = 'sendmailorderconfirmation';
     const WINDOW_STATE = 'windowstate';
     const ENABLE_MOBILE_PAYMENT_WINDOW = 'enablemobilepaymentwindow';
@@ -41,6 +49,7 @@ class BamboraConstants
     const PAYMENT_GROUP = 'paymentgroup';
     const OWN_RECEIPT = 'ownreceipt';
     const ENABLE_INVOICE_DATA = 'enableinvoicedata';
+    const ROUNDING_MODE = 'roundingmode';
 
     //Actions
     const CAPTURE = 'capture';

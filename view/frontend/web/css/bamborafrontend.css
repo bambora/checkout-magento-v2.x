@@ -17,12 +17,8 @@
 }
 
 .bambora_checkout_paymenttype {
-    width: 50px;
-    padding: 2px 0 2px 0;
-}
-
-.bambora_checkout_paymenttype:last-of-type {
-    margin-left: -6px;
+    padding: 6px 3px 6px 0;
+    max-width: 50px;
 }
 
 .bambora_epay_paymenttype {

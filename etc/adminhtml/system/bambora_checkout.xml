@@ -16,7 +16,7 @@
 -->
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
   <group id="bambora_checkout" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
-    <label>Bambora Checkout</label>
+    <label>Bambora Online Checkout</label>
     <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
     <fieldset_css>bambora-checkout-method</fieldset_css>
     <comment><![CDATA[Accept online payments in Magento 2 using the Bambora Checkout payment window.<br /> Go to <a href='http://dev.bambora.com/shopping-carts/guides/shopping-carts/magento2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
@@ -80,48 +80,60 @@
       <config_path>payment/bambora_checkout/immediateredirecttoaccept</config_path>
     </field>
     <field id="addsurchargetopayment" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Add Surcharge:</b>]]></label>
-      <comment><![CDATA[Display surcharge amount on the order, invoice and creditmemo as an item]]></comment>
+      <label><![CDATA[<b>Enable Surcharge fee:</b>]]></label>
+      <comment><![CDATA[Enable to add surcharge to the order]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/addsurchargetopayment</config_path>
     </field>
-    <field id="sendmailorderconfirmation" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="surchargemode" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Surcharge mode:</b>]]></label>
+      <comment><![CDATA[Select if the surcharge should be added as an order line or if it should be added to the shipping & handling fee]]></comment>
+      <source_model>Bambora\Online\Model\Config\Source\Surchargemode</source_model>
+      <config_path>payment/bambora_checkout/surchargemode</config_path>
+    </field>
+    <field id="sendmailorderconfirmation" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Send Email Order Confirmation:</b>]]></label>
       <comment><![CDATA[Send an email order confirmation to the customer when the payment is completed.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/sendmailorderconfirmation</config_path>
     </field>
-    <field id="remoteinterface" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="remoteinterface" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enable remote payment proccessing from within Magento</b>]]></label>
       <comment><![CDATA[Enable this option in order to capture, credit, delete and display payments directly from the Magento backoffice]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/remoteinterface</config_path>
     </field>
-    <field id="instantinvoice" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="instantinvoice" type="select" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant invoice:</b>]]></label>
       <comment><![CDATA[Automatic create an invoice once the payment is completed]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/instantinvoice</config_path>
     </field>
-    <field id="instantinvoicemail" type="select" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="instantinvoicemail" type="select" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant invoice mail:</b>]]></label>
       <comment><![CDATA[If instant invoice then send invoice to customer.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/instantinvoicemail</config_path>
     </field>
-    <field id="masscaptureinvoicemail" type="select" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="masscaptureinvoicemail" type="select" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Mass Invoice and Capture mail:</b>]]></label>
       <comment><![CDATA[Send invoice mail to the customers when bulk invoice and capture.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/masscaptureinvoicemail</config_path>
     </field>
-    <field id="order_status" type="select" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="roundingmode" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Rounding mode:</b>]]></label>
+      <comment><![CDATA[Please select how you want the rounding of the amount sendt to the payment system]]></comment>
+      <source_model>Bambora\Online\Model\Config\Source\Roundingmode</source_model>
+      <config_path>payment/bambora_checkout/roundingmode</config_path>
+    </field>
+    <field id="order_status" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Order status (After the payment is completed):</b>]]></label>
       <comment><![CDATA[Set the status of the order <b>after</b> the payment is completed.]]></comment>
       <source_model>Magento\Sales\Model\Config\Source\Order\Status\Processing</source_model>
       <config_path>payment/bambora_checkout/order_status</config_path>
     </field>
-    <field id="sort_order" type="text" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="sort_order" type="text" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Sort order:</b>]]></label>
       <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
       <config_path>payment/bambora_checkout/sort_order</config_path>

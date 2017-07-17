@@ -82,8 +82,9 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     public function createPaymentRequest($order)
     {
         $currency = $order->getBaseCurrencyCode();
-        $minorUnits = $this->_bamboraHelper->getCurrencyMinorUnits($currency);
-        $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorUnits($order->getBaseTotalDue(), $minorUnits);
+        $minorunits = $this->_bamboraHelper->getCurrencyMinorUnits($currency);
+        $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
+        $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseTotalDue(), $minorunits, $roundingMode);
         $storeId = $order->getStoreId();
 
         /** @var \Bambora\Online\Model\Api\Epay\Request\Payment */
@@ -104,7 +105,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $paymentRequest->language = $this->_bamboraHelper->calcLanguage();
         $paymentRequest->ownreceipt = $this->getConfigData(BamboraConstants::OWN_RECEIPT, $storeId);
         $paymentRequest->timeout = 60;
-        $paymentRequest->invoice = $this->createInvoice($order, $minorUnits);
+        $paymentRequest->invoice = $this->createInvoice($order, $minorunits, $roundingMode);
         $paymentRequest->hash = $this->_bamboraHelper->calcEpayMd5Key($order, $paymentRequest);
 
         return $paymentRequest;
@@ -114,10 +115,11 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * Create Invoice
      *
      * @param \Magento\Sales\Model\Order $order
-     * @param int $minorUnits
+     * @param int $minorunits
+     * @param string $roundingMode
      * @return string
      */
-    public function createInvoice($order, $minorUnits)
+    public function createInvoice($order, $minorunits, $roundingMode)
     {
         if ($this->getConfigData(BamboraConstants::ENABLE_INVOICE_DATA)) {
             /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Invoice */
@@ -157,7 +159,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                         "id" =>$item->getSku(),
                         "description" => $this->removeSpecialCharacters($description),
                         "quantity" => intval($item->getQtyOrdered()),
-                        "price" => $this->calculateItemPrice($item, $minorUnits),
+                        "price" => $this->calculateItemPrice($item, $minorunits, $roundingMode),
                         "vat" => floatval($item->getTaxPercent())
                     );
             }
@@ -168,18 +170,18 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                        "id" => $shippingText,
                        "description" => isset($shippingDescription) ? $shippingDescription : $shippingText,
                        "quantity" => 1,
-                       "price" => $this->_bamboraHelper->convertPriceToMinorUnits($order->getBaseShippingAmount(), $minorUnits),
+                       "price" => $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseShippingAmount(), $minorunits, $roundingMode),
                        "vat" => $this->calculateShippingVat($order)
                    );
 
             // Fix for bug in Magento 2 shipment discont calculation
             $baseShipmentDiscountAmount = $order->getBaseShippingDiscountAmount();
-            if($baseShipmentDiscountAmount > 0) {
-                     $invoice->lines[] = array(
+            if ($baseShipmentDiscountAmount > 0) {
+                $invoice->lines[] = array(
                           "id" => "shipping_discount",
                           "description" => __("Shipping discount"),
                           "quantity" => 1,
-                          "price" =>$this->_bamboraHelper->convertPriceToMinorUnits(($baseShipmentDiscountAmount * -1) , $minorUnits),
+                          "price" =>$this->_bamboraHelper->convertPriceToMinorunits(($baseShipmentDiscountAmount * -1), $minorunits, $roundingMode),
                       );
             }
 
@@ -193,18 +195,19 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * Calculate a single item price and convert into minorunits
      *
      * @param \Magento\Sales\Model\Order\Item $item
-     * @param int $minorUnits
+     * @param int $minorunits
+     * @param string $roundingMode
      * @return integer
      */
-    public function calculateItemPrice($item, $minorUnits)
+    public function calculateItemPrice($item, $minorunits, $roundingMode)
     {
         $itemPrice = $item->getBaseRowTotal() /  intval($item->getQtyOrdered());
 
-        if($item->getBaseDiscountAmount() > 0) {
+        if ($item->getBaseDiscountAmount() > 0) {
             $itemDiscount =  $item->getBaseDiscountAmount() / intval($item->getQtyOrdered());
             $itemPrice = $itemPrice - $itemDiscount;
         }
-        $itemPriceMinorUnits = $this->_bamboraHelper->convertPriceToMinorUnits($itemPrice, $minorUnits);
+        $itemPriceMinorUnits = $this->_bamboraHelper->convertPriceToMinorunits($itemPrice, $minorunits, $roundingMode);
         return $itemPriceMinorUnits;
     }
 
@@ -216,7 +219,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function calculateShippingVat($order)
     {
-        if($order->getBaseShippingTaxAmount() <= 0 || $order->getBaseShippingAmount() <= 0) {
+        if ($order->getBaseShippingTaxAmount() <= 0 || $order->getBaseShippingAmount() <= 0) {
             return 0;
         }
         $shippingVat = round(($order->getBaseShippingTaxAmount() / $order->getBaseShippingAmount()) * 100);
@@ -266,7 +269,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $currency = $order->getBaseCurrencyCode();
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-            $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount, $minorunits);
+            $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
+            $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorunits, $roundingMode);
 
             /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
@@ -315,7 +319,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $currency = $order->getBaseCurrencyCode();
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-            $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount, $minorunits);
+            $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
+            $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorunits, $roundingMode);
 
             /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);

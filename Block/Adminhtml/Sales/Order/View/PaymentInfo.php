@@ -26,6 +26,11 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     protected $_registry;
 
     /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
+    protected $_priceHelper;
+
+    /**
      * @var \Bambora\Online\Helper\Data
      */
     protected $_bamboraHelper;
@@ -34,17 +39,20 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      * PaymentInfo constructor.
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      * @param \Bambora\Online\Helper\Data $bamboraHelper
      * @param array $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Bambora\Online\Helper\Data $bamboraHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_registry = $registry;
+        $this->_priceHelper = $priceHelper;
         $this->_bamboraHelper = $bamboraHelper;
     }
     /**
@@ -82,7 +90,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
 
             if (isset($checkoutMethod)) {
                 $transactionId = $payment->getAdditionalInformation($checkoutMethod::METHOD_REFERENCE);
-                if(!empty($transactionId)) {
+                if (!empty($transactionId)) {
                     $message = "";
                     $transaction = $checkoutMethod->getTransaction($transactionId, $message);
 
@@ -101,7 +109,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
 
             if (isset($ePayMethod)) {
                 $transactionId = $payment->getAdditionalInformation($ePayMethod::METHOD_REFERENCE);
-                if(!empty($transactionId)) {
+                if (!empty($transactionId)) {
                     $message = "";
                     $transaction = $ePayMethod->getTransaction($transactionId, $message);
 
@@ -132,8 +140,9 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $res .= '<tr><td>' . __("Transaction ID") . ':</td>';
         $res .= '<td>' . $transaction->id . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Amount") . ':</td>';
-        $res .= '<td>' . $transaction->currency->code . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transaction->total->authorized, $transaction->currency->minorunits) . '</td></tr>';
+        $res .= '<tr><td>' . __("Authorized amount") . ':</td>';
+        $authAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->authorized, $transaction->currency->minorunits);
+        $res .= '<td>' . $this->_priceHelper->currency($authAmount, true, false) . '</td></tr>';
 
         $res .= '<tr><td>' . __("Transaction date") . ':</td>';
         $res .= '<td>' . $this->formatDate($transaction->createdDate, \IntlDateFormatter::SHORT, true) . '</td></tr>';
@@ -145,19 +154,23 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $res .= '<td>' . $transaction->information->primaryAccountnumbers[0]->number . '</td></tr>';
 
         $res .= '<tr><td>' . __("Surcharge fee") . ':</td>';
-        $res .= '<td>' . $transaction->currency->code . "&nbsp;" .$this->_bamboraHelper->convertPriceFromMinorUnits($transaction->total->feeamount, $transaction->currency->minorunits) . '</td></tr>';
+        $surchargeFee = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->feeamount, $transaction->currency->minorunits);
+        $res .= '<td>' . $this->_priceHelper->currency($surchargeFee, true, false)  . '</td></tr>';
 
         $res .= '<tr><td>' . __("Captured") . ':</td>';
-        $res .= '<td>' . $transaction->currency->code . "&nbsp;" .$this->_bamboraHelper->convertPriceFromMinorUnits($transaction->total->captured, $transaction->currency->minorunits) . '</td></tr>';
+        $capturedAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->captured, $transaction->currency->minorunits);
+        $res .= '<td>' . $this->_priceHelper->currency($capturedAmount, true, false) . '</td></tr>';
 
         $res .= '<tr><td>' . __("Refunded") . ':</td>';
-        $res .= '<td>' . $transaction->currency->code . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transaction->total->credited, $transaction->currency->minorunits) . '</td></tr>';
+        $creditedAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->credited, $transaction->currency->minorunits);
+        $res .= '<td>' . $this->_priceHelper->currency($creditedAmount, true, false) . '</td></tr>';
 
         $res .= '<tr><td>' . __("Acquirer") . ':</td>';
         $res .= '<td>' . $transaction->information->acquirers[0]->name . '</td></tr>';
 
         $res .= '<tr><td>' . __("Status") . ':</td>';
         $res .= '<td>' . $this->checkoutStatus($transaction->status) . '</td></tr>';
+
 
         return $res;
     }
@@ -188,7 +201,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     public function getPaymentLogoUrl($paymentId)
     {
-        return '<img class="bambora_paymentcard" src="https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/'.$paymentId . '.png"';
+        return '<img class="bambora_paymentcard" src="https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/'.$paymentId . '.svg"';
     }
 
     /**
@@ -200,7 +213,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     public function createEpayTransactionHtml($transactionInformation, $order)
     {
-        $minorUnits = $this->_bamboraHelper->getCurrencyMinorunits($order->getBaseCurrencyCode());
+        $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($order->getBaseCurrencyCode());
 
         $res = '<tr><td colspan="2" class="bambora_table_title">ePay | Payment solutions</td></tr>';
 
@@ -230,32 +243,24 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $res .= '<tr><td>' . __("Cardholder") . ':</td>';
         $res .= '<td>' . $transactionInformation->cardholder . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Auth amount") . ':</td>';
-        $res .= '<td>' . $order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->authamount, $minorUnits) .  '</td></tr>';
-
-        if ($transactionInformation->authamount > 0) {
-            $res .= '<tr><td>' . __("Authorized date") . ':</td>';
-            $res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->authdate)) . '</td></tr>';
-        }
+        $res .= '<tr><td>' . __("Authorized amount") . ':</td>';
+        $authAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transactionInformation->authamount, $minorunits);
+        $authDate = $transactionInformation->authamount > 0 ? $this->formatDate(str_replace('T', ' ', $transactionInformation->authdate)) : "";
+        $res .= '<td>' . $this->_priceHelper->currency($authAmount, true, false) . "&nbsp;&nbsp;&nbsp;" . $authDate .  '</td></tr>';
 
         $res .= '<tr><td>' . __("Captured amount") . ':</td>';
-        $res .= '<td>' .$order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->capturedamount, $minorUnits) . '</td></tr>';
-
-        if ($transactionInformation->capturedamount > 0) {
-            $res .= '<tr><td>' . __("Captured date") . ':</td>';
-            $res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->captureddate)) . '</td></tr>';
-        }
+        $capturedAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transactionInformation->capturedamount, $minorunits);
+        $capturedDate = $transactionInformation->capturedamount > 0 ? $this->formatDate(str_replace('T', ' ', $transactionInformation->captureddate)) : "";
+        $res .= '<td>' .$this->_priceHelper->currency($capturedAmount, true, false) . "&nbsp;&nbsp;&nbsp;" . $capturedDate . '</td></tr>';
 
         $res .= '<tr><td>' . __("Credited amount") . ':</td>';
-        $res .= '<td>' . $order->getBaseCurrencyCode() . '&nbsp;' . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->creditedamount, $minorUnits). '</td></tr>';
-
-        if ($transactionInformation->creditedamount > 0) {
-            $res .= '<tr><td>' . __("Credited date") . ':</td>';
-            $res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->crediteddate)) . '</td></tr>';
-        }
+        $creditedAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transactionInformation->creditedamount, $minorunits);
+        $creditedDate = $transactionInformation->creditedamount > 0 ? $this->formatDate(str_replace('T', ' ', $transactionInformation->crediteddate)) : "";
+        $res .= '<td>' . $this->_priceHelper->currency($creditedAmount, true, false) . "&nbsp;&nbsp;&nbsp;" . $creditedDate . '</td></tr>';
 
         $res .= '<tr><td>' . __("Surcharge fee") . ':</td>';
-        $res .= '<td>' . $order->getBaseCurrencyCode() . "&nbsp;" . $this->_bamboraHelper->convertPriceFromMinorUnits($transactionInformation->fee, $minorUnits) . '</td></tr>';
+        $surchargeAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transactionInformation->fee, $minorunits);
+        $res .= '<td>' . $this->_priceHelper->currency($surchargeAmount, true, false) . '</td></tr>';
 
         //Fraud
         if ($transactionInformation->fraudStatus > 0) {

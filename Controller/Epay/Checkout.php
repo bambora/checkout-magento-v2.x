@@ -42,8 +42,7 @@ class Checkout extends \Bambora\Online\Controller\AbstractActionController
             $epayMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
             $response = $epayMethod->getPaymentWindow($order);
             return $response;
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $this->_bamboraLogger->addEpayError($order->getId(), $ex->getMessage());
             return null;
         }

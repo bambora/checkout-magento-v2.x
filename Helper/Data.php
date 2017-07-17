@@ -193,43 +193,46 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Convert an amount to minorunits
      *
      * @param $amount
-     * @param $minorUnits
-     * @param $defaultMinorUnits = 2
+     * @param $minorunits
+     * @param $roundingMode
      * @return int
      */
-    public function convertPriceToMinorUnits($amount, $minorUnits, $defaultMinorUnits = 2)
+    public function convertPriceToMinorunits($amount, $minorunits, $roundingMode)
     {
-        if ($minorUnits == "" || $minorUnits == null) {
-            $minorUnits = $defaultMinorUnits;
-        }
-
         if ($amount == "" || $amount == null) {
             return 0;
         }
 
-        return $amount * pow(10, $minorUnits);
-        ;
+        switch ($roundingMode) {
+            case BamboraConstants::ROUND_UP:
+                $amount = ceil($amount * pow(10, $minorunits));
+                break;
+            case BamboraConstants::ROUND_DOWN:
+                $amount = floor($amount * pow(10, $minorunits));
+                break;
+            default:
+                $amount = round($amount * pow(10, $minorunits));
+                break;
+        }
+        return $amount;
     }
 
     /**
      * Convert an amount from minorunits
      *
      * @param $amount
-     * @param $minorUnits
-     * @param $defaultMinorUnits = 2
-     * @return string
+     * @param $minorunits
+     * @return float
      */
-    public function convertPriceFromMinorUnits($amount, $minorUnits, $defaultMinorUnits = 2)
+    public function convertPriceFromMinorunits($amount, $minorunits)
     {
-        if ($minorUnits == "" || $minorUnits == null) {
-            $minorUnits = $defaultMinorUnits;
-        }
-
         if ($amount == "" || $amount == null) {
             return 0;
         }
-        return number_format($amount / pow(10, $minorUnits), $minorUnits);
+
+        return ($amount / pow(10, $minorunits));
     }
+
 
     /**
      * Return minorunits based on Currency Code
@@ -467,7 +470,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert card id to name
      *
-     * @param int $cardid
+     * @param mixed $cardid
      * @return string
      */
     public function calcCardtype($cardid)
@@ -544,5 +547,44 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return array_search($code, $isoCodeArray);
+    }
+
+    /**
+     * Create an Surcharge fee item
+     *
+     * @param mixed $baseFeeAmount
+     * @param mixed $feeAmount
+     * @param mixed $storeId
+     * @param mixed $orderId
+     * @param mixed $text
+     * @return \Magento\Sales\Model\Order\Item
+     */
+    public function createSurchargeItem($baseFeeAmount, $feeAmount, $storeId, $orderId, $text)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        /** @var \Magento\Sales\Model\Order\Item */
+        $feeItem = $objectManager->create('\Magento\Sales\Model\Order\Item');
+        $feeItem->setSku(BamboraConstants::BAMBORA_SURCHARGE);
+
+        $feeItem->setName($text);
+        $feeItem->setBaseCost($baseFeeAmount);
+        $feeItem->setBasePrice($baseFeeAmount);
+        $feeItem->setBasePriceInclTax($baseFeeAmount);
+        $feeItem->setBaseOriginalPrice($baseFeeAmount);
+        $feeItem->setBaseRowTotal($baseFeeAmount);
+        $feeItem->setBaseRowTotalInclTax($baseFeeAmount);
+        $feeItem->setCost($feeAmount);
+        $feeItem->setPrice($feeAmount);
+        $feeItem->setPriceInclTax($feeAmount);
+        $feeItem->setOriginalPrice($feeAmount);
+        $feeItem->setRowTotal($feeAmount);
+        $feeItem->setRowTotalInclTax($feeAmount);
+        $feeItem->setProductType(\Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL);
+        $feeItem->setIsVirtual(1);
+        $feeItem->setQtyOrdered(1);
+        $feeItem->setStoreId($storeId);
+        $feeItem->setOrderId($orderId);
+
+        return $feeItem;
     }
 }

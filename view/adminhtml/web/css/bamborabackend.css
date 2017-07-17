@@ -39,9 +39,10 @@
 }
 
 .bambora_paymentcard {
-    height: 17px;
+    max-width: 50px;
     position: relative;
     vertical-align: middle;
+    padding: 5px;
 }
 
 .bambora-checkout-method > .entry-edit-head > .config-heading .heading strong {

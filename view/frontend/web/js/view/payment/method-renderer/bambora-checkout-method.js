@@ -42,7 +42,7 @@ define(
                 return window.checkoutConfig.payment.bambora_checkout.paymentIconSrc;
             },
             continueToBamboraCheckout: function() {
-                self = this;
+                var self = this;
                 if (additionalValidators.validate()) {
                     this.selectPaymentMethod();
                     setPaymentMethodAction().then(function() {
@@ -53,7 +53,7 @@ define(
                 } 
             },
             setCheckoutSession: function () {
-                 self = this;
+                 var self = this;
                  var url = window.checkoutConfig.payment.bambora_checkout.checkoutUrl;                   
                     $.get(url)
                         .done(function (response) {

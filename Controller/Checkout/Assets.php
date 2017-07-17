@@ -41,7 +41,7 @@ class Assets extends \Bambora\Online\Controller\AbstractActionController
 
             if ($checkoutMethod) {
                 $paymentCardIds = $checkoutMethod->getPaymentCardIds();
-        }
+            }
         } catch (\Exception $ex) {
             $this->_bamboraLogger->addCheckoutError(-1, $ex->getMessage());
             return null;

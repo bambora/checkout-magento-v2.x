@@ -31,7 +31,7 @@ define(
                 return window.checkoutConfig.payment.bambora_epay.paymentTypeLogoSrc;
             },
             continueToBamboraEpay: function () {
-                self = this;
+                var self = this;
                 if (additionalValidators.validate()) {
                     self.selectPaymentMethod();
                     setPaymentMethodAction().then(function() {
@@ -42,7 +42,7 @@ define(
                 } 
             },
             getPaymentWindow: function () {
-                 self = this;
+                 var self = this;
                  var url = window.checkoutConfig.payment.bambora_epay.checkoutUrl;                   
                     $.get(url)
                         .done(function (response) {

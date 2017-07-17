@@ -77,7 +77,9 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         }
 
         $minorUnits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-        $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorUnits($amount, $minorUnits);
+        $storeId = $this->getQuote()->getStoreId();
+        $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $storeId);
+        $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorUnits, $roundingMode);
 
         /** @var \Bambora\Online\Model\Api\Checkout\Merchant */
         $merchantApi = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_MERCHANT);
@@ -142,7 +144,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
         $storeId = $order->getStoreId();
         $minorUnits = $this->_bamboraHelper->getCurrencyMinorUnits($order->getBaseCurrencyCode());
-        $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorUnits($order->getBaseTotalDue(), $minorUnits);
+        $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $storeId);
+        $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseTotalDue(), $minorUnits, $roundingMode);
 
         /** @var \Bambora\Online\Model\Api\Checkout\Request\Checkout */
         $checkoutRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CHECKOUT);
@@ -159,7 +162,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $bamboraOrder->currency = $order->getBaseCurrencyCode();
         $bamboraOrder->ordernumber = $order->getIncrementId();
         $bamboraOrder->total = $totalAmountMinorUnits;
-        $bamboraOrder->vatamount = $this->_bamboraHelper->convertPriceToMinorUnits($order->getBaseTaxAmount(), $minorUnits);
+        $bamboraOrder->vatamount = $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseTaxAmount(), $minorUnits, $roundingMode);
 
         /** @var \Bambora\Online\Model\Api\Checkout\Request\Models\Url */
         $bamboraUrl = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_MODEL_URL);
@@ -218,6 +221,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                 $item->getBaseRowTotal(),
                 $item->getBaseTaxAmount(),
                 $order->getBaseCurrencyCode(),
+                $roundingMode,
                 $item->getTaxPercent(),
                 $item->getBaseDiscountAmount());
 
@@ -233,11 +237,12 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             __("Shipping"),
              $order->getBaseShippingAmount(),
             $order->getBaseShippingTaxAmount(),
-            $order->getBaseCurrencyCode());
+            $order->getBaseCurrencyCode(),
+            $roundingMode);
 
         // Fix for bug in Magento 2 shipment discont calculation
         $baseShipmentDiscountAmount = $order->getBaseShippingDiscountAmount();
-        if($baseShipmentDiscountAmount > 0) {
+        if ($baseShipmentDiscountAmount > 0) {
             $bamboraOrderLines[] = $this->createInvoiceLine(
                  __("Shipping discount"),
                  "shipping_discount",
@@ -246,7 +251,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                   __("Shipping discount"),
                   $order->getBaseShippingDiscountAmount() * -1,
                   0,
-                  $order->getBaseCurrencyCode());
+                  $order->getBaseCurrencyCode(),
+                  $roundingMode);
         }
 
 
@@ -267,11 +273,14 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * @param mixed $totalPrice
      * @param mixed $totalPriceVatAmount
      * @param mixed $currencyCode
+     * @param string $roundingMode
+     * @param mixed $taxPercent
+     * @param mixed $discountAmount
      * @return \Bambora\Online\Model\Api\Checkout\Request\Models\Line
      */
-    public function createInvoiceLine($description, $id, $lineNumber, $quantity, $text, $totalPrice, $totalPriceVatAmount, $currencyCode, $taxPercent = null, $discountAmount = 0)
+    public function createInvoiceLine($description, $id, $lineNumber, $quantity, $text, $totalPrice, $totalPriceVatAmount, $currencyCode, $roundingMode, $taxPercent = null, $discountAmount = 0)
     {
-        $minorUnits = $this->_bamboraHelper->getCurrencyMinorunits($currencyCode);
+        $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currencyCode);
 
         /** @var \Bambora\Online\Model\Api\Checkout\Request\Models\Line */
         $line = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_MODEL_LINE);
@@ -280,9 +289,9 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $line->linenumber = $lineNumber;
         $line->quantity = $quantity;
         $line->text = $text;
-        $line->totalprice = $this->_bamboraHelper->convertPriceToMinorUnits(($totalPrice - $discountAmount), $minorUnits);
-        $line->totalpriceinclvat = $this->_bamboraHelper->convertPriceToMinorUnits((($totalPrice + $totalPriceVatAmount) - $discountAmount), $minorUnits);
-        $line->totalpricevatamount = $this->_bamboraHelper->convertPriceToMinorUnits($totalPriceVatAmount, $minorUnits);
+        $line->totalprice = $this->_bamboraHelper->convertPriceToMinorunits(($totalPrice - $discountAmount), $minorunits, $roundingMode);
+        $line->totalpriceinclvat = $this->_bamboraHelper->convertPriceToMinorunits((($totalPrice + $totalPriceVatAmount) - $discountAmount), $minorunits, $roundingMode);
+        $line->totalpricevatamount = $this->_bamboraHelper->convertPriceToMinorunits($totalPriceVatAmount, $minorunits, $roundingMode);
         $line->unit = __("pcs.");
         if (!isset($taxPercent)) {
             $vat = $totalPriceVatAmount > 0 && $totalPrice > 0  ? floatval($totalPriceVatAmount / $totalPrice * 100) : 0;
@@ -326,10 +335,11 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $currency = $order->getBaseCurrencyCode();
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
+            $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
 
             /** @var \Bambora\Online\Model\Api\Checkout\Request\Capture */
             $captureRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CAPTURE);
-            $captureRequest->amount = $this->_bamboraHelper->convertPriceToMinorUnits($amount, $minorunits);
+            $captureRequest->amount = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorunits, $roundingMode);
             $captureRequest->currency = $currency;
 
             //Only add invoice lines if it is a full capture
@@ -357,8 +367,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                     ->setParentTransactionId($transactionId);
 
             return $this;
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $errorMessage = "({$order->getIncrementId()}) " . $ex->getMessage();
             $this->_messageManager->addError($errorMessage);
             throw $ex;
@@ -390,10 +399,11 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $currency = $order->getBaseCurrencyCode();
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
+            $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
 
             /** @var \Bambora\Online\Model\Api\Checkout\Request\Credit */
             $creditRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CREDIT);
-            $creditRequest->amount = $this->_bamboraHelper->convertPriceToMinorUnits($amount, $minorunits);
+            $creditRequest->amount = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorunits, $roundingMode);
             $creditRequest->currency = $currency;
             $creditRequest->invoicelines = $this->getRefundInvoiceLines($creditMemo, $order);
 
@@ -412,8 +422,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                     ->setParentTransactionId($transactionId);
 
             return $this;
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $errorMessage = "({$id}) " . $ex->getMessage();
             $this->_messageManager->addError($errorMessage);
             throw $ex;
@@ -431,8 +440,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         try {
             $this->void($payment);
             $this->_messageManager->addSuccess(__("The payment have been voided").' ('.$payment->getOrder()->getIncrementId().')');
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $this->_messageManager->addError($ex->getMessage());
         }
 
@@ -473,8 +481,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $this->cancelSurchargeFeeItem($payment);
 
             return $this;
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $errorMessage = "(OrderId: {$order->getIncrementId()}) " . $ex->getMessage();
             $this->_messageManager->addError($errorMessage);
             throw $ex;
@@ -504,8 +511,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
 
             return $transactionResponse->transaction;
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $errorMessage = "(TransactionId: {$transactionId}) " . $ex->getMessage();
             $this->_messageManager->addError($errorMessage);
             return null;
@@ -523,15 +529,15 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     {
         $invoice = $order->getInvoiceCollection()->getLastItem();
         $invoiceItems = $order->getAllVisibleItems();
-
+        $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
         $lines = array();
         $feeItem = null;
         foreach ($invoiceItems as $item) {
             if ($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE) {
-                $feeItem = $this->createInvoiceLineFromInvoice($item, $order);
+                $feeItem = $this->createInvoiceLineFromInvoice($item, $order, $roundingMode);
                 continue;
             }
-            $lines[] = $this->createInvoiceLineFromInvoice($item, $order);
+            $lines[] = $this->createInvoiceLineFromInvoice($item, $order, $roundingMode);
         }
 
         //Shipping discount handling
@@ -547,9 +553,10 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
         }
 
+
         //Shipping
         $shippingName = __("Shipping");
-        $lines[] = $this->createInvoiceLine($shippingName, $shippingName, count($lines), 1, $shippingName, $shippingAmount, $invoice->getBaseShippingTaxAmount(), $invoice->getBaseCurrencyCode());
+        $lines[] = $this->createInvoiceLine($shippingName, $shippingName, count($lines), 1, $shippingName, $shippingAmount, $invoice->getBaseShippingTaxAmount(), $invoice->getBaseCurrencyCode(), $roundingMode);
 
         //Add fee item
         if (isset($feeItem)) {
@@ -571,13 +578,14 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $lines = array();
         //Fee item must be after shipment to keep the orginal authorize order of items
         $feeItem = null;
+        $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
         $items = $this->filterVisibleItemsOnly($creditMemo->getAllItems());
         foreach ($items as $item) {
             if ($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE) {
-                $feeItem = $this->createInvoiceLineFromInvoice($item, $order);
+                $feeItem = $this->createInvoiceLineFromInvoice($item, $order, $roundingMode);
                 continue;
             }
-            $lines[] = $this->createInvoiceLineFromInvoice($item, $order);
+            $lines[] = $this->createInvoiceLineFromInvoice($item, $order, $roundingMode);
         }
 
         $shippingAmount = $creditMemo->getBaseShippingAmount();
@@ -596,7 +604,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         //Shipping
         if ($shippingAmount > 0) {
             $shippingName = __("Shipping");
-            $lines[] = $this->createInvoiceLine($shippingName, $shippingName, count($lines) + 1, 1, $shippingName, $shippingAmount, $creditMemo->getBaseShippingTaxAmount(), $creditMemo->getBaseCurrencyCode());
+            $lines[] = $this->createInvoiceLine($shippingName, $shippingName, count($lines) + 1, 1, $shippingName, $shippingAmount, $creditMemo->getBaseShippingTaxAmount(), $creditMemo->getBaseCurrencyCode(), $roundingMode);
         }
 
         if (isset($feeItem)) {
@@ -606,7 +614,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         //Adjustment refund
         if ($creditMemo->getBaseAdjustment() > 0) {
             $adjustmentRefundName = __("Adjustment refund");
-            $lines[] = $this->createInvoiceLine($adjustmentRefundName, $adjustmentRefundName, count($lines) + 1, 1, $adjustmentRefundName, $creditMemo->getBaseAdjustment(), 0, $creditMemo->getBaseCurrencyCode());
+            $lines[] = $this->createInvoiceLine($adjustmentRefundName, $adjustmentRefundName, count($lines) + 1, 1, $adjustmentRefundName, $creditMemo->getBaseAdjustment(), 0, $creditMemo->getBaseCurrencyCode(), $roundingMode);
         }
         return $lines;
     }
@@ -634,9 +642,10 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      *
      * @param \Magento\Sales\Model\Order\Item $item
      * @param \Magento\Sales\Model\Order $order
+     * @param string $roundingMode
      * @return \Bambora\Online\Model\Api\Checkout\Request\Models\Line
      */
-    private function createInvoiceLineFromInvoice($item, $order)
+    private function createInvoiceLineFromInvoice($item, $order, $roundingMode)
     {
         $invoiceLine = $this->createInvoiceLine(
             $item->getDescription(),
@@ -647,6 +656,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $item->getBaseRowTotal(),
             $item->getBaseTaxAmount(),
             $order->getBaseCurrencyCode(),
+            $roundingMode,
             $item->getTaxPercent(),
             $item->getBaseDiscountAmount());
 

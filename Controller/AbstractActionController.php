@@ -231,7 +231,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $this->updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $fraudStatus);
 
             if ($paymentMethodInstance->getConfigData(BamboraConstants::ADD_SURCHARGE_TO_PAYMENT, $storeId) == 1 && $feeAmountInMinorUnits > 0) {
-                $this->addSurchargeItemToOrder($order, $feeAmountInMinorUnits, $minorUnits, $ccType);
+                $this->addSurchargeToOrder($order, $feeAmountInMinorUnits, $minorUnits, $ccType, $paymentMethodInstance);
             }
 
             if (!$order->getEmailSent() && $paymentMethodInstance->getConfigData(BamboraConstants::SEND_MAIL_ORDER_CONFIRMATION, $storeId) == 1) {
@@ -241,8 +241,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             if ($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_INVOICE, $storeId) == 1) {
                 $this->createInvoice($order, $paymentMethodInstance, $txnId);
             }
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             throw $ex;
         }
     }
@@ -280,6 +279,11 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $order->setState(Order::STATE_PROCESSING);
             $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
             $payment->addTransactionCommentsToOrder($transaction, $transactionComment);
+
+            if ($order->getPayment()->getMethod() === \Bambora\Online\Model\Method\Epay\Payment::METHOD_CODE) {
+                $ccType = $this->_bamboraHelper->calcCardtype($ccType);
+            }
+
             $payment->setCcType($ccType);
             $payment->setCcNumberEnc($ccNumber);
 
@@ -288,22 +292,22 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $payment->save();
 
             $order->save();
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             throw $ex;
         }
     }
 
     /**
-     * Add Surcharge item to the order as a order line
+     * Add Surcharge to the order
      *
      * @param \Magento\Sales\Model\Order $order
-     * @param mixed $feeAmountInMinorUnits
-     * @param mixed $minorUnits
+     * @param mixed $feeAmountInMinorunits
+     * @param mixed $minorunits
      * @param mixed $ccType
+     * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
      * @return void
      */
-    public function addSurchargeItemToOrder($order, $feeAmountInMinorUnits, $minorUnits, $ccType)
+    public function addSurchargeToOrder($order, $feeAmountInMinorunits, $minorunits, $ccType, $paymentMethodInstance)
     {
         try {
             foreach ($order->getAllItems() as $item) {
@@ -312,46 +316,33 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
                 }
             }
 
-            $baseFeeAmount = floatval($this->_bamboraHelper->convertPriceFromMinorUnits($feeAmountInMinorUnits, $minorUnits));
+            $baseFeeAmount = $this->_bamboraHelper->convertPriceFromMinorunits($feeAmountInMinorunits, $minorunits);
             $feeAmount = $order->getStore()->getBaseCurrency()->convert($baseFeeAmount, $order->getOrderCurrencyCode());
-
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            /** @var \Magento\Sales\Model\Order\Item */
-            $feeItem = $objectManager->create('\Magento\Sales\Model\Order\Item');
-            $feeItem->setSku(BamboraConstants::BAMBORA_SURCHARGE);
-
             $text = $ccType . ' - ' . __("Surcharge fee");
-            $feeItem->setName($text);
-            $feeItem->setBaseCost($baseFeeAmount);
-            $feeItem->setBasePrice($baseFeeAmount);
-            $feeItem->setBasePriceInclTax($baseFeeAmount);
-            $feeItem->setBaseOriginalPrice($baseFeeAmount);
-            $feeItem->setBaseRowTotal($baseFeeAmount);
-            $feeItem->setBaseRowTotalInclTax($baseFeeAmount);
-            $feeItem->setCost($feeAmount);
-            $feeItem->setPrice($feeAmount);
-            $feeItem->setPriceInclTax($feeAmount);
-            $feeItem->setOriginalPrice($feeAmount);
-            $feeItem->setRowTotal($feeAmount);
-            $feeItem->setRowTotalInclTax($feeAmount);
-            $feeItem->setProductType(\Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL);
-            $feeItem->setIsVirtual(1);
-            $feeItem->setQtyOrdered(1);
-            $feeItem->setStoreId($order->getStoreId());
-            $feeItem->setOrderId($order->getId());
+            $storeId = $order->getStoreId();
 
-            $order->addItem($feeItem);
+            if ($paymentMethodInstance->getConfigData(BamboraConstants::SURCHARGE_MODE, $storeId) === BamboraConstants::SURCHARGE_ORDER_LINE) {
+                $feeItem = $this->_bamboraHelper->createSurchargeItem($baseFeeAmount, $feeAmount, $storeId, $order->getId(), $text);
+                $order->addItem($feeItem);
+                $order->setBaseSubtotal($order->getBaseSubtotal() + $baseFeeAmount);
+                $order->setBaseSubtotalInclTax($order->getBaseSubtotalInclTax() + $baseFeeAmount);
+                $order->setSubtotal($order->getSubtotal() + $feeAmount);
+                $order->setSubtotalInclTax($order->getSubtotalInclTax() + $feeAmount);
+            } else {
+                //Add fee to shipment
+                $order->setBaseShippingAmount($order->getBaseShippingAmount() + $baseFeeAmount);
+                $order->setBaseShippingInclTax($order->getBaseShippingInclTax() + $baseFeeAmount);
+                $order->setShippingAmount($order->getShippingAmount() + $feeAmount);
+                $order->setShippingInclTax($order->getShippingInclTax() + $feeAmount);
+            }
 
             $order->setBaseGrandTotal($order->getBaseGrandTotal() + $baseFeeAmount);
-            $order->setBaseSubtotal($order->getBaseSubtotal() + $baseFeeAmount);
             $order->setGrandTotal($order->getGrandTotal() + $feeAmount);
-            $order->setSubtotal($order->getSubtotal() + $feeAmount);
 
             $feeMessage = $text . ' ' .__("added to order");
             $order->addStatusHistoryComment($feeMessage);
             $order->save();
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             throw $ex;
         }
     }
@@ -369,8 +360,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $order->addStatusHistoryComment(__("Notified customer about order #%1", $order->getId()))
                         ->setIsCustomerNotified(1)
                         ->save();
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             $order->addStatusHistoryComment(__("Could not send order confirmation for order #%1", $order->getId()))
                         ->setIsCustomerNotified(0)
                         ->save();
@@ -378,7 +368,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     }
 
     /**
-     * Create an invoice and capture it
+     * Create an invoice
      *
      * @param \Magento\Sales\Model\Order $order
      * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
@@ -391,10 +381,8 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
                 $invoice = $order->prepareInvoice();
                 $storeId = $order->getStoreId();
 
-                if ((int)$paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) === 0 && (int)$paymentMethodInstance->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) === 1) {
+                if ((int)$paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) === 1) {
                     $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
-                } else {
-                    $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
                 }
 
                 $invoice->register();
@@ -412,8 +400,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
                         ->save();
                 }
             }
-        }
-        catch (\Exception $ex) {
+        } catch (\Exception $ex) {
             throw $ex;
         }
     }
