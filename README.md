@@ -1,4 +1,7 @@
-# Bambora Online Magento v2.x
+# Bambora Online Magento 2
+
+## Supported Magento 2 versions
+ - Supports all current versions from 2.1.x and up.
 
 ## Supported Payment Gateways
  - Bambora Checkout
