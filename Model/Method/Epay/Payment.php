@@ -42,7 +42,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth
      */
-    private $_auth;
+    protected $_auth;
 
     /**
      * Get ePay Auth object
@@ -277,7 +277,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $captureResponse = $actionProvider->capture($amountMinorunits, $transactionId, $this->getAuth());
 
             $message = "";
-            if (!$this->_bamboraHelper->validateEpayApiResult($captureResponse, $transactionId, $this->getAuth(), BamboraConstants::CAPTURE, $message)) {
+            if (!$this->_bamboraHelper->validateEpayApiResult($captureResponse, $transactionId, $this->getAuth(), $message)) {
                 throw new \Exception(__("The capture action failed.") . ' - '.$message);
             }
 
@@ -327,7 +327,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $creditResponse = $actionProvider->credit($amountMinorunits, $transactionId, $this->getAuth());
 
             $message = "";
-            if (!$this->_bamboraHelper->validateEpayApiResult($creditResponse, $transactionId, $this->getAuth(), BamboraConstants::REFUND, $message)) {
+            if (!$this->_bamboraHelper->validateEpayApiResult($creditResponse, $transactionId, $this->getAuth(), $message)) {
                 throw new \Exception(__("The refund action failed.") . ' - '.$message);
             }
 
@@ -384,7 +384,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $deleteResponse = $actionProvider->delete($transactionId, $this->getAuth());
 
             $message = "";
-            if (!$this->_bamboraHelper->validateEpayApiResult($deleteResponse, $transactionId, $this->getAuth(), BamboraConstants::VOID, $message)) {
+            if (!$this->_bamboraHelper->validateEpayApiResult($deleteResponse, $transactionId, $this->getAuth(), $message)) {
                 throw new \Exception(__('The void action failed.') . ' - '.$message);
             }
 
@@ -419,7 +419,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
             $transactionResponse = $actionProvider->getTransaction($transactionId, $this->getAuth());
 
-            if (!$this->_bamboraHelper->validateEpayApiResult($transactionResponse, $transactionId, $this->getAuth(), BamboraConstants::GET_TRANSACTION, $message)) {
+            if (!$this->_bamboraHelper->validateEpayApiResult($transactionResponse, $transactionId, $this->getAuth(), $message)) {
                 return null;
             }
 

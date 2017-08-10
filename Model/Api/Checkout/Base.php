@@ -26,7 +26,7 @@ abstract class Base extends DataObject
      *
      * @return array
      */
-    private $endpoints = array(
+    protected $endpoints = array(
         'merchant' => 'https://merchant-v1.api-eu.bambora.com',
         'checkout' => 'https://api.v1.checkout.bambora.com',
         'transaction' => 'https://transaction-v1.api-eu.bambora.com',

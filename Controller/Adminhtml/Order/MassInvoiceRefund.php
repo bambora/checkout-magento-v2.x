@@ -65,8 +65,9 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
         $refunded = array();
         $notRefunded = array();
 
+        $collectionItems = $collection->getItems();
         /** @var \Magento\Sales\Model\Order\Invoice $invoice */
-        foreach ($collection->getItems() as $invoice) {
+        foreach ($collectionItems as $invoice) {
             try {
                 if (!$invoice->canRefund()) {
                     $notRefunded[] = $invoice->getIncrementId(). '('.__("Creditmemo not available"). ')';
@@ -87,7 +88,7 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
                 continue;
             }
         }
-        $countNonRefundInvoice = $collection->count() - $countRefundInvoices;
+        $countNonRefundInvoice = count($collectionItems) - $countRefundInvoices;
 
         if ($countNonRefundInvoice && $countRefundInvoices) {
             $this->messageManager->addError(__("%1 invoice(s) were not refunded.", $countNonRefundInvoice). ' (' .implode(" , ", $notRefunded) . ')');

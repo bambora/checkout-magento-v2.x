@@ -413,7 +413,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string &$message
      * @return bool
      */
-    public function validateEpayApiResult($response, $id, $auth, $action, &$message)
+    public function validateEpayApiResult($response, $id, $auth, &$message)
     {
         if (!isset($response) || $response === false) {
             //Error without description

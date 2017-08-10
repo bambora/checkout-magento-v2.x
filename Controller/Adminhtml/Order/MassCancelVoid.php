@@ -42,8 +42,9 @@ class MassCancelVoid extends \Magento\Sales\Controller\Adminhtml\Order\AbstractM
         $canceled = array();
         $notCanceled = array();
 
+        $collectionItems = $collection->getItems();
         /** @var \Magento\Sales\Model\Order $order */
-        foreach ($collection->getItems() as $order) {
+        foreach ($collectionItems as $order) {
             try {
                 if (!$order->canCancel()) {
                     $notCanceled[] = $order->getIncrementId(). '('.__("Cancel not available"). ')';
@@ -56,12 +57,11 @@ class MassCancelVoid extends \Magento\Sales\Controller\Adminhtml\Order\AbstractM
                 $canceled[] = $order->getIncrementId();
             } catch (\Exception $ex) {
                 $notCanceled[] = $order->getIncrementId(). '('.$ex->getMessage().')';
-                ;
                 continue;
             }
         }
 
-        $countNonCanceledOrder = $collection->count() - $countCanceledOrder;
+        $countNonCanceledOrder = count($collectionItems) - $countCanceledOrder;
 
         if ($countNonCanceledOrder && $countCanceledOrder) {
             $this->messageManager->addError(__("%1 order(s) were not canceled or voided.", $countNonCanceledOrder). ' (' .implode(" , ", $notCanceled) . ')');

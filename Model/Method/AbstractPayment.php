@@ -56,7 +56,7 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
     /**
      * @var \Magento\Sales\Model\Order
      */
-    private $_order;
+    protected $_order;
 
     /**
      * Bambora Checkout constructor.

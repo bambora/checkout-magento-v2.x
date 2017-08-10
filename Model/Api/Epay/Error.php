@@ -44,8 +44,8 @@ class Error extends Base
 
             $result = $client->getEpayError($param);
 
-            if ($result->getEpayErrorResult == 1) {
-                $res = $result->epayresponsestring;
+            if ($result->getEpayErrorResult) {
+                $res = '('.$result->epayresponse.') ' . $result->epayresponsestring;
             }
         } catch (\Exception $ex) {
             $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
@@ -79,8 +79,8 @@ class Error extends Base
             $client = $this->_initSoapClient($url);
             $result = $client->getPbsError($param);
 
-            if ($result->getPbsErrorResult == 1) {
-                $res = $result->pbsresponsestring;
+            if ($result->getPbsErrorResult) {
+                $res = '('.$result->epayresponse.') ' . $result->pbsresponsestring;
             }
         } catch (\Exception $ex) {
             $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());

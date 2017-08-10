@@ -74,8 +74,9 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
         $invoiced = array();
         $notInvoiced = array();
 
+        $collectionItems = $collection->getItems();
         /** @var \Magento\Sales\Model\Order $order */
-        foreach ($collection->getItems() as $order) {
+        foreach ($collectionItems as $order) {
             try {
                 if (!$order->canInvoice()) {
                     $notInvoiced[] = $order->getIncrementId(). '('.__("Invoice not available"). ')';
@@ -110,11 +111,10 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
                 $invoiced[] = $order->getIncrementId();
             } catch (\Exception $ex) {
                 $notInvoiced[] = $order->getIncrementId(). '('.$ex->getMessage().')';
-                ;
                 continue;
             }
         }
-        $countNonInvoicedOrder = $collection->count() - $countInvoicedOrder;
+        $countNonInvoicedOrder = count($collectionItems) - $countInvoicedOrder;
 
         if ($countNonInvoicedOrder && $countInvoicedOrder) {
             $this->messageManager->addError(__("%1 order(s) cannot be Invoiced and Captured.", $countNonInvoicedOrder). ' (' .implode(" , ", $notInvoiced) . ')');

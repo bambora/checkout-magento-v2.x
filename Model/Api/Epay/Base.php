@@ -23,7 +23,7 @@ class Base extends DataObject
      *
      * @return array
      */
-    private $endpoints = array(
+    protected $endpoints = array(
         'remote' => 'https://ssl.ditonlinebetalingssystem.dk/remote',
         'integration' => 'https://ssl.ditonlinebetalingssystem.dk/integration',
         'assets' => 'https://d3r1pwhfz7unl9.cloudfront.net/bambora'

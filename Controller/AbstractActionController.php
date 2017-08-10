@@ -239,7 +239,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             }
 
             if ($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_INVOICE, $storeId) == 1) {
-                $this->createInvoice($order, $paymentMethodInstance, $txnId);
+                $this->createInvoice($order, $paymentMethodInstance);
             }
         } catch (\Exception $ex) {
             throw $ex;
@@ -373,7 +373,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param \Magento\Sales\Model\Order $order
      * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
      */
-    public function createInvoice($order, $paymentMethodInstance, $txnId)
+    public function createInvoice($order, $paymentMethodInstance)
     {
         try {
             if ($order->canInvoice()) {

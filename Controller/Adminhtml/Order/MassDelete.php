@@ -42,8 +42,9 @@ class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassA
         $deleted = array();
         $notDeleted = array();
 
+        $collectionItems = $collection->getItems();
         /** @var \Magento\Sales\Model\Order $order */
-        foreach ($collection->getItems() as $order) {
+        foreach ($collectionItems as $order) {
             try {
                 $order->delete();
                 $countDeleteOrder++;
@@ -55,7 +56,7 @@ class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassA
             }
         }
 
-        $countNonDeleteOrder = $collection->count() - $countDeleteOrder;
+        $countNonDeleteOrder = count($collectionItems) - $countDeleteOrder;
 
         if ($countNonDeleteOrder && $countDeleteOrder) {
             $this->messageManager->addError(__("%1 order(s) were not deleted.", $countNonDeleteOrder). ' (' .implode(" , ", $notDeleted) . ')');

@@ -1,0 +1,33 @@
+<?php
+/**
+ * Copyright (c) 2017. All rights reserved Bambora Online.
+ *
+ * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
+ * It is also not legal to do any changes to the software and distribute it in your own name / brand.
+ *
+ * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
+ *
+ * @author    Bambora Online
+ * @copyright Bambora Online (http://bambora.com)
+ * @license   Bambora Online
+ *
+ */
+
+$specificInfo = $block->getSpecificInformation();
+?>
+<?php echo $block->escapeHtml($block->getMethod()->getTitle()); ?>
+
+<?php if ($specificInfo): ?>
+    <table class="data-table admin__table-secondary">
+    <?php foreach ($specificInfo as $label => $value):?>
+        <tr>
+            <th><?php echo $block->escapeHtml($label)?>:</th>
+            <td>
+                <?php /* @noEscape */ echo nl2br($block->escapeHtml(implode("\n", $block->getValueAsArray($value, true))));?>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+<?php endif;?>
+
+<?php echo $block->getChildHtml()?>

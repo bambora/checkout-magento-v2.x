@@ -135,7 +135,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     public function createCheckoutTransactionHtml($transaction)
     {
-        $res = '<tr><td colspan="2" class="bambora_table_title">Bambora Checkout</td></tr>';
+        $res = '<tr><td colspan="2" class="bambora_table_title">'.__("Bambora Online Checkout - Transaction information").'</td></tr>';
 
         $res .= '<tr><td>' . __("Transaction ID") . ':</td>';
         $res .= '<td>' . $transaction->id . '</td></tr>';
@@ -215,7 +215,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     {
         $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($order->getBaseCurrencyCode());
 
-        $res = '<tr><td colspan="2" class="bambora_table_title">ePay | Payment solutions</td></tr>';
+        $res = '<tr><td colspan="2" class="bambora_table_title">'.__("Bambora Online ePay - Transaction information").'</td></tr>';
 
         $res .= '<tr><td>' . __("Transaction status") . ':</td>';
         $res .= '<td>' . $this->_bamboraHelper->translatePaymentStatus($transactionInformation->status) . '</td></tr>';

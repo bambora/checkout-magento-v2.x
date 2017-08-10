@@ -26,7 +26,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     /**
      * @var \Magento\Framework\Controller\Result\Json
      */
-    private $_callbackResult;
+    protected $_callbackResult;
 
     /**
      * Callback Action
@@ -41,7 +41,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         $message = "Callback Failed: ";
         $responseCode = Exception::HTTP_BAD_REQUEST;
         if ($this->validateCallback($posted, $transactionResponse, $order, $message)) {
-            $message = $this->processCallback($posted, $transactionResponse, $order, $responseCode);
+            $message = $this->processCallback($transactionResponse, $order, $responseCode);
         }
 
         $id = isset($order) ? $order->getIncrementId() : 0;
@@ -66,7 +66,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
      * @param string $message
      * @return bool
      */
-    private function validateCallback($posted, &$transactionResponse, &$order, &$message)
+    protected function validateCallback($posted, &$transactionResponse, &$order, &$message)
     {
         //Validate response
         if (!isset($posted) || !$posted['txnid']) {
@@ -131,13 +131,12 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     /**
      * Process the callback from Bambora
      *
-     * @param mixed $posted
      * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
      * @param \Magento\Sales\Model\Order $order
      * @param int $responseCode
      * @return void
      */
-    private function processCallback($posted, $transactionResponse, $order, &$responseCode)
+    protected function processCallback($transactionResponse, $order, &$responseCode)
     {
         $bamboraTransactionId = $transactionResponse->transaction->id;
         $payment = $order->getPayment();

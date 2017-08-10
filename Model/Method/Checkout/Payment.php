@@ -42,7 +42,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * @var string
      */
-    private $_apiKey;
+    protected $_apiKey;
 
     /**
      * Retrieve an api key for the Bambora Api
@@ -525,7 +525,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * @param \Magento\Sales\Model\Order $order
      * @return \Bambora\Online\Model\Api\Checkout\Request\Models\Line[]
      */
-    private function getCaptureInvoiceLines($order)
+    protected function getCaptureInvoiceLines($order)
     {
         $invoice = $order->getInvoiceCollection()->getLastItem();
         $invoiceItems = $order->getAllVisibleItems();
@@ -573,7 +573,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * @param \Magento\Sales\Model\Order $order
      * @return \Bambora\Online\Model\Api\Checkout\Request\Models\Line[]
      */
-    private function getRefundInvoiceLines($creditMemo, $order)
+    protected function getRefundInvoiceLines($creditMemo, $order)
     {
         $lines = array();
         //Fee item must be after shipment to keep the orginal authorize order of items
@@ -625,7 +625,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * @param \Magento\Sales\Model\Order\Creditmemo\Item[]|\Magento\Sales\Model\Order\Invoice\Item[] $itemCollection
      * @return array
      */
-    private function filterVisibleItemsOnly($itemCollection)
+    protected function filterVisibleItemsOnly($itemCollection)
     {
         $items = array();
         foreach ($itemCollection as $orgItem) {
@@ -645,7 +645,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * @param string $roundingMode
      * @return \Bambora\Online\Model\Api\Checkout\Request\Models\Line
      */
-    private function createInvoiceLineFromInvoice($item, $order, $roundingMode)
+    protected function createInvoiceLineFromInvoice($item, $order, $roundingMode)
     {
         $invoiceLine = $this->createInvoiceLine(
             $item->getDescription(),

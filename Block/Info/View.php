@@ -22,11 +22,21 @@ class View extends \Magento\Payment\Block\Info
     /**
      * {@inheritdoc}
      */
+    protected function _construct()
+    {
+        parent::_construct();
+        $this->setTemplate('sales/order/view/info.phtml');
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
     protected function _prepareSpecificInformation($transport = null)
     {
-        if (null !== $this->_paymentSpecificInformation) {
+        if ($this->_paymentSpecificInformation !== null) {
             return $this->_paymentSpecificInformation;
         }
+        
         $transport = parent::_prepareSpecificInformation($transport);
         $data = [];
 
@@ -54,5 +64,14 @@ class View extends \Magento\Payment\Block\Info
         }
 
         return $transport->setData(array_merge($data, $transport->getData()));
+    }
+
+    /**
+     * Get translated payment information title
+     * @return string
+     */
+    public function getPaymentInformationTitle()
+    {
+        return __("Payment Information");
     }
 }
