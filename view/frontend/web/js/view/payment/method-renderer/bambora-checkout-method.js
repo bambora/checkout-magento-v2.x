@@ -5,12 +5,11 @@ define(
         'ko',
         'jquery',
         'Magento_Checkout/js/view/payment/default',
-        'Bambora_Online/js/action/set-payment-method',
-        'Magento_Checkout/js/model/payment/additional-validators',
         'Magento_Ui/js/model/messageList',
-        'mage/translate'
+        'mage/translate',
+        'Magento_Checkout/js/model/full-screen-loader'
     ],
-    function(ko, $, Component, setPaymentMethodAction, additionalValidators, globalMessageList, $t) {
+    function(ko, $, Component, globalMessageList, $t, fullScreenLoader) {
         'use strict';
 
         return Component.extend({
@@ -33,24 +32,18 @@ define(
                         evaluator.call(this).done(result);
                     });
                     return result;
-                }()
+                }()                
             },
+            redirectAfterPlaceOrder: false,
             getBamboraCheckoutTitle: function() {
                 return window.checkoutConfig.payment.bambora_checkout.paymentTitle;
             },
             getBamboraCheckoutIconSrc: function() {
                 return window.checkoutConfig.payment.bambora_checkout.paymentIconSrc;
             },
-            continueToBamboraCheckout: function() {
-                var self = this;
-                if (additionalValidators.validate()) {
-                    this.selectPaymentMethod();
-                    setPaymentMethodAction().then(function() {
-                        self.setCheckoutSession();
-                    });
-                } else {
-                    return false;
-                } 
+            afterPlaceOrder: function() {
+                fullScreenLoader.startLoader();
+                this.setCheckoutSession();                
             },
             setCheckoutSession: function () {
                  var self = this;
@@ -59,12 +52,17 @@ define(
                         .done(function (response) {
                             response = JSON.parse(response);
                             if(!response || !response.meta.result) {
-                                self.showError($t("Error opening payment window"));
+                                if(!response) {
+                                    self.showError($t("Error opening payment window"));
+                                } else {
+                                    self.showError($t("Error opening payment window") + ': ' + response.meta.message.enduser);
+                                }
+                                
                                 $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
                             }
                             self.openCheckoutPaymentWindow(response.url);                             
                         }).fail(function(error) {
-                            self.showError($t("Error opening payment window"));
+                            self.showError($t("Error opening payment window") + ': ' + error.statusText);
                             $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
                         });
             },

@@ -5,12 +5,11 @@ define(
         'ko',
         'jquery',
         'Magento_Checkout/js/view/payment/default',
-        'Bambora_Online/js/action/set-payment-method',
-        'Magento_Checkout/js/model/payment/additional-validators',
         'Magento_Ui/js/model/messageList',
-        'mage/translate'
+        'mage/translate',
+        'Magento_Checkout/js/model/full-screen-loader'
     ],
-    function(ko, $, Component, setPaymentMethodAction, additionalValidators, globalMessageList, $t) {
+    function(ko, $, Component, globalMessageList, $t, fullScreenLoader) {
         'use strict';
 
         return Component.extend({
@@ -21,6 +20,7 @@ define(
             defaults: {
                 template: 'Bambora_Online/payment/epay-form'
             },
+            redirectAfterPlaceOrder: false,
             getBamboraEpayTitle: function () {
                 return window.checkoutConfig.payment.bambora_epay.paymentTitle;
             },
@@ -30,16 +30,9 @@ define(
             getBamboraEpayPaymentLogoSrc: function () {
                 return window.checkoutConfig.payment.bambora_epay.paymentTypeLogoSrc;
             },
-            continueToBamboraEpay: function () {
-                var self = this;
-                if (additionalValidators.validate()) {
-                    self.selectPaymentMethod();
-                    setPaymentMethodAction().then(function() {
-                        self.getPaymentWindow();
-                    });
-                } else {
-                    return false;
-                } 
+            afterPlaceOrder: function () {
+                fullScreenLoader.startLoader();
+                this.getPaymentWindow();
             },
             getPaymentWindow: function () {
                  var self = this;
@@ -53,7 +46,7 @@ define(
                             }
                             self.openPaymentWindow(response);                             
                         }).fail(function(error) {
-                            self.showError($t("Error opening payment window"));
+                            self.showError($t("Error opening payment window") + ': ' + error.statusText);
                             $.mage.redirect(window.checkoutConfig.payment.bambora_epay.cancelUrl);
                         });
             },
