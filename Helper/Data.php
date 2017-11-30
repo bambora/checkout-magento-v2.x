@@ -323,7 +323,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
         $magentoVersion = $productMetadata->getVersion();
-        $result = 'Magento/' . $magentoVersion. ' Module/'.$bamboraVersion;
+        $result = 'Magento/' . $magentoVersion. ' Module/' . $bamboraVersion . ' PHP/' . phpversion();
         return $result;
     }
 

@@ -125,30 +125,41 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Invoice */
             $invoice = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_INVOICE);
 
-            $billingAddress = $order->getBillingAddress();
-            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Customer */
-            $customer = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_CUSTOMER);
-            $customer->emailaddress = $billingAddress->getEmail();
-            $customer->firstname = $billingAddress->getFirstname();
-            $customer->lastname = $billingAddress->getLastname();
-            $customer->address = $billingAddress->getStreet()[0];
-            $customer->zip = $billingAddress->getPostcode();
-            $customer->city = $billingAddress->getCity();
-            $customer->country = $billingAddress->getCountryId();
+            $orderBillingAddress = $order->getBillingAddress();
+            if($orderBillingAddress) {
+                /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Customer */
+                $customer = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_CUSTOMER);
+                $customer->firstname = $orderBillingAddress->getFirstname();
+                $customer->lastname = $orderBillingAddress->getLastname();
+                $customer->address = $orderBillingAddress->getStreet()[0];
+                $customer->zip = $orderBillingAddress->getPostcode();
+                $customer->city = $orderBillingAddress->getCity();
+                $customer->country = $orderBillingAddress->getCountryId();
+                if ($orderBillingAddress->getEmail()) {
+                    $customer->emailaddress = $orderBillingAddress->getEmail();
+                } else {
+                    $customer->emailaddress = $order->getCustomerEmail();
+                }
+                
+                $invoice->customer = $customer;
+            }
+            
+            $orderShippingAddress = $order->getShippingAddress();
+            if(!$orderShippingAddress) {
+                $orderShippingAddress = $orderBillingAddress;
+            }
 
-            $invoice->customer = $customer;
-
-            $sa = $order->getShippingAddress();
-            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\ShippingAddress */
-            $shippingAddress = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_SHIPPINGADDRESS);
-            $shippingAddress->firstname = $sa->getFirstname();
-            $shippingAddress->lastname = $sa->getLastname();
-            $shippingAddress->address = $sa->getStreet()[0];
-            $shippingAddress->zip = $sa->getPostcode();
-            $shippingAddress->city = $sa->getCity();
-            $shippingAddress->country = $sa->getCountryId();
-
-            $invoice->shippingaddress = $shippingAddress;
+            if($orderShippingAddress) {
+                /** @var \Bambora\Online\Model\Api\Epay\Request\Models\ShippingAddress */
+                $shippingAddress = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_SHIPPINGADDRESS);
+                $shippingAddress->firstname = $orderShippingAddress->getFirstname();
+                $shippingAddress->lastname = $orderShippingAddress->getLastname();
+                $shippingAddress->address = $orderShippingAddress->getStreet()[0];
+                $shippingAddress->zip = $orderShippingAddress->getPostcode();
+                $shippingAddress->city = $orderShippingAddress->getCity();
+                $shippingAddress->country = $orderShippingAddress->getCountryId();
+                $invoice->shippingaddress = $shippingAddress;
+            }
             $invoice->lines = array();
 
             /** @var \Magento\Sales\Model\Order\Item[] */

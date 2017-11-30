@@ -134,14 +134,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function createPaymentRequest($order)
     {
-        $billingAddress  = $order->getBillingAddress();
-        $shippingAddress = $order->getShippingAddress();
-        if ($order->getBillingAddress()->getEmail()) {
-            $email = $order->getBillingAddress()->getEmail();
-        } else {
-            $email = $order->getCustomerEmail();
-        }
-
         $storeId = $order->getStoreId();
         $minorUnits = $this->_bamboraHelper->getCurrencyMinorUnits($order->getBaseCurrencyCode());
         $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $storeId);
@@ -152,10 +144,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $checkoutRequest->instantcaptureamount = $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) == 0 ? 0 : $totalAmountMinorUnits;
         $checkoutRequest->language = $this->_bamboraHelper->getShopLocalCode();
         $checkoutRequest->paymentwindowid = $this->getConfigData(BamboraConstants::PAYMENT_WINDOW_ID, $storeId);
-
-        /** @var \Bambora\Online\Model\Api\Checkout\Request\Models\Customer */
-        $bamboraCustomer = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_MODEL_CUSTOMER);
-        $bamboraCustomer->email = $email;
 
         /** @var \Bambora\Online\Model\Api\Checkout\Request\Models\Order */
         $bamboraOrder = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_MODEL_ORDER);
@@ -177,9 +165,18 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $bamboraUrl->immediateredirecttoaccept = $this->getConfigData(BamboraConstants::IMMEDIATEREDI_REDIRECT_TO_ACCEPT, $storeId);
         $checkoutRequest->url = $bamboraUrl;
 
+        $billingAddress  = $order->getBillingAddress();
         if ($billingAddress) {
+            /** @var \Bambora\Online\Model\Api\Checkout\Request\Models\Customer */           
+            $bamboraCustomer = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_MODEL_CUSTOMER);
             $bamboraCustomer->phonenumber = $billingAddress->getTelephone();
             $bamboraCustomer->phonenumbercountrycode = $billingAddress->getCountryId();
+            if ($billingAddress->getEmail()) {
+                $bamboraCustomer->email = $billingAddress->getEmail();
+            } else {
+                $bamboraCustomer->email = $order->getCustomerEmail();
+            }
+            $checkoutRequest->customer = $bamboraCustomer;
 
             $bamboraBillingAddress = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_MODEL_ADDRESS);
             $bamboraBillingAddress->att = "";
@@ -191,6 +188,11 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $bamboraBillingAddress->zip = $billingAddress->getPostcode();
 
             $bamboraOrder->billingaddress = $bamboraBillingAddress;
+        }
+
+        $shippingAddress = $order->getShippingAddress();
+        if(!$shippingAddress) {
+            $shippingAddress = $billingAddress;
         }
 
         if ($shippingAddress) {
@@ -205,9 +207,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $bamboraOrder->shippingaddress = $bamboraShippingAddress;
         }
-
-        $checkoutRequest->customer = $bamboraCustomer;
-
         $bamboraOrderLines = array();
         $items = $order->getAllVisibleItems();
         $lineNumber = 1;
@@ -227,7 +226,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $lineNumber++;
         }
-
         //Add shipping line
         $bamboraOrderLines[] = $this->createInvoiceLine(
            $order->getShippingDescription(),
@@ -254,8 +252,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                   $order->getBaseCurrencyCode(),
                   $roundingMode);
         }
-
-
         $bamboraOrder->lines = $bamboraOrderLines;
         $checkoutRequest->order = $bamboraOrder;
 
