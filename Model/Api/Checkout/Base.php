@@ -26,13 +26,13 @@ abstract class Base extends DataObject
      *
      * @return array
      */
-    protected $endpoints = array(
+    protected $endpoints = [
         'merchant' => 'https://merchant-v1.api-eu.bambora.com',
         'checkout' => 'https://api.v1.checkout.bambora.com',
         'transaction' => 'https://transaction-v1.api-eu.bambora.com',
         'checkoutAssets' => 'https://v1.checkout.bambora.com/Assets',
         'globalAssets' => 'https://d3r1pwhfz7unl9.cloudfront.net/bambora'
-    );
+    ];
 
     /**
      * @var \Bambora\Online\Helper\Data
@@ -61,7 +61,7 @@ abstract class Base extends DataObject
         \Bambora\Online\Helper\Data $bamboraHelper,
         \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
         \Magento\Framework\HTTP\Client\Curl $curl,
-         array $data = []
+        array $data = []
     ) {
         parent::__construct($data);
         $this->_bamboraHelper = $bamboraHelper;
@@ -92,13 +92,13 @@ abstract class Base extends DataObject
     protected function _callRestService($serviceUrl, $jsonData, $method, $apiKey)
     {
         $contentLength = isset($jsonData) ? strlen($jsonData) : 0;
-        $headers = array(
+        $headers = [
            'Content-Type' => 'application/json',
            'Content-Length' => $contentLength,
            'Accept' => 'application/json',
            'Authorization' => $apiKey,
            'X-EPay-System' => $this->_bamboraHelper->getModuleHeaderInfo()
-       );
+        ];
 
         $this->_curl->setHeaders($headers);
         $this->_curl->setOption(CURLOPT_HEADER, false);
@@ -110,7 +110,7 @@ abstract class Base extends DataObject
         } elseif ($method === Base::POST) {
             //For overwriting build in method and allow json encoded data as post fields
             $this->_curl->setOption(CURLOPT_POSTFIELDS, $jsonData);
-            $this->_curl->post($serviceUrl, array());
+            $this->_curl->post($serviceUrl, []);
         } else {
             return null;
         }

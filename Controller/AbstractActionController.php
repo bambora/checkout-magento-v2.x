@@ -266,7 +266,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $payment = $order->getPayment();
             $payment->setTransactionId($txnId);
             $payment->setIsTransactionClosed(false);
-            $payment->setAdditionalInformation(array($methodReference => $txnId));
+            $payment->setAdditionalInformation([$methodReference => $txnId]);
             $transactionComment = __("Payment authorization was a success.");
             if ($fraudStatus == 1) {
                 $payment->setIsFraudDetected(true);
@@ -438,7 +438,8 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
 
         $result->setData(
             ['id'=>$id,
-            'message'=>$message]);
+            'message'=>$message]
+        );
 
         return $result;
     }

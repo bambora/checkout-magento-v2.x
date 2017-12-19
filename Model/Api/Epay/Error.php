@@ -29,16 +29,16 @@ class Error extends Base
      */
     public function getEpayErrorText($errorcode, $language, $auth)
     {
-        $res = "Unable to lookup errorcode";
+        $res = 'Unable to lookup errorcode';
         try {
-            $param = array(
-                    'merchantnumber' => $auth->merchantNumber,
-                    'language' => $language,
-                    'epayresponsecode' => $errorcode,
-                    'epayresponsestring' => -1,
-                    'epayresponse' => -1,
-                    'pwd' => $auth->pwd
-                );
+            $param = [
+                'merchantnumber' => $auth->merchantNumber,
+                'language' => $language,
+                'epayresponsecode' => $errorcode,
+                'epayresponsestring' => -1,
+                'epayresponse' => -1,
+                'pwd' => $auth->pwd
+            ];
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
 
@@ -48,7 +48,7 @@ class Error extends Base
                 $res = '('.$result->epayresponse.') ' . $result->epayresponsestring;
             }
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addEpayError('-1', $ex->getMessage());
             return $res;
         }
 
@@ -65,16 +65,16 @@ class Error extends Base
      */
     public function getPbsErrorText($errorcode, $language, $auth)
     {
-        $res = "Unable to lookup errorcode";
+        $res = 'Unable to lookup errorcode';
         try {
-            $param = array(
+            $param = [
                 'merchantnumber' => $auth->merchantNumber,
                 'language' => $language,
                 'pbsresponsecode' => $errorcode,
                 'epayresponsestring' => 0,
                 'epayresponse' => 0,
-                'pwd' => $auth->pwd
-            );
+                'pwd' => $auth->pwd,
+            ];
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
             $result = $client->getPbsError($param);
@@ -83,7 +83,7 @@ class Error extends Base
                 $res = '('.$result->epayresponse.') ' . $result->pbsresponsestring;
             }
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addEpayError('-1', $ex->getMessage());
             return $res;
         }
 

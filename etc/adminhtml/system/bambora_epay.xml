@@ -155,6 +155,6 @@
       <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
       <config_path>payment/bambora_epay/sort_order</config_path>
     </field>
-    
+
   </group>
 </include>

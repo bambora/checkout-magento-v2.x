@@ -32,7 +32,7 @@ define(
                         evaluator.call(this).done(result);
                     });
                     return result;
-                }()                
+                }()
             },
             redirectAfterPlaceOrder: false,
             getBamboraCheckoutTitle: function() {
@@ -43,11 +43,11 @@ define(
             },
             afterPlaceOrder: function() {
                 fullScreenLoader.startLoader();
-                this.setCheckoutSession();                
+                this.setCheckoutSession();
             },
             setCheckoutSession: function () {
                  var self = this;
-                 var url = window.checkoutConfig.payment.bambora_checkout.checkoutUrl;                   
+                 var url = window.checkoutConfig.payment.bambora_checkout.checkoutUrl;
                     $.get(url)
                         .done(function (response) {
                             response = JSON.parse(response);
@@ -57,10 +57,10 @@ define(
                                 } else {
                                     self.showError($t("Error opening payment window") + ': ' + response.meta.message.enduser);
                                 }
-                                
+
                                 $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
                             }
-                            self.openCheckoutPaymentWindow(response.url);                             
+                            self.openCheckoutPaymentWindow(response.url);
                         }).fail(function(error) {
                             self.showError($t("Error opening payment window") + ': ' + error.statusText);
                             $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);

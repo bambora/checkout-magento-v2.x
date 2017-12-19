@@ -26,9 +26,9 @@ class Roundingmode implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => BamboraConstants::ROUND_DEFAULT, 'label' => "Default"],
-            ['value' => BamboraConstants::ROUND_UP, 'label' => "Always Up"],
-            ['value' => BamboraConstants::ROUND_DOWN, 'label' => "Always Down"],
+            ['value' => BamboraConstants::ROUND_DEFAULT, 'label' => 'Default'],
+            ['value' => BamboraConstants::ROUND_UP, 'label' => 'Always Up'],
+            ['value' => BamboraConstants::ROUND_DOWN, 'label' => 'Always Down'],
         ];
     }
 }

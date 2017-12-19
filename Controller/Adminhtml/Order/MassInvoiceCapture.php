@@ -71,8 +71,8 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
         $countInvoicedOrder = 0;
-        $invoiced = array();
-        $notInvoiced = array();
+        $invoiced = [];
+        $notInvoiced = [];
 
         $collectionItems = $collection->getItems();
         /** @var \Magento\Sales\Model\Order $order */

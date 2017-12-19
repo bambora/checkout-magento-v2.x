@@ -89,7 +89,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
         /** @var \Bambora\Online\Model\Api\Epay\Request\Payment */
         $paymentRequest = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_PAYMENT);
-        $paymentRequest->encoding = "UTF-8";
+        $paymentRequest->encoding = 'UTF-8';
         $paymentRequest->cms = $this->_bamboraHelper->getModuleHeaderInfo();
         $paymentRequest->windowstate = $this->getConfigData(BamboraConstants::WINDOW_STATE, $storeId);
         $paymentRequest->mobile = $this->getConfigData(BamboraConstants::ENABLE_MOBILE_PAYMENT_WINDOW, $storeId);
@@ -126,7 +126,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $invoice = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_INVOICE);
 
             $orderBillingAddress = $order->getBillingAddress();
-            if($orderBillingAddress) {
+            if ($orderBillingAddress) {
                 /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Customer */
                 $customer = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_CUSTOMER);
                 $customer->firstname = $orderBillingAddress->getFirstname();
@@ -140,16 +140,16 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                 } else {
                     $customer->emailaddress = $order->getCustomerEmail();
                 }
-                
+
                 $invoice->customer = $customer;
             }
-            
+
             $orderShippingAddress = $order->getShippingAddress();
-            if(!$orderShippingAddress) {
+            if (!$orderShippingAddress) {
                 $orderShippingAddress = $orderBillingAddress;
             }
 
-            if($orderShippingAddress) {
+            if ($orderShippingAddress) {
                 /** @var \Bambora\Online\Model\Api\Epay\Request\Models\ShippingAddress */
                 $shippingAddress = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_SHIPPINGADDRESS);
                 $shippingAddress->firstname = $orderShippingAddress->getFirstname();
@@ -160,40 +160,40 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                 $shippingAddress->country = $orderShippingAddress->getCountryId();
                 $invoice->shippingaddress = $shippingAddress;
             }
-            $invoice->lines = array();
+            $invoice->lines = [];
 
             /** @var \Magento\Sales\Model\Order\Item[] */
             $items = $order->getAllVisibleItems();
             foreach ($items as $item) {
                 $description = empty($item->getDescription()) ? $item->getName() : $item->getDescription();
-                $invoice->lines[] = array(
-                        "id" =>$item->getSku(),
-                        "description" => $this->removeSpecialCharacters($description),
-                        "quantity" => intval($item->getQtyOrdered()),
-                        "price" => $this->calculateItemPrice($item, $minorunits, $roundingMode),
-                        "vat" => floatval($item->getTaxPercent())
-                    );
+                $invoice->lines[] = [
+                    'id' =>$item->getSku(),
+                    'description' => $this->removeSpecialCharacters($description),
+                    'quantity' => intval($item->getQtyOrdered()),
+                    'price' => $this->calculateItemPrice($item, $minorunits, $roundingMode),
+                    'vat' => floatval($item->getTaxPercent())
+                ];
             }
             // add shipment as line
-            $shippingText = __("Shipping");
+            $shippingText = __('Shipping');
             $shippingDescription = $order->getShippingDescription();
-            $invoice->lines[] = array(
-                       "id" => $shippingText,
-                       "description" => isset($shippingDescription) ? $shippingDescription : $shippingText,
-                       "quantity" => 1,
-                       "price" => $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseShippingAmount(), $minorunits, $roundingMode),
-                       "vat" => $this->calculateShippingVat($order)
-                   );
+            $invoice->lines[] = [
+                'id' => $shippingText,
+                'description' => isset($shippingDescription) ? $shippingDescription : $shippingText,
+                'quantity' => 1,
+                'price' => $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseShippingAmount(), $minorunits, $roundingMode),
+                'vat' => $this->calculateShippingVat($order)
+            ];
 
             // Fix for bug in Magento 2 shipment discont calculation
             $baseShipmentDiscountAmount = $order->getBaseShippingDiscountAmount();
             if ($baseShipmentDiscountAmount > 0) {
-                $invoice->lines[] = array(
-                          "id" => "shipping_discount",
-                          "description" => __("Shipping discount"),
-                          "quantity" => 1,
-                          "price" =>$this->_bamboraHelper->convertPriceToMinorunits(($baseShipmentDiscountAmount * -1), $minorunits, $roundingMode),
-                      );
+                $invoice->lines[] = [
+                    'id' => 'shipping_discount',
+                    'description' => __('Shipping discount'),
+                    'quantity' => 1,
+                    'price' =>$this->_bamboraHelper->convertPriceToMinorunits(($baseShipmentDiscountAmount * -1), $minorunits, $roundingMode),
+                ];
             }
 
             return json_encode($invoice, JSON_UNESCAPED_UNICODE);
@@ -275,7 +275,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
 
             if (!$this->canOnlineAction($payment)) {
-                throw new \Exception(__("The capture action could not, be processed online. Please enable remote payment processing from the module configuration"));
+                throw new \Exception(__('The capture action could not, be processed online. Please enable remote payment processing from the module configuration'));
             }
 
             $currency = $order->getBaseCurrencyCode();
@@ -289,12 +289,12 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $message = "";
             if (!$this->_bamboraHelper->validateEpayApiResult($captureResponse, $transactionId, $this->getAuth(), $message)) {
-                throw new \Exception(__("The capture action failed.") . ' - '.$message);
+                throw new \Exception(__('The capture action failed.') . ' - '.$message);
             }
 
             $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_CAPTURE)
-                    ->setIsTransactionClosed(true)
-                    ->setParentTransactionId($transactionId);
+                ->setIsTransactionClosed(true)
+                ->setParentTransactionId($transactionId);
 
             return $this;
         } catch (\Exception $ex) {
@@ -323,7 +323,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $id = $creditMemo->getInvoice()->getIncrementId();
 
             if (!$this->canOnlineAction($payment)) {
-                throw new \Exception(__("The refund action could not, be processed online. Please enable remote payment processing from the module configuration"));
+                throw new \Exception(__('The refund action could not, be processed online. Please enable remote payment processing from the module configuration'));
             }
 
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
@@ -339,12 +339,12 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $message = "";
             if (!$this->_bamboraHelper->validateEpayApiResult($creditResponse, $transactionId, $this->getAuth(), $message)) {
-                throw new \Exception(__("The refund action failed.") . ' - '.$message);
+                throw new \Exception(__('The refund action failed.') . ' - '.$message);
             }
 
             $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_REFUND)
-                    ->setIsTransactionClosed(true)
-                    ->setParentTransactionId($transactionId);
+                ->setIsTransactionClosed(true)
+                ->setParentTransactionId($transactionId);
 
             return $this;
         } catch (\Exception $ex) {
@@ -364,7 +364,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     {
         try {
             $this->void($payment);
-            $this->_messageManager->addSuccess(__("The payment have been voided").' ('.$payment->getOrder()->getIncrementId().')');
+            $this->_messageManager->addSuccess(__('The payment have been voided').' ('.$payment->getOrder()->getIncrementId().')');
         } catch (\Exception $ex) {
             $this->_messageManager->addError($ex->getMessage());
         }
@@ -385,7 +385,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
         try {
             if (!$this->canOnlineAction($payment)) {
-                throw new \Exception(__("The void action could not, be processed online. Please enable remote payment processing from the module configuration"));
+                throw new \Exception(__('The void action could not, be processed online. Please enable remote payment processing from the module configuration'));
             }
 
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
@@ -400,8 +400,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
 
             $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_VOID)
-                    ->setIsTransactionClosed(true)
-                    ->setParentTransactionId($transactionId);
+                ->setIsTransactionClosed(true)
+                ->setParentTransactionId($transactionId);
 
             $this->cancelSurchargeFeeItem($payment);
 

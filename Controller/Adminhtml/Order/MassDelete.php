@@ -39,8 +39,8 @@ class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassA
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
         $countDeleteOrder = 0;
-        $deleted = array();
-        $notDeleted = array();
+        $deleted = [];
+        $notDeleted = [];
 
         $collectionItems = $collection->getItems();
         /** @var \Magento\Sales\Model\Order $order */

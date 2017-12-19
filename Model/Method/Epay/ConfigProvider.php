@@ -61,7 +61,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
                     'windowState' => $this->_ePayMethod->getConfigData(BamboraConstants::WINDOW_STATE),
                     'checkoutUrl'=> $this->_ePayMethod->getCheckoutUrl(),
                     'cancelUrl'=> $this->_ePayMethod->getCancelUrl()
-                ]
+                 ]
             ]
         ];
 

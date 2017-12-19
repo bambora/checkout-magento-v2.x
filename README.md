@@ -6,7 +6,7 @@
      * view\adminhtml\ui_component\sales_order_grid.xml
      * view\adminhtml\ui_component\sales_order_invoice_grid.xml
    * **NB** When these are removed Mass actions functionality is no longer available and we can no longer guaranty that the module work as intended.
-   
+
 ## Supported Payment Gateways
  * Bambora Checkout
  * ePay | Payment solutions

@@ -33,7 +33,7 @@ class Assets extends \Bambora\Online\Controller\AbstractActionController
      */
     public function getPaymentcardIds()
     {
-        $paymentCardIds = array();
+        $paymentCardIds = [];
         try {
             /** @var \Bambora\Online\Model\Method\Checkout\Payment */
             $checkoutMethod =  $this->_getPaymentMethodInstance(CheckoutPayment::METHOD_CODE);
