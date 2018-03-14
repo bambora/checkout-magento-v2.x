@@ -39,8 +39,8 @@ class MassCancelVoid extends \Magento\Sales\Controller\Adminhtml\Order\AbstractM
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
         $countCanceledOrder = 0;
-        $canceled = array();
-        $notCanceled = array();
+        $canceled = [];
+        $notCanceled = [];
 
         $collectionItems = $collection->getItems();
         /** @var \Magento\Sales\Model\Order $order */

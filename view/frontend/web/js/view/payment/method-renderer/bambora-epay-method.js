@@ -36,7 +36,7 @@ define(
             },
             getPaymentWindow: function () {
                  var self = this;
-                 var url = window.checkoutConfig.payment.bambora_epay.checkoutUrl;                   
+                 var url = window.checkoutConfig.payment.bambora_epay.checkoutUrl;
                     $.get(url)
                         .done(function (response) {
                             response = JSON.parse(response);
@@ -44,7 +44,7 @@ define(
                                 self.showError($t("Error opening payment window"));
                                 $.mage.redirect(window.checkoutConfig.payment.bambora_epay.cancelUrl);
                             }
-                            self.openPaymentWindow(response);                             
+                            self.openPaymentWindow(response);
                         }).fail(function(error) {
                             self.showError($t("Error opening payment window") + ': ' + error.statusText);
                             $.mage.redirect(window.checkoutConfig.payment.bambora_epay.cancelUrl);

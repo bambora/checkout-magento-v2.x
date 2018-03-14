@@ -32,24 +32,24 @@ class Action extends Base
         /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Url */
         $url = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_URL);
 
-        $paramString = "?encoding=".urlencode($paymentRequest->encoding).
-                       "&cms=".urlencode($paymentRequest->cms).
-                       "&windowstate=".urlencode($paymentRequest->windowstate).
-                       "&mobile=".urlencode($paymentRequest->mobile).
-                       "&merchantnumber=".urlencode($paymentRequest->merchantnumber).
-                       "&windowid=".urlencode($paymentRequest->windowid).
-                       "&amount=".urlencode($paymentRequest->amount).
-                       "&currency=".urlencode($paymentRequest->currency).
-                       "&orderid=".urlencode($paymentRequest->orderid).
-                       "&accepturl=".urlencode($paymentRequest->accepturl).
-                       "&cancelurl=".urlencode($paymentRequest->cancelurl).
-                       "&callbackurl=".urlencode($paymentRequest->callbackurl).
-                       "&instantcapture=".urlencode($paymentRequest->instantcapture).
-                       "&language=".urlencode($paymentRequest->language).
-                       "&ownreceipt=".urlencode($paymentRequest->ownreceipt).
-                       "&timeout=".urlencode($paymentRequest->timeout).
-                       "&invoice=".urlencode($paymentRequest->invoice).
-                       "&hash=".urlencode($paymentRequest->hash);
+        $paramString = '?encoding='.urlencode($paymentRequest->encoding).
+                       '&cms='.urlencode($paymentRequest->cms).
+                       '&windowstate='.urlencode($paymentRequest->windowstate).
+                       '&mobile='.urlencode($paymentRequest->mobile).
+                       '&merchantnumber='.urlencode($paymentRequest->merchantnumber).
+                       '&windowid='.urlencode($paymentRequest->windowid).
+                       '&amount='.urlencode($paymentRequest->amount).
+                       '&currency='.urlencode($paymentRequest->currency).
+                       '&orderid='.urlencode($paymentRequest->orderid).
+                       '&accepturl='.urlencode($paymentRequest->accepturl).
+                       '&cancelurl='.urlencode($paymentRequest->cancelurl).
+                       '&callbackurl='.urlencode($paymentRequest->callbackurl).
+                       '&instantcapture='.urlencode($paymentRequest->instantcapture).
+                       '&language='.urlencode($paymentRequest->language).
+                       '&ownreceipt='.urlencode($paymentRequest->ownreceipt).
+                       '&timeout='.urlencode($paymentRequest->timeout).
+                       '&invoice='.urlencode($paymentRequest->invoice).
+                       '&hash='.urlencode($paymentRequest->hash);
 
         $url->url = $baseUrl . $paramString;
 
@@ -100,7 +100,7 @@ class Action extends Base
      */
     public function getEpayLogoUrl()
     {
-        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_ASSETS)."/ePay-logo.png";
+        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_ASSETS).'/ePay-logo.png';
         return $url;
     }
 
@@ -115,7 +115,7 @@ class Action extends Base
     public function capture($amount, $transactionId, $auth)
     {
         try {
-            $param = array(
+            $param = [
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'amount' => (string)$amount,
@@ -123,7 +123,7 @@ class Action extends Base
                 'pbsResponse' => -1,
                 'epayresponse' => -1,
                 'pwd' => $auth->pwd
-            );
+            ];
 
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
@@ -138,7 +138,7 @@ class Action extends Base
 
             return $captureResponse;
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addEpayError('-1', $ex->getMessage());
             return null;
         }
     }
@@ -157,7 +157,7 @@ class Action extends Base
         $creditResponse = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::RESPONSE_CREDIT);
 
         try {
-            $param = array(
+            $param = [
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'amount' => (string)$amount,
@@ -165,7 +165,7 @@ class Action extends Base
                 'pbsresponse' => -1,
                 'epayresponse' => -1,
                 'pwd' => $auth->pwd
-            );
+            ];
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
             $result = $client->credit($param);
@@ -176,7 +176,7 @@ class Action extends Base
 
             return $creditResponse;
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addEpayError('-1', $ex->getMessage());
             return null;
         }
     }
@@ -191,13 +191,13 @@ class Action extends Base
     public function delete($transactionId, $auth)
     {
         try {
-            $param = array(
+            $param = [
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'group' => '',
                 'epayresponse' => -1,
                 'pwd' => $auth->pwd
-            );
+            ];
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
             $result = $client->delete($param);
@@ -209,7 +209,7 @@ class Action extends Base
 
             return $deleteResponse;
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addEpayError('-1', $ex->getMessage());
             return null;
         }
     }
@@ -224,12 +224,12 @@ class Action extends Base
     public function getTransaction($transactionId, $auth)
     {
         try {
-            $param = array(
+            $param = [
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'epayresponse' => -1,
                 'pwd' => $auth->pwd
-            );
+            ];
 
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
@@ -244,7 +244,7 @@ class Action extends Base
 
             return $getTransactionResponse;
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addEpayError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addEpayError('-1', $ex->getMessage());
             return null;
         }
     }

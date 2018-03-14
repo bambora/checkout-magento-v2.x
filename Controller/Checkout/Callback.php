@@ -147,7 +147,8 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                 /** @var \Bambora\Online\Model\Method\Checkout\Payment */
                 $paymentMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
 
-                $this->_processCallbackData($order,
+                $this->_processCallbackData(
+                    $order,
                     $paymentMethod,
                     $bamboraTransactionId,
                     CheckoutPayment::METHOD_REFERENCE,
@@ -167,7 +168,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         } catch (\Exception $ex) {
             $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
             $order->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
-            $payment->setAdditionalInformation(array(CheckoutPayment::METHOD_REFERENCE => ""));
+            $payment->setAdditionalInformation([CheckoutPayment::METHOD_REFERENCE => ""]);
             $payment->save();
             $order->save();
 

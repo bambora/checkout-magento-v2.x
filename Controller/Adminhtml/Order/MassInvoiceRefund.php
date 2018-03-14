@@ -62,8 +62,8 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
         $countRefundInvoices = 0;
-        $refunded = array();
-        $notRefunded = array();
+        $refunded = [];
+        $notRefunded = [];
 
         $collectionItems = $collection->getItems();
         /** @var \Magento\Sales\Model\Order\Invoice $invoice */

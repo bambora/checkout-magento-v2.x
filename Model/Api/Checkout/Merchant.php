@@ -39,7 +39,7 @@ class Merchant extends Base
             $listPaymentTypesResponse->meta = $this->_mapMeta($result);
 
             if ($listPaymentTypesResponse->meta->result) {
-                $listPaymentTypesResponse->paymentCollections = array();
+                $listPaymentTypesResponse->paymentCollections = [];
 
                 foreach ($result['paymentcollections'] as $payment) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentCollection */
@@ -47,7 +47,7 @@ class Merchant extends Base
                     $paymentCollection->displayName = $payment['displayname'];
                     $paymentCollection->id = $payment['id'];
                     $paymentCollection->name = $payment['name'];
-                    $paymentCollection->paymentGroups = array();
+                    $paymentCollection->paymentGroups = [];
 
                     foreach ($payment['paymentgroups'] as $group) {
                         /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentGroup */
@@ -55,7 +55,7 @@ class Merchant extends Base
                         $paymentGroup->displayName = $group['displayname'];
                         $paymentGroup->id = $group['id'];
                         $paymentGroup->name = $group['name'];
-                        $paymentGroup->paymentTypes = array();
+                        $paymentGroup->paymentTypes = [];
 
                         foreach ($group['paymenttypes'] as $type) {
                             /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentType */
@@ -83,7 +83,7 @@ class Merchant extends Base
 
             return $listPaymentTypesResponse;
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addCheckoutError('-1', $ex->getMessage());
             return null;
         }
     }
@@ -134,14 +134,14 @@ class Merchant extends Base
 
                 /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\Information */
                 $information = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_INFORMATION);
-                $information->acquirers = array();
+                $information->acquirers = [];
                 foreach ($result['information']['acquirers'] as $acq) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\Acquirer */
                     $acquirer = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_ACQUIRER);
                     $acquirer->name = $acq['name'];
                     $information->acquirers[] = $acquirer;
                 }
-                $information->paymentTypes = array();
+                $information->paymentTypes = [];
                 foreach ($result['information']['paymenttypes'] as $type) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentType */
                     $paymentType = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_PAYMENTYPE);
@@ -150,7 +150,7 @@ class Merchant extends Base
                     $paymentType->id = $type['id'];
                     $information->paymentTypes[] = $paymentType;
                 }
-                $information->primaryAccountnumbers = array();
+                $information->primaryAccountnumbers = [];
                 foreach ($result['information']['primaryaccountnumbers'] as $accountNumber) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\PrimaryAccountnumber */
                     $primaryAccountnumber = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_PRIMARYACCOUNTNUMBER);
@@ -192,7 +192,7 @@ class Merchant extends Base
 
             return $transactionResponse;
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addCheckoutError('-1', $ex->getMessage());
             return null;
         }
     }

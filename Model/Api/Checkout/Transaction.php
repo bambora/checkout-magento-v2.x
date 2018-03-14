@@ -40,7 +40,7 @@ class Transaction extends Base
             $captureResponse->meta = $this->_mapMeta($result);
 
             if ($captureResponse->meta->result) {
-                $captureResponse->transactionOperations = array();
+                $captureResponse->transactionOperations = [];
                 foreach ($result['transactionoperations'] as $operation) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation */
                     $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION);
@@ -51,7 +51,7 @@ class Transaction extends Base
 
             return $captureResponse;
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addCheckoutError('-1', $ex->getMessage());
             return null;
         }
     }
@@ -77,7 +77,7 @@ class Transaction extends Base
             $creditResponse->meta = $this->_mapMeta($result);
 
             if ($creditResponse->meta->result) {
-                $creditResponse->transactionOperations = array();
+                $creditResponse->transactionOperations = [];
                 foreach ($result['transactionoperations'] as $operation) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation */
                     $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION);
@@ -88,7 +88,7 @@ class Transaction extends Base
 
             return $creditResponse;
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addCheckoutError('-1', $ex->getMessage());
             return null;
         }
     }
@@ -112,7 +112,7 @@ class Transaction extends Base
             $deleteResponse->meta = $this->_mapMeta($result);
 
             if ($deleteResponse->meta->result) {
-                $deleteResponse->transactionOperations = array();
+                $deleteResponse->transactionOperations = [];
                 foreach ($result['transactionoperations'] as $operation) {
                     /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation */
                     $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION);
@@ -123,7 +123,7 @@ class Transaction extends Base
 
             return $deleteResponse;
         } catch (\Exception $ex) {
-            $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
+            $this->_bamboraLogger->addCheckoutError('-1', $ex->getMessage());
             return null;
         }
     }

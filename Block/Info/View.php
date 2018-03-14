@@ -27,7 +27,7 @@ class View extends \Magento\Payment\Block\Info
         parent::_construct();
         $this->setTemplate('sales/order/view/info.phtml');
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -36,18 +36,18 @@ class View extends \Magento\Payment\Block\Info
         if ($this->_paymentSpecificInformation !== null) {
             return $this->_paymentSpecificInformation;
         }
-        
+
         $transport = parent::_prepareSpecificInformation($transport);
         $data = [];
 
         if ($this->getInfo()->getLastTransId()) {
             $ccType = $this->getInfo()->getOrder()->getPayment()->getCcType();
             if (!empty($ccType)) {
-                $data[(string)__("Payment type")] = $ccType;
+                $data[(string)__('Payment type')] = $ccType;
             }
             $ccNumber = $this->getInfo()->getOrder()->getPayment()->getCcNumberEnc();
             if (!empty($ccNumber)) {
-                $data[(string)__("Card number")] = $ccNumber;
+                $data[(string)__('Card number')] = $ccNumber;
             }
 
             $txnId = "";
@@ -59,7 +59,7 @@ class View extends \Magento\Payment\Block\Info
             }
 
             if (!empty($txnId)) {
-                $data[(string)__("Transaction Id")] = $txnId;
+                $data[(string)__('Transaction Id')] = $txnId;
             }
         }
 
@@ -72,6 +72,6 @@ class View extends \Magento\Payment\Block\Info
      */
     public function getPaymentInformationTitle()
     {
-        return __("Payment Information");
+        return __('Payment Information');
     }
 }

@@ -242,13 +242,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getCurrencyMinorunits($currencyCode)
     {
-        $currencyArray = array(
+        $currencyArray = [
         'TTD' => 0, 'KMF' => 0, 'ADP' => 0, 'TPE' => 0, 'BIF' => 0,
         'DJF' => 0, 'MGF' => 0, 'XPF' => 0, 'GNF' => 0, 'BYR' => 0,
         'PYG' => 0, 'JPY' => 0, 'CLP' => 0, 'XAF' => 0, 'TRL' => 0,
         'VUV' => 0, 'CLF' => 0, 'KRW' => 0, 'XOF' => 0, 'RWF' => 0,
         'IQD' => 3, 'TND' => 3, 'BHD' => 3, 'JOD' => 3, 'OMR' => 3,
-        'KWD' => 3, 'LYD' => 3);
+        'KWD' => 3, 'LYD' => 3];
 
         return array_key_exists($currencyCode, $currencyArray) ? $currencyArray[$currencyCode] : 2;
     }
@@ -338,24 +338,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $shopMd5 = $this->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
         $md5stamp = md5(
-                    $paymentRequest->encoding.
-                    $paymentRequest->cms.
-                    $paymentRequest->windowstate.
-                    $paymentRequest->mobile.
-                    $paymentRequest->merchantnumber.
-                    $paymentRequest->windowid.
-                    $paymentRequest->amount.
-                    $paymentRequest->currency.
-                    $paymentRequest->orderid.
-                    $paymentRequest->accepturl.
-                    $paymentRequest->cancelurl.
-                    $paymentRequest->callbackurl.
-                    $paymentRequest->instantcapture.
-                    $paymentRequest->language.
-                    $paymentRequest->ownreceipt.
-                    $paymentRequest->timeout.
-                    $paymentRequest->invoice.
-                    $shopMd5);
+            $paymentRequest->encoding .
+            $paymentRequest->cms .
+            $paymentRequest->windowstate .
+            $paymentRequest->mobile .
+            $paymentRequest->merchantnumber .
+            $paymentRequest->windowid .
+            $paymentRequest->amount .
+            $paymentRequest->currency .
+            $paymentRequest->orderid .
+            $paymentRequest->accepturl .
+            $paymentRequest->cancelurl .
+            $paymentRequest->callbackurl .
+            $paymentRequest->instantcapture .
+            $paymentRequest->language .
+            $paymentRequest->ownreceipt .
+            $paymentRequest->timeout .
+            $paymentRequest->invoice .
+            $shopMd5
+        );
 
         return $md5stamp;
     }
@@ -452,7 +453,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $lan = $this->getShopLocalCode();
         }
 
-        $languageArray = array(
+        $languageArray = [
             'da_DK' => '1',
             'de_CH' => '7',
             'de_DE' => '7',
@@ -462,7 +463,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'en_US' => '2',
             'sv_SE' => '3',
             'nn_NO' => '4',
-            );
+            ];
 
         return array_key_exists($lan, $languageArray) ? $languageArray[$lan] : '0';
     }
@@ -475,7 +476,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function calcCardtype($cardid)
     {
-        $cardIdArray = array(
+        $cardIdArray = [
             '1' => 'Dankort / VISA/Dankort',
             '2' => 'eDankort',
             '3' => 'VISA / VISA Electron',
@@ -497,7 +498,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             '22' => 'Swedbank Direktbetalningar',
             '23' => 'ViaBill',
             '24' => 'NemPay',
-            '25' => 'iDeal');
+            '25' => 'iDeal'];
 
         return array_key_exists($cardid, $cardIdArray) ? $cardIdArray[$cardid] : '';
     }
@@ -511,7 +512,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function convertIsoCode($code, $isKey = true)
     {
-        $isoCodeArray = array(
+        $isoCodeArray = [
            'ADP' => '020', 'AED' => '784', 'AFA' => '004', 'ALL' => '008', 'AMD' => '051', 'ANG' => '532',
            'AOA' => '973', 'ARS' => '032', 'AUD' => '036', 'AWG' => '533', 'AZM' => '031', 'BAM' => '052',
            'BBD' => '004', 'BDT' => '050', 'BGL' => '100', 'BGN' => '975', 'BHD' => '048', 'BIF' => '108',
@@ -540,7 +541,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
            'TRL' => '792', 'TRY' => '949', 'TTD' => '780', 'TWD' => '901', 'TZS' => '834', 'UAH' => '980',
            'UGX' => '800', 'USD' => '840', 'UYU' => '858', 'UZS' => '860', 'VEB' => '862', 'VND' => '704',
            'VUV' => '548', 'XAF' => '950', 'XCD' => '951', 'XOF' => '952', 'XPF' => '953', 'YER' => '886',
-           'YUM' => '891', 'ZAR' => '710', 'ZMK' => '894', 'ZWD' => '716');
+           'YUM' => '891', 'ZAR' => '710', 'ZMK' => '894', 'ZWD' => '716'];
 
         if ($isKey) {
             return $isoCodeArray[$code];

@@ -78,7 +78,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     public function getTransactionData()
     {
-        $result = __("Can not display transaction informations");
+        $result = __('Can not display transaction informations');
         $order = $this->getOrder();
         $storeId = $order->getStoreId();
         $payment = $order->getPayment();
@@ -97,7 +97,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     if (isset($transaction)) {
                         $result = $this->createCheckoutTransactionHtml($transaction);
                     } elseif ($checkoutMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0) {
-                        $result .= ' '.__("Please enable remote payment processing from the module configuration");
+                        $result .= ' '.__('Please enable remote payment processing from the module configuration');
                     } else {
                         $result .= ': ' .  $message;
                     }
@@ -116,7 +116,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     if (isset($transaction)) {
                         $result = $this->createEpayTransactionHtml($transaction, $order);
                     } elseif ($ePayMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0) {
-                        $result .= ' - '.__("Please enable remote payment processing from the module configuration");
+                        $result .= ' - '.__('Please enable remote payment processing from the module configuration');
                     } else {
                         $result .= ': ' .  $message;
                     }
@@ -135,40 +135,40 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     public function createCheckoutTransactionHtml($transaction)
     {
-        $res = '<tr><td colspan="2" class="bambora_table_title">'.__("Bambora Online Checkout - Transaction information").'</td></tr>';
+        $res = '<tr><td colspan="2" class="bambora_table_title">'.__('Bambora Online Checkout - Transaction information').'</td></tr>';
 
-        $res .= '<tr><td>' . __("Transaction ID") . ':</td>';
+        $res .= '<tr><td>' . __('Transaction ID') . ':</td>';
         $res .= '<td>' . $transaction->id . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Authorized amount") . ':</td>';
+        $res .= '<tr><td>' . __('Authorized amount') . ':</td>';
         $authAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->authorized, $transaction->currency->minorunits);
         $res .= '<td>' . $this->_priceHelper->currency($authAmount, true, false) . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Transaction date") . ':</td>';
+        $res .= '<tr><td>' . __('Transaction date') . ':</td>';
         $res .= '<td>' . $this->formatDate($transaction->createdDate, \IntlDateFormatter::SHORT, true) . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Card type") . ':</td>';
+        $res .= '<tr><td>' . __('Card type') . ':</td>';
         $res .= '<td>' . $transaction->information->paymentTypes[0]->displayName . $this->getPaymentLogoUrl($transaction->information->paymentTypes[0]->groupid). '</td></tr>';
 
-        $res .= '<tr><td>' . __("Card number") . ':</td>';
+        $res .= '<tr><td>' . __('Card number') . ':</td>';
         $res .= '<td>' . $transaction->information->primaryAccountnumbers[0]->number . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Surcharge fee") . ':</td>';
+        $res .= '<tr><td>' . __('Surcharge fee') . ':</td>';
         $surchargeFee = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->feeamount, $transaction->currency->minorunits);
         $res .= '<td>' . $this->_priceHelper->currency($surchargeFee, true, false)  . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Captured") . ':</td>';
+        $res .= '<tr><td>' . __('Captured') . ':</td>';
         $capturedAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->captured, $transaction->currency->minorunits);
         $res .= '<td>' . $this->_priceHelper->currency($capturedAmount, true, false) . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Refunded") . ':</td>';
+        $res .= '<tr><td>' . __('Refunded') . ':</td>';
         $creditedAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->credited, $transaction->currency->minorunits);
         $res .= '<td>' . $this->_priceHelper->currency($creditedAmount, true, false) . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Acquirer") . ':</td>';
+        $res .= '<tr><td>' . __('Acquirer') . ':</td>';
         $res .= '<td>' . $transaction->information->acquirers[0]->name . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Status") . ':</td>';
+        $res .= '<tr><td>' . __('Status') . ':</td>';
         $res .= '<td>' . $this->checkoutStatus($transaction->status) . '</td></tr>';
 
 
@@ -215,65 +215,65 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     {
         $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($order->getBaseCurrencyCode());
 
-        $res = '<tr><td colspan="2" class="bambora_table_title">'.__("Bambora Online ePay - Transaction information").'</td></tr>';
+        $res = '<tr><td colspan="2" class="bambora_table_title">'.__('Bambora Online ePay - Transaction information').'</td></tr>';
 
-        $res .= '<tr><td>' . __("Transaction status") . ':</td>';
+        $res .= '<tr><td>' . __('Transaction status') . ':</td>';
         $res .= '<td>' . $this->_bamboraHelper->translatePaymentStatus($transactionInformation->status) . '</td></tr>';
 
         if (strcmp($transactionInformation->status, 'PAYMENT_DELETED') == 0) {
-            $res .= '<tr><td>' . __("Deleted date") . ':</td>';
+            $res .= '<tr><td>' . __('Deleted date') . ':</td>';
             $res .= '<td>' . $this->formatDate(str_replace('T', ' ', $transactionInformation->deleteddate)) . '</td></tr>';
         }
 
-        $res .= '<tr><td>' . __("Order number") . ':</td>';
+        $res .= '<tr><td>' . __('Order number') . ':</td>';
         $res .= '<td>' . $transactionInformation->orderid . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Acquirer") . ':</td>';
+        $res .= '<tr><td>' . __('Acquirer') . ':</td>';
         $res .= '<td>' . $transactionInformation->acquirer . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Currency code") . ':</td>';
+        $res .= '<tr><td>' . __('Currency code') . ':</td>';
         $res .= '<td>' . $transactionInformation->currency . '</td></tr>';
 
-        $res .= '<tr><td>' . __("3D Secure") . ':</td>';
+        $res .= '<tr><td>' . __('3D Secure') . ':</td>';
         $res .= '<td>' . ($transactionInformation->msc ? __('Yes') : __('No')) . '</td></tr>';
 
         $res .= '<tr><td>' . __('Description') . ':</td>';
         $res .= '<td>' . $transactionInformation->description . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Cardholder") . ':</td>';
+        $res .= '<tr><td>' . __('Cardholder') . ':</td>';
         $res .= '<td>' . $transactionInformation->cardholder . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Authorized amount") . ':</td>';
+        $res .= '<tr><td>' . __('Authorized amount') . ':</td>';
         $authAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transactionInformation->authamount, $minorunits);
         $authDate = $transactionInformation->authamount > 0 ? $this->formatDate(str_replace('T', ' ', $transactionInformation->authdate)) : "";
-        $res .= '<td>' . $this->_priceHelper->currency($authAmount, true, false) . "&nbsp;&nbsp;&nbsp;" . $authDate .  '</td></tr>';
+        $res .= '<td>' . $this->_priceHelper->currency($authAmount, true, false) . '&nbsp;&nbsp;&nbsp;' . $authDate .  '</td></tr>';
 
-        $res .= '<tr><td>' . __("Captured amount") . ':</td>';
+        $res .= '<tr><td>' . __('Captured amount') . ':</td>';
         $capturedAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transactionInformation->capturedamount, $minorunits);
         $capturedDate = $transactionInformation->capturedamount > 0 ? $this->formatDate(str_replace('T', ' ', $transactionInformation->captureddate)) : "";
-        $res .= '<td>' .$this->_priceHelper->currency($capturedAmount, true, false) . "&nbsp;&nbsp;&nbsp;" . $capturedDate . '</td></tr>';
+        $res .= '<td>' .$this->_priceHelper->currency($capturedAmount, true, false) . '&nbsp;&nbsp;&nbsp;' . $capturedDate . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Credited amount") . ':</td>';
+        $res .= '<tr><td>' . __('Credited amount') . ':</td>';
         $creditedAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transactionInformation->creditedamount, $minorunits);
         $creditedDate = $transactionInformation->creditedamount > 0 ? $this->formatDate(str_replace('T', ' ', $transactionInformation->crediteddate)) : "";
-        $res .= '<td>' . $this->_priceHelper->currency($creditedAmount, true, false) . "&nbsp;&nbsp;&nbsp;" . $creditedDate . '</td></tr>';
+        $res .= '<td>' . $this->_priceHelper->currency($creditedAmount, true, false) . '&nbsp;&nbsp;&nbsp;' . $creditedDate . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Surcharge fee") . ':</td>';
+        $res .= '<tr><td>' . __('Surcharge fee') . ':</td>';
         $surchargeAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transactionInformation->fee, $minorunits);
         $res .= '<td>' . $this->_priceHelper->currency($surchargeAmount, true, false) . '</td></tr>';
 
         //Fraud
         if ($transactionInformation->fraudStatus > 0) {
-            $res .= '<tr><td>' . __("Fraud status") . ':</td>';
+            $res .= '<tr><td>' . __('Fraud status') . ':</td>';
             $res .= '<td>' .$transactionInformation->fraudStatus. '</td></tr>';
 
-            $res .= '<tr><td>' . __("Payer country code") . ':</td>';
+            $res .= '<tr><td>' . __('Payer country code') . ':</td>';
             $res .= '<td>' .$transactionInformation->payerCountryCode. '</td></tr>';
 
-            $res .= '<tr><td>' . __("Issued country code") . ':</td>';
+            $res .= '<tr><td>' . __('Issued country code') . ':</td>';
             $res .= '<td>' .$transactionInformation->issuedCountryCode. '</td></tr>';
             if (isset($transactionInformation->FraudMessage)) {
-                $res .= '<tr><td>' . __("Fraud message") . ':</td>';
+                $res .= '<tr><td>' . __('Fraud message') . ':</td>';
                 $res .= '<td>' .$transactionInformation->FraudMessage. '</td></tr>';
             }
         }
@@ -284,10 +284,10 @@ class PaymentInfo extends \Magento\Backend\Block\Template
             $historyArray = $transactionInformation->history->TransactionHistoryInfo;
             if (count($transactionInformation->history->TransactionHistoryInfo) == 1) {
                 // convert to array
-                $historyArray = array($transactionInformation->history->TransactionHistoryInfo);
+                $historyArray = [$transactionInformation->history->TransactionHistoryInfo];
             }
             $res .= '<br /><br />';
-            $res .= '<tr><td colspan="2" class="bambora_table_title bambora_table_title_padding">' . __("History") . '</td></tr>';
+            $res .= '<tr><td colspan="2" class="bambora_table_title bambora_table_title_padding">' . __('History') . '</td></tr>';
             foreach ($historyArray as $history) {
                 $res .= '<tr class="bambora_table_history_tr"><td class="bambora_table_history_td">' . str_replace('T', ' ', $history->created) . '</td>';
                 $res .= '<td>';
