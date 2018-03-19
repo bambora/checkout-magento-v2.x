@@ -124,7 +124,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                 $paymentMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
                 $currency = $this->_bamboraHelper->convertIsoCode($posted['currency'], false);
                 $minorUnits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-
+                $isInstantCapture = intval($this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::INSTANT_CAPTURE, $order->getStoreId())) === 1 ? true : false;
                 $paymentType = array_key_exists('paymenttype', $posted) ? $posted['paymenttype'] : "";
                 $cardNumber = array_key_exists('cardno', $posted) ? $posted['cardno'] : "";
                 $txnFee = array_key_exists('txnfee', $posted) ? $posted['txnfee'] : 0;
@@ -139,6 +139,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                      $txnFee,
                      $minorUnits,
                      $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::ORDER_STATUS),
+                     $isInstantCapture,
                      $payment,
                      $fraud
                  );

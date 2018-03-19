@@ -105,7 +105,7 @@
     </field>
     <field id="instantinvoice" type="select" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant invoice:</b>]]></label>
-      <comment><![CDATA[Automatic create an invoice once the payment is completed]]></comment>
+      <comment><![CDATA[Enable this to automatic create an invoice once the payment is completed. Notice that this will also capture the payment]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/instantinvoice</config_path>
     </field>

@@ -147,12 +147,16 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $res .= '<tr><td>' . __("Transaction date") . ':</td>';
         $res .= '<td>' . $this->formatDate($transaction->createdDate, \IntlDateFormatter::SHORT, true) . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Card type") . ':</td>';
-        $res .= '<td>' . $transaction->information->paymentTypes[0]->displayName . $this->getPaymentLogoUrl($transaction->information->paymentTypes[0]->groupid). '</td></tr>';
-
-        $res .= '<tr><td>' . __("Card number") . ':</td>';
-        $res .= '<td>' . $transaction->information->primaryAccountnumbers[0]->number . '</td></tr>';
-
+        if(is_array($transaction->information->paymentTypes) && count($transaction->information->paymentTypes) > 0) {
+            $res .= '<tr><td>' . __("Card type") . ':</td>';
+            $res .= '<td>' . $transaction->information->paymentTypes[0]->displayName . $this->getPaymentLogoUrl($transaction->information->paymentTypes[0]->groupid). '</td></tr>';
+        }
+        
+        if(is_array($transaction->information->primaryAccountnumbers) && count($transaction->information->primaryAccountnumbers) > 0) {
+            $res .= '<tr><td>' . __("Card number") . ':</td>';
+            $res .= '<td>' . $transaction->information->primaryAccountnumbers[0]->number . '</td></tr>';
+        }
+        
         $res .= '<tr><td>' . __("Surcharge fee") . ':</td>';
         $surchargeFee = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->feeamount, $transaction->currency->minorunits);
         $res .= '<td>' . $this->_priceHelper->currency($surchargeFee, true, false)  . '</td></tr>';
@@ -165,9 +169,11 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $creditedAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->credited, $transaction->currency->minorunits);
         $res .= '<td>' . $this->_priceHelper->currency($creditedAmount, true, false) . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Acquirer") . ':</td>';
-        $res .= '<td>' . $transaction->information->acquirers[0]->name . '</td></tr>';
-
+        if(is_array($transaction->information->acquirers) && count($transaction->information->acquirers) > 0) {
+            $res .= '<tr><td>' . __("Acquirer") . ':</td>';
+            $res .= '<td>' . $transaction->information->acquirers[0]->name . '</td></tr>';
+        }
+        
         $res .= '<tr><td>' . __("Status") . ':</td>';
         $res .= '<td>' . $this->checkoutStatus($transaction->status) . '</td></tr>';
 

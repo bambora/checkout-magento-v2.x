@@ -218,17 +218,18 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param mixed $feeAmountInMinorUnits
      * @param mixed $minorUnits
      * @param mixed $status
+     * @param boolean $isInstantCapture
      * @param \Magento\Sales\Model\Order\Payment $payment
      * @return void
      */
-    protected function _processCallbackData($order, $paymentMethodInstance, $txnId, $methodReference, $ccType, $ccNumber, $feeAmountInMinorUnits, $minorUnits, $status, $payment = null, $fraudStatus = 0)
+    protected function _processCallbackData($order, $paymentMethodInstance, $txnId, $methodReference, $ccType, $ccNumber, $feeAmountInMinorUnits, $minorUnits, $status, $isInstantCapture, $payment = null, $fraudStatus = 0)
     {
         try {
             if (!isset($payment)) {
                 $payment = $order->getPayment();
             }
             $storeId = $order->getStoreId();
-            $this->updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $fraudStatus);
+            $this->updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $isInstantCapture, $fraudStatus);
 
             if ($paymentMethodInstance->getConfigData(BamboraConstants::ADD_SURCHARGE_TO_PAYMENT, $storeId) == 1 && $feeAmountInMinorUnits > 0) {
                 $this->addSurchargeToOrder($order, $feeAmountInMinorUnits, $minorUnits, $ccType, $paymentMethodInstance);
@@ -256,10 +257,11 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * @param string $ccNumber
      * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
      * @param mixed $status
+     * @param boolean $isInstantCapture
      * @param mixed $fraudStatus
      * @return void
      */
-    public function updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $fraudStatus)
+    public function updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $isInstantCapture, $fraudStatus)
     {
         try {
             /** @var \Magento\Sales\Model\Order\Payment */
@@ -287,7 +289,6 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $payment->setCcType($ccType);
             $payment->setCcNumberEnc($ccNumber);
 
-            $isInstantCapture = intval($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $order->getStoreId())) === 1 ? true : false;
             $payment->setAdditionalInformation(BamboraConstants::INSTANT_CAPTURE, $isInstantCapture);
             $payment->save();
 
@@ -380,11 +381,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
                 /** @var \Magento\Sales\Model\Order\Invoice */
                 $invoice = $order->prepareInvoice();
                 $storeId = $order->getStoreId();
-
-                if ((int)$paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) === 1) {
-                    $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
-                }
-
+                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
                 $invoice->register();
                 $invoice->save();
                 $transactionSave = $this->_objectManager->create('Magento\Framework\DB\Transaction')
@@ -401,7 +398,9 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
                 }
             }
         } catch (\Exception $ex) {
-            throw $ex;
+            $order->addStatusHistoryComment(__("Could not create or Capture the Invoice for order #%1 - Reason: %2", $order->getId(), $ex->getMessage()))
+                        ->setIsCustomerNotified(0)
+                        ->save();
         }
     }
 

@@ -138,7 +138,8 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
      */
     protected function processCallback($transactionResponse, $order, &$responseCode)
     {
-        $bamboraTransactionId = $transactionResponse->transaction->id;
+        $transaction = $transactionResponse->transaction;
+        $bamboraTransactionId = $transaction->id;
         $payment = $order->getPayment();
 
         try {
@@ -146,20 +147,34 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
             if (empty($pspReference)) {
                 /** @var \Bambora\Online\Model\Method\Checkout\Payment */
                 $paymentMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
+                $isInstantCapture = false;
+                if($transaction->total->authorized - $transaction->total->captured === 0){
+                    $isInstantCapture = true;
+                }
+                $paymentTypeDisplayName = "N/A";
+                $paymentTypeAccountNumber = "";
+                if(is_array($transaction->information->paymentTypes) && count($transaction->information->paymentTypes) > 0) {
+                    $paymentTypeDisplayName = $transaction->information->paymentTypes[0]->displayName;
+                }
+                if(is_array($transaction->information->primaryAccountnumbers) && count($transaction->information->primaryAccountnumbers) > 0) {
+                    $paymentTypeAccountNumber = $transaction->information->primaryAccountnumbers[0]->number;
+                }
 
                 $this->_processCallbackData($order,
                     $paymentMethod,
                     $bamboraTransactionId,
                     CheckoutPayment::METHOD_REFERENCE,
-                    $transactionResponse->transaction->information->paymentTypes[0]->displayName,
-                    $transactionResponse->transaction->information->primaryAccountnumbers[0]->number,
-                    $transactionResponse->transaction->total->feeamount,
-                    $transactionResponse->transaction->currency->minorunits,
+                    $paymentTypeDisplayName,
+                    $paymentTypeAccountNumber,
+                    $transaction->total->feeamount,
+                    $transaction->currency->minorunits,
                     $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::ORDER_STATUS),
+                    $isInstantCapture,
                     $payment
                 );
 
                 $message = "Callback Success - Order created";
+                
             } else {
                 $message = "Callback Success - Order already created";
             }
