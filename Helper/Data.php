@@ -462,6 +462,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'en_US' => '2',
             'sv_SE' => '3',
             'nn_NO' => '4',
+            'nb_NO' => '4',
             );
 
         return array_key_exists($lan, $languageArray) ? $languageArray[$lan] : '0';
