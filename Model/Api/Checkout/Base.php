@@ -30,7 +30,7 @@ abstract class Base extends DataObject
         'merchant' => 'https://merchant-v1.api-eu.bambora.com',
         'checkout' => 'https://api.v1.checkout.bambora.com',
         'transaction' => 'https://transaction-v1.api-eu.bambora.com',
-        'checkoutAssets' => 'https://v1.checkout.bambora.com/Assets',
+        'checkoutCDN' => 'https://static.bambora.com',
         'globalAssets' => 'https://d3r1pwhfz7unl9.cloudfront.net/bambora'
     );
 

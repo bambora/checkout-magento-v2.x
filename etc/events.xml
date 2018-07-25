@@ -18,4 +18,7 @@
   <event name="sales_order_payment_place_start">
     <observer name="Bambora_Online_Sales_Order_Payment_Place_Start" instance="Bambora\Online\Observer\SalesOrderPaymentPlaceStart" />
   </event>
+  <event name="sales_order_manage_inventory">
+    <observer name="Bambora_Online_Manage_Inventory_Observer" instance="Bambora\Online\Observer\ManageInventoryObserver"/>
+  </event>
 </config>

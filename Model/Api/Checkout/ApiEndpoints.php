@@ -19,6 +19,6 @@ class ApiEndpoints
     const ENDPOINT_MERCHANT = 'merchant';
     const ENDPOINT_CHECKOUT = 'checkout';
     const ENDPOINT_TRANSACTION = 'transaction';
-    const ENDPOINT_CHECKOUT_ASSETS = 'checkoutAssets';
+    const ENDPOINT_CHECKOUT_CDN = 'checkoutCDN';
     const ENDPOINT_GLOBAL_ASSETS = 'globalAssets';
 }

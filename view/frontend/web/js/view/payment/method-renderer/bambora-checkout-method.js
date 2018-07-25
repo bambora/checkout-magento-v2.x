@@ -15,7 +15,7 @@ define(
         return Component.extend({
             initialize: function() {
                 this._super().initChildren();
-                this.loadBamboraCheckoutPaymentWindowJs();
+                this.loadBamboraCheckoutWebSdk();
             },
             defaults: {
                 template: 'Bambora_Online/payment/checkout-form',
@@ -60,40 +60,33 @@ define(
                                 
                                 $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
                             }
-                            self.openCheckoutPaymentWindow(response.url);                             
+                            self.openCheckoutPaymentWindow(response.token);                             
                         }).fail(function(error) {
                             self.showError($t("Error opening payment window") + ': ' + error.statusText);
                             $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
                         });
             },
-            openCheckoutPaymentWindow: function(sessionUrl) {
-                var onclose = function() {
-                     var cancelUrl = window.checkoutConfig.payment.bambora_checkout.cancelUrl;
-                      $.mage.redirect(cancelUrl);
+            openCheckoutPaymentWindow: function(checkoutToken) {
+                var windowState = parseInt(window.checkoutConfig.payment.bambora_checkout.windowState);
+                if(windowState === 1) {
+                    new Bambora.RedirectCheckout(checkoutToken);    
+                } else {
+                    var checkout = new Bambora.ModalCheckout(null);
+                    checkout.on(Bambora.Event.Cancel, function(payload) {
+                        var cancelUrl = payload.cancelUrl;
+                        $.mage.redirect(cancelUrl);
+                    });
+                    checkout.on(Bambora.Event.Close, function (payload){
+                        $.mage.redirect(payload.acceptUrl);
+                    });
+                    checkout.initialize(checkoutToken).then(() => {
+                        checkout.show();
+                    });
                 }
-                var options = {
-                    windowstate: parseInt(window.checkoutConfig.payment.bambora_checkout.windowState),
-                    onClose: onclose
-                }
-                window.bam("open", sessionUrl, options);
             },
-            loadBamboraCheckoutPaymentWindowJs: function() {
-                (function(n, t, i, r, u, f, e) {
-                    n[u] = n[u] ||
-                        function() {
-                            (n[u].q = n[u].q || []).push(arguments);
-                        };
-                    f = t.createElement(i);
-                    e = t.getElementsByTagName(i)[0];
-                    f.async = 1;
-                    f.src = r;
-                    e.parentNode.insertBefore(f, e);
-                })(window,
-                    document,
-                    "script",
-                    window.checkoutConfig.payment.bambora_checkout.paymentWindowJsUrl,
-                    "bam");
-                },
+            loadBamboraCheckoutWebSdk: function() {
+                $.getScript(window.checkoutConfig.payment.bambora_checkout.checkoutWebSdkUrl);
+            },
             showError: function (errorMessage) {
                 globalMessageList.addErrorMessage({
                     message: errorMessage

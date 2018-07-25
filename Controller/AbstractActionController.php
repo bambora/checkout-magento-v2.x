@@ -63,6 +63,13 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     protected $_invoiceSender;
 
     /**
+     * Application Event Dispatcher
+     *
+     * @var \Magento\Framework\Event\ManagerInterface
+     */
+    protected $_eventManager;
+
+    /**
      * AbstractActionController constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
@@ -95,6 +102,8 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
         $this->_paymentHelper = $paymentHelper;
         $this->_orderSender = $orderSender;
         $this->_invoiceSender = $invoiceSender;
+       
+       $this->_eventManager = $context->getEventManager();
     }
 
     /**
@@ -175,9 +184,11 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     {
         $order = $this->_getOrder();
         if ($order->getId() && $order->getState() != Order::STATE_CANCELED) {
-            $comment =  __("The order was canceled");
+            $comment =  __("The order was canceled through the payment window");
             $this->_bamboraLogger->addCheckoutInfo($order->getIncrementId(), $comment);
-            $order->registerCancellation($comment)->save();
+            $order->cancel();
+            $order->addStatusHistoryComment($comment);
+            $order->save();
 
             return true;
         }
@@ -277,7 +288,10 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             } else {
                 $order->setStatus($status);
             }
-
+            $orderCurrentState = $order->getState();
+            if($orderCurrentState === Order::STATE_CANCELED) {
+                $this->unCancelOrderItems($order);
+            }
             $order->setState(Order::STATE_PROCESSING);
             $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
             $payment->addTransactionCommentsToOrder($transaction, $transactionComment);
@@ -295,6 +309,52 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $order->save();
         } catch (\Exception $ex) {
             throw $ex;
+        }
+    }
+
+    public function unCancelOrderItems($order) 
+    {
+        try{
+            $productStockQty = [];
+            foreach ($order->getAllVisibleItems() as $item) {
+                $productStockQty[$item->getProductId()] = $item->getQtyCanceled();
+                foreach ($item->getChildrenItems() as $child) {
+                    $productStockQty[$child->getProductId()] = $item->getQtyCanceled();
+                    $child->setQtyCanceled(0);
+                    $child->setTaxCanceled(0);
+                    $child->setDiscountTaxCompensationCanceled(0);
+                }
+                $item->setQtyCanceled(0);
+                $item->setTaxCanceled(0);
+                $item->setDiscountTaxCompensationCanceled(0);
+            }
+            $this->_eventManager->dispatch(
+                'sales_order_manage_inventory',
+                [
+                    'order' => $order,
+                    'product_qty' => $productStockQty
+                ]
+            );
+            $order->setSubtotalCanceled(0);
+            $order->setBaseSubtotalCanceled(0);
+            $order->setTaxCanceled(0);
+            $order->setBaseTaxCanceled(0);
+            $order->setShippingCanceled(0);
+            $order->setBaseShippingCanceled(0);
+            $order->setDiscountCanceled(0);
+            $order->setBaseDiscountCanceled(0);
+            $order->setTotalCanceled(0);
+            $order->setBaseTotalCanceled(0);
+            $comment = __("The order was un-canceled by the Bambora Checkout Callback");
+            $order->addStatusHistoryComment($comment, false);
+            $order->save();
+            $this->_bamboraLogger->addCheckoutInfo($order->getId(), $comment);
+
+        } catch(\Exception $ex) {
+            $comment = __("The order could not be un-canceled - Reason:") .$ex->getMessage();
+            $order->addStatusHistoryComment($comment , false);
+            $order->save();
+            $this->_bamboraLogger->addCheckoutInfo($order->getId(), $comment);
         }
     }
 

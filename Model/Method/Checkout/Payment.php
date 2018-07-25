@@ -737,11 +737,11 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      *
      * @return string
      */
-    public function getCheckoutPaymentWindowJsUrl()
+    public function getCheckoutWebSdkUrl()
     {
         /** @var \Bambora\Online\Model\Api\Checkout\Assets */
         $assetsApi = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_ASSETS);
 
-        return $assetsApi->getCheckoutPaymentWindowJSUrl();
+        return $assetsApi->getCheckoutWebSdkUrl();
     }
 }

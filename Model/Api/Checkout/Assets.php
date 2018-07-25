@@ -23,11 +23,9 @@ class Assets extends Base
      *
      * @return string
      */
-    public function getCheckoutPaymentWindowJSUrl()
+    public function getCheckoutWebSdkUrl()
     {
-        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_CHECKOUT_ASSETS).'/paymentwindow-v1.min.js';
-
-        return $url;
+        return $this->_getEndpoint(ApiEndpoints::ENDPOINT_CHECKOUT_CDN).'/checkout-sdk-web/latest/checkout-sdk-web.min.js';
     }
 
     /**
@@ -37,8 +35,6 @@ class Assets extends Base
      */
     public function getCheckoutIconUrl()
     {
-        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_GLOBAL_ASSETS).'/bambora_icon_64x64.png';
-
-        return $url;
+        return $this->_getEndpoint(ApiEndpoints::ENDPOINT_GLOBAL_ASSETS).'/bambora_icon_64x64.png';
     }
 }
