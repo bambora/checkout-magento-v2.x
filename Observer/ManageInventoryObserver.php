@@ -49,7 +49,7 @@ class ManageInventoryObserver implements \Magento\Framework\Event\ObserverInterf
     }
 
     /**
-     * Subtract items qtys from stock related with uncancel products.
+     * Subtract the un-cancled products from the store inventory.
      *
      * @param \Magento\Framework\Event\Observer $observer
      * @return $this

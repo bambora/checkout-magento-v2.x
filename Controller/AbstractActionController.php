@@ -288,10 +288,12 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             } else {
                 $order->setStatus($status);
             }
+            $storeId = $order->getStoreId();
             $orderCurrentState = $order->getState();
-            if($orderCurrentState === Order::STATE_CANCELED) {
+            if($orderCurrentState === Order::STATE_CANCELED && $paymentMethodInstance->getConfigData(BamboraConstants::UNCANCEL_ORDER_LINES, $storeId) == 1 ) {
                 $this->unCancelOrderItems($order);
             }
+
             $order->setState(Order::STATE_PROCESSING);
             $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
             $payment->addTransactionCommentsToOrder($transaction, $transactionComment);
@@ -312,6 +314,11 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
         }
     }
 
+    /**
+     * Un-Cancel order lines
+     *
+     * @param \Magento\Sales\Model\Order $order
+     */
     public function unCancelOrderItems($order) 
     {
         try{

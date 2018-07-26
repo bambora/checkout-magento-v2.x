@@ -73,8 +73,8 @@ define(
                 } else {
                     var checkout = new Bambora.ModalCheckout(null);
                     checkout.on(Bambora.Event.Cancel, function(payload) {
-                        var cancelUrl = payload.cancelUrl;
-                        $.mage.redirect(cancelUrl);
+                        var declineUrl = payload.declineUrl;
+                        $.mage.redirect(declineUrl);
                     });
                     checkout.on(Bambora.Event.Close, function (payload){
                         $.mage.redirect(payload.acceptUrl);

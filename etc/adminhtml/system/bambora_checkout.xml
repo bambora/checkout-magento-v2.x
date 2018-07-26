@@ -138,5 +138,11 @@
       <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
       <config_path>payment/bambora_checkout/sort_order</config_path>
     </field>
+    <field id="uncancelorderlines" type="select" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
+      <label><![CDATA[<b>Un-Cancel order lines:</b>]]></label>
+      <comment><![CDATA[When this is enabled, the module will try to restore the canceled order lines if the order gets paid after the order is canceled. This feature is against normal Magento behavior and we cannot guarantee that there will not be any side effects. ]]></comment>
+      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+      <config_path>payment/bambora_checkout/uncancelorderlines</config_path>
+    </field>
   </group>
 </include>

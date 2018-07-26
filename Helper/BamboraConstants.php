@@ -50,6 +50,7 @@ class BamboraConstants
     const OWN_RECEIPT = 'ownreceipt';
     const ENABLE_INVOICE_DATA = 'enableinvoicedata';
     const ROUNDING_MODE = 'roundingmode';
+    const UNCANCEL_ORDER_LINES = 'uncancelorderlines';
 
     //Actions
     const CAPTURE = 'capture';
