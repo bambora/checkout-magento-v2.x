@@ -79,7 +79,7 @@ define(
                     checkout.on(Bambora.Event.Close, function (payload){
                         $.mage.redirect(payload.acceptUrl);
                     });
-                    checkout.initialize(checkoutToken).then(() => {
+                    checkout.initialize(checkoutToken).then(function() {
                         checkout.show();
                     });
                 }
