@@ -14,7 +14,7 @@ define(
 
         return Component.extend({
             initialize: function() {
-                this._super().initChildren();
+                this._super();
                 this.loadBamboraCheckoutWebSdk();
             },
             defaults: {
