@@ -96,9 +96,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                 $windowState = "3";
             }
         }
-
-
-
         /** @var \Bambora\Online\Model\Api\Epay\Request\Payment */
         $paymentRequest = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_PAYMENT);
         $paymentRequest->encoding = "UTF-8";
