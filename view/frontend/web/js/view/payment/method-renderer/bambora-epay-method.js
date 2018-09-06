@@ -50,14 +50,13 @@ define(
                             $.mage.redirect(window.checkoutConfig.payment.bambora_epay.cancelUrl);
                         });
             },
-            openPaymentWindow: function(requestString) {
-                var onclose = function() {
-                     var cancelUrl = window.checkoutConfig.payment.bambora_epay.cancelUrl;
-                      $.mage.redirect(cancelUrl);
-                }
-                var paymentwindow = new PaymentWindow(requestString);
-                if(window.checkoutConfig.payment.bambora_epay.windowState === "1") {
-                    paymentwindow.on("close", onclose);
+            openPaymentWindow: function(request) {
+                var paymentwindow = new PaymentWindow(request);
+                if(request["windowstate"] === "1") {
+                    paymentwindow.on("close", function() {
+                        var cancelUrl = request["cancelurl"];
+                         $.mage.redirect(cancelUrl);
+                    });
                 }
                 paymentwindow.open();
             },
