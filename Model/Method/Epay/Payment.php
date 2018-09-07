@@ -87,21 +87,12 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseTotalDue(), $minorunits, $roundingMode);
         $storeId = $order->getStoreId();
 
-        $mobile = $this->getConfigData(BamboraConstants::ENABLE_MOBILE_PAYMENT_WINDOW, $storeId);
-        $windowState = $this->getConfigData(BamboraConstants::WINDOW_STATE, $storeId);
-
-        if($mobile === "1" && $windowState === "1") {
-            $isMobile = $this->isMobileDevice();
-            if($isMobile) {
-                $windowState = "3";
-            }
-        }
         /** @var \Bambora\Online\Model\Api\Epay\Request\Payment */
         $paymentRequest = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_PAYMENT);
         $paymentRequest->encoding = "UTF-8";
         $paymentRequest->cms = $this->_bamboraHelper->getModuleHeaderInfo();
-        $paymentRequest->windowstate = $windowState;
-        $paymentRequest->mobile = $mobile;
+        $paymentRequest->windowstate = "3";
+        $paymentRequest->mobile = $this->getConfigData(BamboraConstants::ENABLE_MOBILE_PAYMENT_WINDOW, $storeId);
         $paymentRequest->merchantnumber = $this->getAuth()->merchantNumber;
         $paymentRequest->windowid = $this->getConfigData(BamboraConstants::PAYMENT_WINDOW_ID, $storeId);
         $paymentRequest->amount = $totalAmountMinorUnits;
@@ -118,14 +109,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $paymentRequest->hash = $this->_bamboraHelper->calcEpayMd5Key($order, $paymentRequest);
 
         return $paymentRequest;
-    }
-
-     /**
-     * Check if the user is using a mobile device
-     * @return integer
-     */
-    public function isMobileDevice() {
-        return preg_match("/(android|iphone|blackberry|mobile|windows ce|opera mini|palm|opera mobi)/i", $_SERVER["HTTP_USER_AGENT"]);
     }
 
     /**
@@ -229,7 +212,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function calculateItemPrice($item, $minorunits, $roundingMode)
     {
-        $itemPrice = $item->getBaseRowTotal() /  intval($item->getQtyOrdered());
+        $itemPrice = $item->getBaseRowTotal() > 0 ? $item->getBaseRowTotal() / intval($item->getQtyOrdered()) : 0;
 
         if ($item->getBaseDiscountAmount() > 0) {
             $itemDiscount =  $item->getBaseDiscountAmount() / intval($item->getQtyOrdered());

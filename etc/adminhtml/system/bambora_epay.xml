@@ -19,7 +19,7 @@
     <label>ePay | Payment Solutions</label>
     <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
     <fieldset_css>bambora-epay-method</fieldset_css>
-    <comment><![CDATA[Accept online payments in Magento 2 using the ePay payment window..<br /> Go to <a href='http://dev.bambora.com/shopping-carts/guides/shopping-carts/magento2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
+    <comment><![CDATA[Accept online payments in Magento 2 using the ePay payment window..<br /> Go to <a href='https://developer.bambora.com/europe/shopping-carts/shopping-carts/magento2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
     <field id="version" type="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Module version:</b>]]></label>
       <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Field\Version</frontend_model>
@@ -89,12 +89,6 @@
       <label><![CDATA[<b>MD5 Key:</b>]]></label>
       <comment><![CDATA[This is the secret password you must enter both here and within the payment system if you enable MD5 above. Notice that the secret password must be 100% the same. Otherwise the customer will be declined as payments are made. You can log into your account on the payment system <a href="https://ssl.ditonlinebetalingssystem.dk/admin/" target="_blank">here</a>. The MD5 settings are to be found from the menu <b>Settings</b> -> <b>Payment System</b>.]]></comment>
      <config_path>payment/bambora_epay/md5key</config_path>
-    </field>
-    <field id="windowstate" translate="label comment" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Window state:</b>]]></label>
-      <comment><![CDATA[Set to <b>Overlay</b> for the Payment Window to open as a overlayed window on top of the store. The store will be visible behind the payment window. Set to <b>Full Screen</b> to open the payment window in the same window but in full-screen. The store will not be visible in this setting.]]></comment>
-      <source_model>Bambora\Online\Model\Config\Source\EpayWindowstate</source_model>
-      <config_path>payment/bambora_epay/windowstate</config_path>
     </field>
     <field id="ownreceipt" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Use own receipt:</b>]]></label>

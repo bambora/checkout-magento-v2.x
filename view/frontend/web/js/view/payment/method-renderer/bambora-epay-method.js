@@ -52,12 +52,6 @@ define(
             },
             openPaymentWindow: function(request) {
                 var paymentwindow = new PaymentWindow(request);
-                if(request["windowstate"] === "1") {
-                    paymentwindow.on("close", function() {
-                        var cancelUrl = request["cancelurl"];
-                         $.mage.redirect(cancelUrl);
-                    });
-                }
                 paymentwindow.open();
             },
             loadEPayPaymentWindowJs: function() {
