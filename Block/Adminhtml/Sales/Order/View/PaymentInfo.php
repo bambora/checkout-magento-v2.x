@@ -92,7 +92,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 $transactionId = $payment->getAdditionalInformation($checkoutMethod::METHOD_REFERENCE);
                 if (!empty($transactionId)) {
                     $message = "";
-                    $transaction = $checkoutMethod->getTransaction($transactionId, $message);
+                    $transaction = $checkoutMethod->getTransaction($transactionId, $storeId, $message);
 
                     if (isset($transaction)) {
                         $result = $this->createCheckoutTransactionHtml($transaction);
@@ -111,7 +111,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 $transactionId = $payment->getAdditionalInformation($ePayMethod::METHOD_REFERENCE);
                 if (!empty($transactionId)) {
                     $message = "";
-                    $transaction = $ePayMethod->getTransaction($transactionId, $message);
+                    $transaction = $ePayMethod->getTransaction($transactionId, $storeId, $message);
 
                     if (isset($transaction)) {
                         $result = $this->createEpayTransactionHtml($transaction, $order);

@@ -49,14 +49,12 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      *
      * @return string
      */
-    public function getApiKey()
+    public function getApiKey($storeId)
     {
-        if (!$this->_apiKey) {
+        if(!$storeId) {
             $storeId = $this->getStoreManager()->getStore()->getId();
-            $this->_apiKey = $this->_bamboraHelper->generateCheckoutApiKey($storeId);
         }
-
-        return $this->_apiKey;
+        return $this->_bamboraHelper->generateCheckoutApiKey($storeId);
     }
 
     /**
@@ -84,7 +82,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         /** @var \Bambora\Online\Model\Api\Checkout\Merchant */
         $merchantApi = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_MERCHANT);
 
-        $paymentTypeResponse = $merchantApi->getPaymentTypes($currency, $amountMinorunits, $this->getApiKey());
+        $paymentTypeResponse = $merchantApi->getPaymentTypes($currency, $amountMinorunits, $this->getApiKey($storeId));
 
         $message = "";
         $paymentCardIdsArray = array();
@@ -109,12 +107,12 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         if (!isset($order)) {
             return null;
         }
-
+        $storeId = $order->getStoreId();
         $paymentRequest = $this->createPaymentRequest($order);
 
         /** @var \Bambora\Online\Model\Api\Checkout\Checkout */
         $checkoutProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_CHECKOUT);
-        $checkoutResponse = $checkoutProvider->setCheckout($paymentRequest, $this->getApiKey());
+        $checkoutResponse = $checkoutProvider->setCheckout($paymentRequest, $this->getApiKey($storeId));
 
         $message = "";
         if (!$this->_bamboraHelper->validateCheckoutApiResult($checkoutResponse, $order->getIncrementId(), false, $message)) {
@@ -311,7 +309,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     {
         /** @var \Magento\Sales\Model\Order */
         $order = $payment->getOrder();
-
+        $storeId = $order->getStoreId();
         try {
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
 
@@ -331,7 +329,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $currency = $order->getBaseCurrencyCode();
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-            $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
+            $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $storeId);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Request\Capture */
             $captureRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CAPTURE);
@@ -348,7 +346,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             /** @var \Bambora\Online\Model\Api\Checkout\Transaction */
             $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
-            $captureResponse = $transactionProvider->capture($transactionId, $captureRequest, $this->getApiKey());
+            $captureResponse = $transactionProvider->capture($transactionId, $captureRequest, $this->getApiKey($storeId));
             $message = "";
             if (!$this->_bamboraHelper->validateCheckoutApiResult($captureResponse, $transactionId, true, $message)) {
                 throw new \Exception(__("The capture action failed.") . ' - '.$message);
@@ -383,6 +381,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         /** @var \Magento\Sales\Model\Order */
         $order = $payment->getOrder();
         $id = $order->getIncrementId();
+        $storeId = $order->getStoreId();
         try {
             $creditMemo = $payment->getCreditmemo();
             $id = $creditMemo->getInvoice()->getIncrementId();
@@ -395,7 +394,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $currency = $order->getBaseCurrencyCode();
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-            $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
+            $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $storeId);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Request\Credit */
             $creditRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CREDIT);
@@ -404,7 +403,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $creditRequest->invoicelines = $this->getRefundInvoiceLines($creditMemo, $order);
 
             $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
-            $creditResponse = $transactionProvider->credit($transactionId, $creditRequest, $this->getApiKey());
+            $creditResponse = $transactionProvider->credit($transactionId, $creditRequest, $this->getApiKey($storeId));
             $message = "";
             if (!$this->_bamboraHelper->validateCheckoutApiResult($creditResponse, $transactionId, true, $message)) {
                 throw new \Exception(__('The refund action failed.') . ' - '.$message);
@@ -453,6 +452,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     {
         /** @var \Magento\Sales\Model\Order */
         $order = $payment->getOrder();
+        $storeId = $order->getStoreId();
         try {
             if (!$this->canOnlineAction($payment)) {
                 throw new \Exception(__("The void action could not, be processed online. Please enable remote payment processing from the module configuration"));
@@ -461,7 +461,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
 
             $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
-            $deleteResponse = $transactionProvider->delete($transactionId, $this->getApiKey());
+            $deleteResponse = $transactionProvider->delete($transactionId, $this->getApiKey($storeId));
             $message = "";
             if (!$this->_bamboraHelper->validateCheckoutApiResult($deleteResponse, $transactionId, true, $message)) {
                 throw new \Exception(__("The void action failed.") . ' - '.$message);
@@ -488,10 +488,11 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * Get Bambora Checkout Transaction
      *
      * @param mixed $transactionId
+     * @param string $storeId
      * @param string &$message
      * @return \Bambora\Online\Model\Api\Checkout\Response\Models\Transaction
      */
-    public function getTransaction($transactionId, &$message)
+    public function getTransaction($transactionId, $storeId, &$message)
     {
         try {
             if (!$this->getConfigData(BamboraConstants::REMOTE_INTERFACE)) {
@@ -500,7 +501,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             /** @var \Bambora\Online\Model\Api\Checkout\Merchant */
             $merchantProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_MERCHANT);
-            $transactionResponse = $merchantProvider->getTransaction($transactionId, $this->getApiKey());
+            $transactionResponse = $merchantProvider->getTransaction($transactionId, $this->getApiKey($storeId));
 
             if (!$this->_bamboraHelper->validateCheckoutApiResult($transactionResponse, $transactionId, true, $message)) {
                 return null;

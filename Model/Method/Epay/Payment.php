@@ -39,24 +39,18 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     protected $_canVoid                     = true;
     protected $_canDelete                   = true;
 
-    /**
-     * @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth
-     */
-    protected $_auth;
 
     /**
      * Get ePay Auth object
      *
      * @return \Bambora\Online\Model\Api\Epay\Request\Models\Auth
      */
-    public function getAuth()
+    public function getAuth($storeId)
     {
-        if (!$this->_auth) {
+        if(!$storeId) {
             $storeId = $this->getStoreManager()->getStore()->getId();
-            $this->_auth = $this->_bamboraHelper->generateEpayAuth($storeId);
         }
-
-        return $this->_auth;
+        return $this->_bamboraHelper->generateEpayAuth($storeId);
     }
 
     /**
@@ -81,19 +75,19 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function createPaymentRequest($order)
     {
+        $storeId = $order->getStoreId();
         $currency = $order->getBaseCurrencyCode();
         $minorunits = $this->_bamboraHelper->getCurrencyMinorUnits($currency);
-        $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
+        $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $storeId);
         $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseTotalDue(), $minorunits, $roundingMode);
-        $storeId = $order->getStoreId();
-
+        
         /** @var \Bambora\Online\Model\Api\Epay\Request\Payment */
         $paymentRequest = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_PAYMENT);
         $paymentRequest->encoding = "UTF-8";
         $paymentRequest->cms = $this->_bamboraHelper->getModuleHeaderInfo();
         $paymentRequest->windowstate = "3";
         $paymentRequest->mobile = $this->getConfigData(BamboraConstants::ENABLE_MOBILE_PAYMENT_WINDOW, $storeId);
-        $paymentRequest->merchantnumber = $this->getAuth()->merchantNumber;
+        $paymentRequest->merchantnumber = $this->getAuth($storeId)->merchantNumber;
         $paymentRequest->windowid = $this->getConfigData(BamboraConstants::PAYMENT_WINDOW_ID, $storeId);
         $paymentRequest->amount = $totalAmountMinorUnits;
         $paymentRequest->currency = $currency;
@@ -282,13 +276,17 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
             $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
             $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorunits, $roundingMode);
+            $storeId = $order->getStoreId();
+            
+            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth */
+            $auth = $this->getAuth($storeId);
 
             /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
-            $captureResponse = $actionProvider->capture($amountMinorunits, $transactionId, $this->getAuth());
+            $captureResponse = $actionProvider->capture($amountMinorunits, $transactionId, $auth);
 
             $message = "";
-            if (!$this->_bamboraHelper->validateEpayApiResult($captureResponse, $transactionId, $this->getAuth(), $message)) {
+            if (!$this->_bamboraHelper->validateEpayApiResult($captureResponse, $transactionId, $auth, $message)) {
                 throw new \Exception(__("The capture action failed.") . ' - '.$message);
             }
 
@@ -329,16 +327,21 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
 
             $currency = $order->getBaseCurrencyCode();
+            $storeId = $order->getStoreId();
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-            $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
+            $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $storeId);
             $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorunits, $roundingMode);
+            
+            
+            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth */
+            $auth = $this->getAuth($storeId);
 
             /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
-            $creditResponse = $actionProvider->credit($amountMinorunits, $transactionId, $this->getAuth());
+            $creditResponse = $actionProvider->credit($amountMinorunits, $transactionId, $auth);
 
             $message = "";
-            if (!$this->_bamboraHelper->validateEpayApiResult($creditResponse, $transactionId, $this->getAuth(), $message)) {
+            if (!$this->_bamboraHelper->validateEpayApiResult($creditResponse, $transactionId, $auth, $message)) {
                 throw new \Exception(__("The refund action failed.") . ' - '.$message);
             }
 
@@ -389,13 +392,17 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
 
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
+            $storeId = $order->getStoreId();
+            
+            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth */
+            $auth = $this->getAuth($storeId);
 
             /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
-            $deleteResponse = $actionProvider->delete($transactionId, $this->getAuth());
+            $deleteResponse = $actionProvider->delete($transactionId, $auth);
 
             $message = "";
-            if (!$this->_bamboraHelper->validateEpayApiResult($deleteResponse, $transactionId, $this->getAuth(), $message)) {
+            if (!$this->_bamboraHelper->validateEpayApiResult($deleteResponse, $transactionId, $auth, $message)) {
                 throw new \Exception(__('The void action failed.') . ' - '.$message);
             }
 
@@ -417,20 +424,25 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * Get Bambora Checkout Transaction
      *
      * @param mixed $transactionId
+     * @param string $storeId
      * @param string &$message
      * @return \Bambora\Online\Model\Api\Epay\Response\Models\TransactionInformationType|null
      */
-    public function getTransaction($transactionId, &$message)
+    public function getTransaction($transactionId, $storeId, &$message)
     {
         try {
             if (!$this->getConfigData(BamboraConstants::REMOTE_INTERFACE)) {
                 return null;
             }
+            
+            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth */
+            $auth = $this->getAuth($storeId);
+
             /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
-            $transactionResponse = $actionProvider->getTransaction($transactionId, $this->getAuth());
+            $transactionResponse = $actionProvider->getTransaction($transactionId, $auth);
 
-            if (!$this->_bamboraHelper->validateEpayApiResult($transactionResponse, $transactionId, $this->getAuth(), $message)) {
+            if (!$this->_bamboraHelper->validateEpayApiResult($transactionResponse, $transactionId, $auth, $message)) {
                 return null;
             }
 
@@ -482,7 +494,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         /** @var \Bambora\Online\Model\Api\Epay\Action */
         $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
 
-        return $actionProvider->getPaymentLogoUrl($this->getAuth()->merchantNumber);
+        return $actionProvider->getPaymentLogoUrl($this->getAuth(null)->merchantNumber);
     }
 
     /**
