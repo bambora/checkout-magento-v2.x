@@ -41,7 +41,7 @@
       <bambora_epay>
         <active>0</active>
         <model>Bambora\Online\Model\Method\Epay\Payment</model>
-        <title>ePay | Payment solutions</title>
+        <title>Bambora Online ePay</title>
         <paymentwindowid>1</paymentwindowid>
         <instantcapture>0</instantcapture>
         <instantinvoice>0</instantinvoice>
@@ -55,7 +55,6 @@
         <enablemobilepaymentwindow>1</enablemobilepaymentwindow>
         <sendmailorderconfirmation>1</sendmailorderconfirmation>
         <sort_order>1</sort_order>
-        <windowstate>3</windowstate>
         <timeout>60</timeout>
         <order_status>processing</order_status>
         <masscaptureinvoicemail>1</masscaptureinvoicemail>
