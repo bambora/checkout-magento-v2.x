@@ -1,7 +1,9 @@
 # Bambora Online Magento 2
 
+## Currently we do not support Magento 2.3 but we are working on it so stay tuned.
+
 ## Supported Magento 2 versions
- * Supports all current versions from 2.1 and up.
+ * Supports Magento 2.1.x and 2.2.x
  * If you want to run the module with a Magento version lower then 2.1 you must remove these two files
      * view\adminhtml\ui_component\sales_order_grid.xml
      * view\adminhtml\ui_component\sales_order_invoice_grid.xml
