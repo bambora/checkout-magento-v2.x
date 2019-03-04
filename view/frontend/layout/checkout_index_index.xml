@@ -12,7 +12,7 @@
  * @category    Online Payment Gatway
  * @package     Bambora_Online
  * @author      Bambora Online
- * @copyright   Bambora (http://bambora.com)
+ * @copyright   Bambora (https://bambora.com)
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/layout_generic.xsd">

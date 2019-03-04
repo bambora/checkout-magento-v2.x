@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017. All rights reserved Bambora Online.
+ * Copyright (c) 2019. All rights reserved Bambora Online.
  *
  * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
  * It is also not legal to do any changes to the software and distribute it in your own name / brand.
@@ -8,7 +8,7 @@
  * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
  *
  * @author    Bambora Online
- * @copyright Bambora Online (http://bambora.com)
+ * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  *
  */
@@ -25,7 +25,8 @@ class Assets extends Base
      */
     public function getCheckoutWebSdkUrl()
     {
-        return $this->_getEndpoint(ApiEndpoints::ENDPOINT_CHECKOUT_CDN).'/checkout-sdk-web/latest/checkout-sdk-web.min.js';
+        $serviceEndpoint = $this->_getEndpoint(ApiEndpoints::ENDPOINT_CHECKOUT_CDN);
+        return "{$serviceEndpoint}/checkout-sdk-web/latest/checkout-sdk-web.min.js";
     }
 
     /**
@@ -35,6 +36,7 @@ class Assets extends Base
      */
     public function getCheckoutIconUrl()
     {
-        return $this->_getEndpoint(ApiEndpoints::ENDPOINT_GLOBAL_ASSETS).'/bambora_icon_64x64.png';
+        $serviceEndpoint = $this->_getEndpoint(ApiEndpoints::ENDPOINT_GLOBAL_ASSETS);
+        return "{$serviceEndpoint}/bambora_icon_64x64.png";
     }
 }
