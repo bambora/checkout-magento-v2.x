@@ -116,7 +116,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
         $message = "";
         if (!$this->_bamboraHelper->validateCheckoutApiResult($checkoutResponse, $order->getIncrementId(), false, $message)) {
-            $this->_messageManager->addError(__("The payment window could not be retrived"));
+            $this->_messageManager->addError(__("The payment window could not be retrived") . ": {$message}");
             $this->_messageManager->addError(__("Bambora Checkout error") . ': ' . $message);
             $checkoutResponse = null;
         }
@@ -205,16 +205,19 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $bamboraOrder->shippingaddress = $bamboraShippingAddress;
         }
+
         $bamboraOrderLines = array();
+
         $items = $order->getAllVisibleItems();
         $lineNumber = 1;
         foreach ($items as $item) {
+            $itemName = $item->getName();
             $bamboraOrderLines[] = $this->createInvoiceLine(
-                $item->getDescription(),
+                isset($itemName) ? $itemName : $item->getDescription(),
                 $item->getSku(),
                 $lineNumber,
                 floatval($item->getQtyOrdered()),
-                $item->getName(),
+                $item->getDescription(),
                 $item->getBaseRowTotal(),
                 $item->getBaseTaxAmount(),
                 $order->getBaseCurrencyCode(),
@@ -224,31 +227,42 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $lineNumber++;
         }
-        //Add shipping line
-        $bamboraOrderLines[] = $this->createInvoiceLine(
-           $order->getShippingDescription(),
-            __("Shipping"),
-            $lineNumber++,
-            1,
-            __("Shipping"),
-             $order->getBaseShippingAmount(),
-            $order->getBaseShippingTaxAmount(),
-            $order->getBaseCurrencyCode(),
-            $roundingMode);
 
-        // Fix for bug in Magento 2 shipment discont calculation
+        //Add shipping line
+        $baseShippingAmount = $order->getBaseShippingAmount();
+        if($baseShippingAmount > 0) {
+            $shippingDescription = $order->getShippingDescription();
+            $shipmentOrderLine = $this->createInvoiceLine(
+                $shippingDescription,
+                __("Shipping"),
+                $lineNumber,
+                1,
+                $shippingDescription,
+                $baseShippingAmount,
+                $order->getBaseShippingTaxAmount(),
+                $order->getBaseCurrencyCode(),
+                $roundingMode);
+
+            $bamboraOrderLines[] = $shipmentOrderLine;
+            $lineNumber++;
+        }
+
+        // Fix for bug in Magento 2 shipment discount calculation
         $baseShipmentDiscountAmount = $order->getBaseShippingDiscountAmount();
         if ($baseShipmentDiscountAmount > 0) {
-            $bamboraOrderLines[] = $this->createInvoiceLine(
-                 __("Shipping discount"),
-                 "shipping_discount",
-                 $lineNumber++,
-                  1,
-                  __("Shipping discount"),
-                  $order->getBaseShippingDiscountAmount() * -1,
-                  0,
-                  $order->getBaseCurrencyCode(),
-                  $roundingMode);
+            $shippingDiscuntText = __("Shipping discount");
+            $shipmentDiscountOrderLine = $this->createInvoiceLine(
+                $shippingDiscuntText,
+                "shipping_discount",
+                $lineNumber,
+                1,
+                $shippingDiscuntText,
+                $baseShipmentDiscountAmount * -1,
+                0,
+                $order->getBaseCurrencyCode(),
+                $roundingMode);
+
+            $bamboraOrderLines[] = $shipmentDiscountOrderLine;
         }
         $bamboraOrder->lines = $bamboraOrderLines;
         $checkoutRequest->order = $bamboraOrder;
@@ -303,7 +317,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * @param \Magento\Payment\Model\InfoInterface $payment
      * @param float $amount
      * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Exception
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
@@ -336,13 +350,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $captureRequest->amount = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorunits, $roundingMode);
             $captureRequest->currency = $currency;
 
-            //Only add invoice lines if it is a full capture
-            $invoiceLines = null;
-            if (floatval($amount) === floatval($order->getBaseTotalDue())) {
-                $invoiceLines = $this->getCaptureInvoiceLines($order);
-            }
-
-            $captureRequest->invoicelines = $invoiceLines;
+            $captureRequest->invoicelines = $this->getCaptureInvoiceLines($order);
 
             /** @var \Bambora\Online\Model\Api\Checkout\Transaction */
             $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
@@ -351,12 +359,12 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             if (!$this->_bamboraHelper->validateCheckoutApiResult($captureResponse, $transactionId, true, $message)) {
                 throw new \Exception(__("The capture action failed.") . ' - '.$message);
             }
-            $transactionoperationId = "";
+            $transactinOperationId = "";
             foreach ($captureResponse->transactionOperations as $transactionoperation) {
-                $transactionoperationId = $transactionoperation->id;
+                $transactinOperationId = $transactionoperation->id;
             }
 
-            $payment->setTransactionId($transactionoperationId . '-' . Transaction::TYPE_CAPTURE)
+            $payment->setTransactionId($transactinOperationId . '-' . Transaction::TYPE_CAPTURE)
                     ->setIsTransactionClosed(true)
                     ->setParentTransactionId($transactionId);
 
@@ -374,7 +382,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      * @param \Magento\Payment\Model\InfoInterface $payment
      * @param float $amount
      * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Exception
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
@@ -383,9 +391,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $id = $order->getIncrementId();
         $storeId = $order->getStoreId();
         try {
-            $creditMemo = $payment->getCreditmemo();
-            $id = $creditMemo->getInvoice()->getIncrementId();
-
             if (!$this->canOnlineAction($payment)) {
                 throw new \Exception(__("The refund action could not, be processed online. Please enable remote payment processing from the module configuration"));
             }
@@ -400,7 +405,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $creditRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CREDIT);
             $creditRequest->amount = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorunits, $roundingMode);
             $creditRequest->currency = $currency;
-            $creditRequest->invoicelines = $this->getRefundInvoiceLines($creditMemo, $order);
+            $creditRequest->invoicelines = $this->getRefundInvoiceLines($payment, $order);
 
             $transactionProvider = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_TRANSACTION);
             $creditResponse = $transactionProvider->credit($transactionId, $creditRequest, $this->getApiKey($storeId));
@@ -447,6 +452,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      *
      * @param \Magento\Payment\Model\InfoInterface $payment
      * @return $this
+     * @throws \Exception
      */
     public function void(\Magento\Payment\Model\InfoInterface $payment)
     {
@@ -516,25 +522,29 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     }
 
     /**
-     * Get Refund Invoice Lines
+     * Get Captured Invoice Lines
      *
-     * @param \Magento\Sales\Model\Order\Invoice $creditMemo
      * @param \Magento\Sales\Model\Order $order
      * @return \Bambora\Online\Model\Api\Checkout\Request\Models\Line[]
      */
     protected function getCaptureInvoiceLines($order)
     {
-        $invoice = $order->getInvoiceCollection()->getLastItem();
-        $invoiceItems = $order->getAllVisibleItems();
+        $invoiceCollection = $order->getInvoiceCollection();
+        $invoice = $invoiceCollection->getLastItem();
+        $allItems = $invoice->getAllItems();
+        $visibleItems = $this->filterVisibleItemsOnly($allItems);
         $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
         $lines = array();
         $feeItem = null;
-        foreach ($invoiceItems as $item) {
+        $lineNumber = 1;
+        foreach ($visibleItems as $item) {
+            //Add fee item
             if ($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE) {
-                $feeItem = $this->createInvoiceLineFromInvoice($item, $order, $roundingMode);
+                $feeItem = $item;
                 continue;
             }
-            $lines[] = $this->createInvoiceLineFromInvoice($item, $order, $roundingMode);
+            $lines[] = $this->createInvoiceLineFromInvoice($item, $order, $lineNumber, $roundingMode);
+            $lineNumber++;
         }
 
         //Shipping discount handling
@@ -550,14 +560,28 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
         }
 
+        if($shippingAmount > 0) {
+            //Shipping
+            $shippingId = __("Shipping");
+            $shippingDescription = $order->getShippingDescription();
+            $shippingQty = 1;
+            $lines[] = $this->createInvoiceLine(
+                $shippingDescription,
+                $shippingId,
+                $lineNumber,
+                $shippingQty,
+                $shippingDescription,
+                $shippingAmount,
+                $invoice->getBaseShippingTaxAmount(),
+                $invoice->getBaseCurrencyCode(),
+                $roundingMode
+            );
+            $lineNumber++;
+        }
 
-        //Shipping
-        $shippingName = __("Shipping");
-        $lines[] = $this->createInvoiceLine($shippingName, $shippingName, count($lines), 1, $shippingName, $shippingAmount, $invoice->getBaseShippingTaxAmount(), $invoice->getBaseCurrencyCode(), $roundingMode);
-
-        //Add fee item
-        if (isset($feeItem)) {
-            $lines[] = $feeItem;
+        if(isset($feeItem))
+        {
+            $lines[] = $this->createInvoiceLineFromInvoice($feeItem, $order, $lineNumber, $roundingMode);
         }
 
         return $lines;
@@ -566,27 +590,31 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Get Refund Invoice Lines
      *
-     * @param \Magento\Sales\Model\Order\Creditmemo $creditMemo
+     * @param \Magento\Payment\Model\InfoInterface $payment
      * @param \Magento\Sales\Model\Order $order
      * @return \Bambora\Online\Model\Api\Checkout\Request\Models\Line[]
      */
-    protected function getRefundInvoiceLines($creditMemo, $order)
+    protected function getRefundInvoiceLines($payment, $order)
     {
-        $lines = array();
+        $creditMemo = $payment->getCreditmemo();
+        $allItems = $creditMemo->getAllItems();
+        $visibleItems = $this->filterVisibleItemsOnly($allItems);
+        $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
         //Fee item must be after shipment to keep the orginal authorize order of items
         $feeItem = null;
-        $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
-        $items = $this->filterVisibleItemsOnly($creditMemo->getAllItems());
-        foreach ($items as $item) {
+        $lines = array();
+        $lineNumber = 1;
+        foreach ($visibleItems as $item) {
             if ($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE) {
-                $feeItem = $this->createInvoiceLineFromInvoice($item, $order, $roundingMode);
+                $feeItem = $item;
                 continue;
             }
-            $lines[] = $this->createInvoiceLineFromInvoice($item, $order, $roundingMode);
+            $lines[] = $this->createInvoiceLineFromInvoice($item, $order, $lineNumber, $roundingMode);
+            $lineNumber++;
         }
 
-        $shippingAmount = $creditMemo->getBaseShippingAmount();
         //Shipping discount handling
+        $shippingAmount = $creditMemo->getBaseShippingAmount();
         if ($order->getBaseShippingDiscountAmount() > 0) {
             $creditShipmentAmount = $creditMemo->getBaseShippingAmount();
             $shipmentDiscount = $order->getBaseShippingDiscountAmount();
@@ -600,19 +628,45 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
         //Shipping
         if ($shippingAmount > 0) {
-            $shippingName = __("Shipping");
-            $lines[] = $this->createInvoiceLine($shippingName, $shippingName, count($lines) + 1, 1, $shippingName, $shippingAmount, $creditMemo->getBaseShippingTaxAmount(), $creditMemo->getBaseCurrencyCode(), $roundingMode);
+            $shippingId = __("Shipping");
+            $shippingDescription = $order->getShippingDescription();
+            $shippingQty = 1;
+            $lines[] = $this->createInvoiceLine(
+                $shippingDescription,
+                $shippingId,
+                $lineNumber,
+                $shippingQty,
+                $shippingDescription,
+                $shippingAmount,
+                $creditMemo->getBaseShippingTaxAmount(),
+                $creditMemo->getBaseCurrencyCode(),
+                $roundingMode
+            );
+            $lineNumber++;
         }
 
         if (isset($feeItem)) {
-            $lines[] = $feeItem;
+            $lines[] = $this->createInvoiceLineFromInvoice($feeItem, $order, $lineNumber, $roundingMode);
+            $lineNumber++;
         }
 
         //Adjustment refund
         if ($creditMemo->getBaseAdjustment() > 0) {
-            $adjustmentRefundName = __("Adjustment refund");
-            $lines[] = $this->createInvoiceLine($adjustmentRefundName, $adjustmentRefundName, count($lines) + 1, 1, $adjustmentRefundName, $creditMemo->getBaseAdjustment(), 0, $creditMemo->getBaseCurrencyCode(), $roundingMode);
+            $adjustmentRefundDescription = __("Adjustment refund");
+            $adjustmentQty = 1;
+            $lines[] = $this->createInvoiceLine(
+                $adjustmentRefundName,
+                $adjustmentRefundName,
+                $lineNumber,
+                $adjustmentQty,
+                "",
+                $creditMemo->getBaseAdjustment(),
+                0,
+                $creditMemo->getBaseCurrencyCode(),
+                $roundingMode
+            );
         }
+
         return $lines;
     }
 
@@ -624,14 +678,12 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     protected function filterVisibleItemsOnly($itemCollection)
     {
-        $items = array();
-        foreach ($itemCollection as $orgItem) {
-            $item = $orgItem->getOrderItem();
-            if (!$item->isDeleted() && !$item->getParentItemId()) {
-                $items[] =  $item;
-            }
+        $visibleItems = array();
+        foreach ($itemCollection as $item) {
+            if ($item->getOrderItem()->getParentItem()) continue;
+            $visibleItems[] = $item;
         }
-        return $items;
+        return $visibleItems;
     }
 
     /**
@@ -639,17 +691,20 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      *
      * @param \Magento\Sales\Model\Order\Item $item
      * @param \Magento\Sales\Model\Order $order
+     * @param int $lineNumber
      * @param string $roundingMode
      * @return \Bambora\Online\Model\Api\Checkout\Request\Models\Line
      */
-    protected function createInvoiceLineFromInvoice($item, $order, $roundingMode)
+    protected function createInvoiceLineFromInvoice($item, $order, $lineNumber , $roundingMode)
     {
+        $itemName = $item->getName();
+        $itemDescription = $item->getDescription();
         $invoiceLine = $this->createInvoiceLine(
-            $item->getDescription(),
+            isset($itemName) ? $itemName : $itemDescription,
             $item->getSku(),
-            array_search($item->getOrderItemId(), array_keys($order->getItems())) + 1,
-            floatval($item->getQty()),
-            $item->getName(),
+            $lineNumber,
+            $item->getQty(),
+            isset($itemDescription) ? $itemDescription : $itemName,
             $item->getBaseRowTotal(),
             $item->getBaseTaxAmount(),
             $order->getBaseCurrencyCode(),
