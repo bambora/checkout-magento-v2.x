@@ -2,25 +2,31 @@
   "name": "bambora/module-payment-magento2",
   "description": "Magento 2 payment module for Bambora Online",
   "type": "magento2-module",
-  "version": "2.0.2",
+  "version": "2.1.0",
+  "authors": [
+    {
+      "name": "Bambora Online A/S",
+      "email": "shoppingcarts@bambora.com"
+    }
+  ],
   "license": [
-    "OSL-3.0"
+    "OSL-3.0",
+    "AFL-3.0"
   ],
   "require": {
-    "php": "~5.5.22|~5.6.0|7.0.2|7.0.4|~7.0.6|~7.1.0",
-    "magento/framework": "100.* | 101.*",
-    "magento/module-backend": "100.* | 101.* | 102.*",
-    "magento/module-catalog": "100.* | 101.* | 102.*",
+    "php": "~5.6|^7.0|^7.1|^7.2",
+    "magento/framework": "100.* | 101.* | 102.*",
+    "magento/module-backend": "100.* | 101.*",
+    "magento/module-catalog": "100.* | 101.* | 102.* | 103.*",
     "magento/module-checkout": "100.*",
     "magento/module-config": "100.* | 101.*",
     "magento/module-payment": "100.*",
-    "magento/module-paypal": "100.*",
     "magento/module-quote": "100.* | 101.*",
-    "magento/module-sales": "100.* | 101.*",
-    "magento/module-store": "100.*",
+    "magento/module-sales": "100.* | 101.* | 102.*",
+    "magento/module-store": "100.* | 101.*",
     "magento/module-tax": "100.*",
     "magento/module-ui": "100.* | 101.*",
-    "zendframework/zend-soap": ">=2.4.6"
+    "zendframework/zend-soap": "^2.4.6"
   },
   "autoload": {
     "files": [ "registration.php" ],
