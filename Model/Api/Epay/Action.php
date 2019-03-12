@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Model\Api\Epay;
 
@@ -22,16 +21,13 @@ class Action extends Base
     /**
      * Get Payment window url
      *
-     * @param \Bambora\Online\Model\Api\Epay\Request\Payment $paymentRequest
+     * @param  \Bambora\Online\Model\Api\Epay\Request\Payment $paymentRequest
      * @return \Bambora\Online\Model\Api\Epay\Request\Models\Url
      */
     public function getPaymentWindowUrl($paymentRequest)
     {
         $baseUrl = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_INTEGRATION). '/ewindow/Default.aspx';
-
-        /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Url */
         $url = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_URL);
-
         $paramString = "?encoding=".urlencode($paymentRequest->encoding).
                        "&cms=".urlencode($paymentRequest->cms).
                        "&windowstate=".urlencode($paymentRequest->windowstate).
@@ -50,27 +46,10 @@ class Action extends Base
                        "&timeout=".urlencode($paymentRequest->timeout).
                        "&invoice=".urlencode($paymentRequest->invoice).
                        "&hash=".urlencode($paymentRequest->hash);
-
         $url->url = $baseUrl . $paramString;
-
         return $url;
     }
 
-    ///**
-    // * Get ePay payment window js url
-    // *
-    // * @return \Bambora\Online\Model\Api\Epay\Request\Models\Url
-    // */
-    //public function getPaymentWindowJSUrl()
-    //{
-    //    $result = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_INTEGRATION).'/ewindow/paymentwindow.js';
-
-    //    /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Url */
-    //    $url = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_URL);
-    //    $url->url = $result;
-
-    //    return $url;
-    //}
     /**
      * Get ePay payment window js url
      *
@@ -85,7 +64,7 @@ class Action extends Base
     /**
      * Get ePay payment logo url
      *
-     * @param string $merchantNumber
+     * @param  string $merchantNumber
      * @return string
      */
     public function getPaymentLogoUrl($merchantNumber)
@@ -107,15 +86,15 @@ class Action extends Base
     /**
      * Capture transaction
      *
-     * @param int|long $amount
-     * @param string $transactionId
-     * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
+     * @param  int|long                                           $amount
+     * @param  string                                             $transactionId
+     * @param  \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
      * @return \Bambora\Online\Model\Api\Epay\Response\Capture
      */
     public function capture($amount, $transactionId, $auth)
     {
         try {
-            $param = array(
+            $param = [
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'amount' => (string)$amount,
@@ -123,14 +102,12 @@ class Action extends Base
                 'pbsResponse' => -1,
                 'epayresponse' => -1,
                 'pwd' => $auth->pwd
-            );
+            ];
 
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
 
             $result = $client->capture($param);
-
-            /** @var \Bambora\Online\Model\Api\Epay\Response\Capture */
             $captureResponse = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::RESPONSE_CAPTURE);
             $captureResponse->result = $result->captureResult;
             $captureResponse->epayResponse = $result->epayresponse;
@@ -146,18 +123,16 @@ class Action extends Base
     /**
      * Credit transaction
      *
-     * @param int|long $amount
-     * @param string $transactionId
-     * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
+     * @param  int|long                                           $amount
+     * @param  string                                             $transactionId
+     * @param  \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
      * @return \Bambora\Online\Model\Api\Epay\Response\Credit
      */
     public function credit($amount, $transactionId, $auth)
     {
-        /** @var \Bambora\Online\Model\Api\Epay\Response\Credit */
         $creditResponse = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::RESPONSE_CREDIT);
-
         try {
-            $param = array(
+            $param = [
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'amount' => (string)$amount,
@@ -165,7 +140,7 @@ class Action extends Base
                 'pbsresponse' => -1,
                 'epayresponse' => -1,
                 'pwd' => $auth->pwd
-            );
+            ];
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
             $result = $client->credit($param);
@@ -184,25 +159,23 @@ class Action extends Base
     /**
      * Delete transaction
      *
-     * @param string $transactionId
-     * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
+     * @param  string                                             $transactionId
+     * @param  \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
      * @return \Bambora\Online\Model\Api\Epay\Response\Delete
      */
     public function delete($transactionId, $auth)
     {
         try {
-            $param = array(
+            $param = [
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'group' => '',
                 'epayresponse' => -1,
                 'pwd' => $auth->pwd
-            );
+            ];
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
             $result = $client->delete($param);
-
-            /** @var \Bambora\Online\Model\Api\Epay\Response\Delete */
             $deleteResponse = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::RESPONSE_DELETE);
             $deleteResponse->result = $result->deleteResult;
             $deleteResponse->epayResponse = $result->epayresponse;
@@ -217,26 +190,24 @@ class Action extends Base
     /**
      * Get Transaction
      *
-     * @param string $transactionId
-     * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
+     * @param  string                                             $transactionId
+     * @param  \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
      * @return \Bambora\Online\Model\Api\Epay\Response\Transaction
      */
     public function getTransaction($transactionId, $auth)
     {
         try {
-            $param = array(
+            $param = [
                 'merchantnumber' => $auth->merchantNumber,
                 'transactionid' => $transactionId,
                 'epayresponse' => -1,
                 'pwd' => $auth->pwd
-            );
+            ];
 
             $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_REMOTE).'/payment.asmx?WSDL';
             $client = $this->_initSoapClient($url);
 
             $result = $client->gettransaction($param);
-
-            /** @var \Bambora\Online\Model\Api\Epay\Response\Transaction */
             $getTransactionResponse = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::RESPONSE_TRANSACTION);
             $getTransactionResponse->result = $result->gettransactionResult;
             $getTransactionResponse->epayResponse = $result->epayresponse;

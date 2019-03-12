@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Controller\Checkout;
 
@@ -34,8 +33,6 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     public function execute()
     {
         $posted = $this->getRequest()->getParams();
-
-        /** @var \Magento\Sales\Model\Order */
         $order = null;
         $transactionResponse = null;
         $message = "Callback Failed: ";
@@ -60,10 +57,10 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     /**
      * Validate the callback
      *
-     * @param mixed $posted
-     * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
-     * @param \Magento\Sales\Model\Order $order
-     * @param string $message
+     * @param  mixed                                                   $posted
+     * @param  \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
+     * @param  \Magento\Sales\Model\Order                              $order
+     * @param  string                                                  $message
      * @return bool
      */
     protected function validateCallback($posted, &$transactionResponse, &$order, &$message)
@@ -108,10 +105,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         //Validate Transaction
         $transactionId = $posted['txnid'];
         $apiKey = $this->_bamboraHelper->generateCheckoutApiKey($order->getStoreId());
-
-        /** @var \Bambora\Online\Model\Api\Checkout\Merchant */
         $merchantApi = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_MERCHANT);
-
         $transactionResponse = $merchantApi->getTransaction($transactionId, $apiKey);
 
         //Validate transaction
@@ -131,9 +125,9 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     /**
      * Process the callback from Bambora
      *
-     * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
-     * @param \Magento\Sales\Model\Order $order
-     * @param int $responseCode
+     * @param  \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
+     * @param  \Magento\Sales\Model\Order                              $order
+     * @param  int                                                     $responseCode
      * @return void
      */
     protected function processCallback($transactionResponse, $order, &$responseCode)
@@ -145,22 +139,22 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         try {
             $pspReference = $payment->getAdditionalInformation(CheckoutPayment::METHOD_REFERENCE);
             if (empty($pspReference)) {
-                /** @var \Bambora\Online\Model\Method\Checkout\Payment */
                 $paymentMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
                 $isInstantCapture = false;
-                if($transaction->total->authorized - $transaction->total->captured === 0){
+                if ($transaction->total->authorized - $transaction->total->captured === 0) {
                     $isInstantCapture = true;
                 }
                 $paymentTypeDisplayName = "N/A";
                 $paymentTypeAccountNumber = "";
-                if(is_array($transaction->information->paymentTypes) && count($transaction->information->paymentTypes) > 0) {
+                if (is_array($transaction->information->paymentTypes) && count($transaction->information->paymentTypes) > 0) {
                     $paymentTypeDisplayName = $transaction->information->paymentTypes[0]->displayName;
                 }
-                if(is_array($transaction->information->primaryAccountnumbers) && count($transaction->information->primaryAccountnumbers) > 0) {
+                if (is_array($transaction->information->primaryAccountnumbers) && count($transaction->information->primaryAccountnumbers) > 0) {
                     $paymentTypeAccountNumber = $transaction->information->primaryAccountnumbers[0]->number;
                 }
 
-                $this->_processCallbackData($order,
+                $this->_processCallbackData(
+                    $order,
                     $paymentMethod,
                     $bamboraTransactionId,
                     CheckoutPayment::METHOD_REFERENCE,
@@ -174,7 +168,6 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                 );
 
                 $message = "Callback Success - Order created";
-                
             } else {
                 $message = "Callback Success - Order already created";
             }
@@ -182,7 +175,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         } catch (\Exception $ex) {
             $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
             $order->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
-            $payment->setAdditionalInformation(array(CheckoutPayment::METHOD_REFERENCE => ""));
+            $payment->setAdditionalInformation([CheckoutPayment::METHOD_REFERENCE => ""]);
             $payment->save();
             $order->save();
 

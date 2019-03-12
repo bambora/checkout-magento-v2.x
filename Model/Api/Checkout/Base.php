@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Model\Api\Checkout;
 
@@ -26,13 +25,13 @@ abstract class Base extends DataObject
      *
      * @return array
      */
-    protected $endpoints = array(
+    protected $endpoints = [
         'merchant' => 'https://merchant-v1.api-eu.bambora.com',
         'checkout' => 'https://api.v1.checkout.bambora.com',
         'transaction' => 'https://transaction-v1.api-eu.bambora.com',
         'checkoutCDN' => 'https://static.bambora.com',
         'globalAssets' => 'https://d3r1pwhfz7unl9.cloudfront.net/bambora'
-    );
+    ];
 
     /**
      * @var \Bambora\Online\Helper\Data
@@ -52,16 +51,16 @@ abstract class Base extends DataObject
     /**
      * Bambora Api
      *
-     * @param \Bambora\Online\Helper\Data $bamboraHelper
+     * @param \Bambora\Online\Helper\Data          $bamboraHelper
      * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
-     * @param \Magento\Framework\HTTP\Client\Curl $curl
-     * @param array $data
+     * @param \Magento\Framework\HTTP\Client\Curl  $curl
+     * @param array                                $data
      */
     public function __construct(
         \Bambora\Online\Helper\Data $bamboraHelper,
         \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
         \Magento\Framework\HTTP\Client\Curl $curl,
-         array $data = []
+        array $data = []
     ) {
         parent::__construct($data);
         $this->_bamboraHelper = $bamboraHelper;
@@ -72,7 +71,7 @@ abstract class Base extends DataObject
     /**
      * Return the address of the endpoint type
      *
-     * @param string $type
+     * @param  string $type
      * @return string
      */
     public function _getEndpoint($type)
@@ -83,22 +82,22 @@ abstract class Base extends DataObject
     /**
      * Sends the curl request to the given serviceurl
      *
-     * @param string $serviceUrl
-     * @param mixed $jsonData
-     * @param string $method
-     * @param string $apiKey
+     * @param  string $serviceUrl
+     * @param  mixed  $jsonData
+     * @param  string $method
+     * @param  string $apiKey
      * @return mixed
      */
     protected function _callRestService($serviceUrl, $jsonData, $method, $apiKey)
     {
         $contentLength = isset($jsonData) ? strlen($jsonData) : 0;
-        $headers = array(
+        $headers = [
            'Content-Type' => 'application/json',
            'Content-Length' => $contentLength,
            'Accept' => 'application/json',
            'Authorization' => $apiKey,
            'X-EPay-System' => $this->_bamboraHelper->getModuleHeaderInfo()
-       );
+        ];
 
         $this->_curl->setHeaders($headers);
         $this->_curl->setOption(CURLOPT_HEADER, false);
@@ -110,7 +109,7 @@ abstract class Base extends DataObject
         } elseif ($method === Base::POST) {
             //For overwriting build in method and allow json encoded data as post fields
             $this->_curl->setOption(CURLOPT_POSTFIELDS, $jsonData);
-            $this->_curl->post($serviceUrl, array());
+            $this->_curl->post($serviceUrl, []);
         } else {
             return null;
         }
@@ -121,7 +120,7 @@ abstract class Base extends DataObject
     /**
      * Map bambora checkout response meta json to meta object
      *
-     * @param mixed $response
+     * @param  mixed $response
      * @return Response\Models\Meta|null
      */
     protected function _mapMeta($response)
@@ -129,12 +128,9 @@ abstract class Base extends DataObject
         if (!isset($response)) {
             return null;
         }
-        /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\Message */
         $message = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_MESSAGE);
         $message->enduser = $response['meta']['message']['enduser'];
         $message->merchant = $response['meta']['message']['merchant'];
-
-        /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\Meta */
         $meta = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_META);
         $meta->message = $message;
         $meta->result = $response['meta']['result'];

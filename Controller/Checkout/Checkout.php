@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Controller\Checkout;
 
@@ -32,13 +31,12 @@ class Checkout extends \Bambora\Online\Controller\AbstractActionController
     /**
      * Get the Bambora Checkout Response
      *
-     * @param \Magento\Sales\Model\Order
+     * @param  \Magento\Sales\Model\Order
      * @return \Bambora\Online\Model\Api\Checkout\Response\Checkout|null
      */
     public function getPaymentWindow($order)
     {
         try {
-            /** @var \Bambora\Online\Model\Method\Checkout\Payment */
             $checkoutMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
             $paymentWindowResponse = $checkoutMethod->getPaymentWindow($order);
 

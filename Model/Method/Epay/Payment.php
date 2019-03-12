@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Model\Method\Epay;
 
@@ -47,7 +46,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function getAuth($storeId)
     {
-        if(!$storeId) {
+        if (!$storeId) {
             $storeId = $this->getStoreManager()->getStore()->getId();
         }
         return $this->_bamboraHelper->generateEpayAuth($storeId);
@@ -56,7 +55,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Get Bambora Checkout payment window
      *
-     * @param \Magento\Sales\Model\Order
+     * @param  \Magento\Sales\Model\Order
      * @return \Bambora\Online\Model\Api\Epay\Request\Payment
      */
     public function getPaymentWindow($order)
@@ -70,7 +69,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Create the ePay payment window Request url
      *
-     * @param \Magento\Sales\Model\Order
+     * @param  \Magento\Sales\Model\Order
      * @return \Bambora\Online\Model\Api\Epay\Request\Payment
      */
     public function createPaymentRequest($order)
@@ -80,8 +79,6 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $minorunits = $this->_bamboraHelper->getCurrencyMinorUnits($currency);
         $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $storeId);
         $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseTotalDue(), $minorunits, $roundingMode);
-        
-        /** @var \Bambora\Online\Model\Api\Epay\Request\Payment */
         $paymentRequest = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_PAYMENT);
         $paymentRequest->encoding = "UTF-8";
         $paymentRequest->cms = $this->_bamboraHelper->getModuleHeaderInfo();
@@ -108,20 +105,17 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Create Invoice
      *
-     * @param \Magento\Sales\Model\Order $order
-     * @param int $minorunits
-     * @param string $roundingMode
+     * @param  \Magento\Sales\Model\Order $order
+     * @param  int                        $minorunits
+     * @param  string                     $roundingMode
      * @return string
      */
     public function createInvoice($order, $minorunits, $roundingMode)
     {
         if ($this->getConfigData(BamboraConstants::ENABLE_INVOICE_DATA)) {
-            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Invoice */
             $invoice = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_INVOICE);
-
             $orderBillingAddress = $order->getBillingAddress();
-            if($orderBillingAddress) {
-                /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Customer */
+            if ($orderBillingAddress) {
                 $customer = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_CUSTOMER);
                 $customer->firstname = $orderBillingAddress->getFirstname();
                 $customer->lastname = $orderBillingAddress->getLastname();
@@ -139,12 +133,11 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
             
             $orderShippingAddress = $order->getShippingAddress();
-            if(!$orderShippingAddress) {
+            if (!$orderShippingAddress) {
                 $orderShippingAddress = $orderBillingAddress;
             }
 
-            if($orderShippingAddress) {
-                /** @var \Bambora\Online\Model\Api\Epay\Request\Models\ShippingAddress */
+            if ($orderShippingAddress) {
                 $shippingAddress = $this->_bamboraHelper->getEpayApiModel(EpayApiModels::REQUEST_MODEL_SHIPPINGADDRESS);
                 $shippingAddress->firstname = $orderShippingAddress->getFirstname();
                 $shippingAddress->lastname = $orderShippingAddress->getLastname();
@@ -154,40 +147,43 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                 $shippingAddress->country = $orderShippingAddress->getCountryId();
                 $invoice->shippingaddress = $shippingAddress;
             }
-            $invoice->lines = array();
-
-            /** @var \Magento\Sales\Model\Order\Item[] */
+            $invoice->lines = [];
+            
+            // Add order lines
             $items = $order->getAllVisibleItems();
             foreach ($items as $item) {
                 $description = empty($item->getDescription()) ? $item->getName() : $item->getDescription();
-                $invoice->lines[] = array(
+                $invoice->lines[] = [
                         "id" =>$item->getSku(),
                         "description" => $this->removeSpecialCharacters($description),
                         "quantity" => intval($item->getQtyOrdered()),
                         "price" => $this->calculateItemPrice($item, $minorunits, $roundingMode),
                         "vat" => floatval($item->getTaxPercent())
-                    );
+                    ];
             }
-            // add shipment as line
-            $shippingText = __("Shipping");
-            $shippingDescription = $order->getShippingDescription();
-            $invoice->lines[] = array(
-                       "id" => $shippingText,
-                       "description" => isset($shippingDescription) ? $shippingDescription : $shippingText,
-                       "quantity" => 1,
-                       "price" => $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseShippingAmount(), $minorunits, $roundingMode),
-                       "vat" => $this->calculateShippingVat($order)
-                   );
 
+            // add shipment as line
+            $baseShippingAmount = $order->getBaseShippingAmount();
+            if($baseShippingAmount > 0) {
+                $shippingText = __("Shipping");
+                $shippingDescription = $order->getShippingDescription();
+                $invoice->lines[] = [
+                    "id" => $shippingText,
+                    "description" => isset($shippingDescription) ? $shippingDescription : $shippingText,
+                    "quantity" => 1,
+                    "price" => $this->_bamboraHelper->convertPriceToMinorunits($baseShippingAmount, $minorunits, $roundingMode),
+                    "vat" => $this->calculateShippingVat($order)
+                ];
+            }
             // Fix for bug in Magento 2 shipment discont calculation
             $baseShipmentDiscountAmount = $order->getBaseShippingDiscountAmount();
             if ($baseShipmentDiscountAmount > 0) {
-                $invoice->lines[] = array(
+                $invoice->lines[] = [
                           "id" => "shipping_discount",
                           "description" => __("Shipping discount"),
                           "quantity" => 1,
                           "price" =>$this->_bamboraHelper->convertPriceToMinorunits(($baseShipmentDiscountAmount * -1), $minorunits, $roundingMode),
-                      );
+                      ];
             }
 
             return json_encode($invoice, JSON_UNESCAPED_UNICODE);
@@ -199,9 +195,9 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Calculate a single item price and convert into minorunits
      *
-     * @param \Magento\Sales\Model\Order\Item $item
-     * @param int $minorunits
-     * @param string $roundingMode
+     * @param  \Magento\Sales\Model\Order\Item $item
+     * @param  int                             $minorunits
+     * @param  string                          $roundingMode
      * @return integer
      */
     public function calculateItemPrice($item, $minorunits, $roundingMode)
@@ -219,7 +215,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Calculate the shipment Vat based on shipment tax and base shipment price
      *
-     * @param \Magento\Sales\Model\Order $order
+     * @param  \Magento\Sales\Model\Order $order
      * @return int
      */
     public function calculateShippingVat($order)
@@ -234,7 +230,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Remove special characters
      *
-     * @param string $value
+     * @param  string $value
      * @return string
      */
     public function removeSpecialCharacters($value)
@@ -245,21 +241,17 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Capture payment
      *
-     * @param \Magento\Payment\Model\InfoInterface $payment
-     * @param float $amount
+     * @param  \Magento\Payment\Model\InfoInterface $payment
+     * @param  float                                $amount
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        /** @var \Magento\Sales\Model\Order */
         $order = $payment->getOrder();
-
         try {
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
-
             $isInstantCapure = $payment->getAdditionalInformation(BamboraConstants::INSTANT_CAPTURE);
-
             if ($isInstantCapure === true) {
                 $payment->setTransactionId($transactionId . '-' . BamboraConstants::INSTANT_CAPTURE)
                     ->setIsTransactionClosed(true)
@@ -277,11 +269,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $order->getStoreId());
             $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorunits, $roundingMode);
             $storeId = $order->getStoreId();
-            
-            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth */
             $auth = $this->getAuth($storeId);
-
-            /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
             $captureResponse = $actionProvider->capture($amountMinorunits, $transactionId, $auth);
 
@@ -291,8 +279,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
 
             $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_CAPTURE)
-                    ->setIsTransactionClosed(true)
-                    ->setParentTransactionId($transactionId);
+                ->setIsTransactionClosed(true)
+                ->setParentTransactionId($transactionId);
 
             return $this;
         } catch (\Exception $ex) {
@@ -305,17 +293,15 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Refund payment
      *
-     * @param \Magento\Payment\Model\InfoInterface $payment
-     * @param float $amount
+     * @param  \Magento\Payment\Model\InfoInterface $payment
+     * @param  float                                $amount
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        /** @var \Magento\Sales\Model\Order */
         $order = $payment->getOrder();
         $id = $order->getIncrementId();
-
         try {
             $creditMemo = $payment->getCreditmemo();
             $id = $creditMemo->getInvoice()->getIncrementId();
@@ -331,12 +317,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $minorunits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
             $roundingMode = $this->getConfigData(BamboraConstants::ROUNDING_MODE, $storeId);
             $amountMinorunits = $this->_bamboraHelper->convertPriceToMinorunits($amount, $minorunits, $roundingMode);
-            
-            
-            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth */
             $auth = $this->getAuth($storeId);
-
-            /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
             $creditResponse = $actionProvider->credit($amountMinorunits, $transactionId, $auth);
 
@@ -346,8 +327,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
 
             $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_REFUND)
-                    ->setIsTransactionClosed(true)
-                    ->setParentTransactionId($transactionId);
+                ->setIsTransactionClosed(true)
+                ->setParentTransactionId($transactionId);
 
             return $this;
         } catch (\Exception $ex) {
@@ -360,7 +341,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Cancel payment
      *
-     * @param \Magento\Payment\Model\InfoInterface $payment
+     * @param  \Magento\Payment\Model\InfoInterface $payment
      * @return $this
      */
     public function cancel(\Magento\Payment\Model\InfoInterface $payment)
@@ -378,14 +359,12 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Void payment
      *
-     * @param \Magento\Payment\Model\InfoInterface $payment
+     * @param  \Magento\Payment\Model\InfoInterface $payment
      * @return $this
      */
     public function void(\Magento\Payment\Model\InfoInterface $payment)
     {
-        /** @var \Magento\Sales\Model\Order */
         $order = $payment->getOrder();
-
         try {
             if (!$this->canOnlineAction($payment)) {
                 throw new \Exception(__("The void action could not, be processed online. Please enable remote payment processing from the module configuration"));
@@ -393,11 +372,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
             $transactionId = $payment->getAdditionalInformation($this::METHOD_REFERENCE);
             $storeId = $order->getStoreId();
-            
-            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth */
             $auth = $this->getAuth($storeId);
-
-            /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEPayApi(EpayApi::API_ACTION);
             $deleteResponse = $actionProvider->delete($transactionId, $auth);
 
@@ -407,8 +382,8 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             }
 
             $payment->setTransactionId($transactionId. '-' . Transaction::TYPE_VOID)
-                    ->setIsTransactionClosed(true)
-                    ->setParentTransactionId($transactionId);
+                ->setIsTransactionClosed(true)
+                ->setParentTransactionId($transactionId);
 
             $this->cancelSurchargeFeeItem($payment);
 
@@ -423,9 +398,9 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
     /**
      * Get Bambora Checkout Transaction
      *
-     * @param mixed $transactionId
-     * @param string $storeId
-     * @param string &$message
+     * @param  mixed  $transactionId
+     * @param  string $storeId
+     * @param  string &$message
      * @return \Bambora\Online\Model\Api\Epay\Response\Models\TransactionInformationType|null
      */
     public function getTransaction($transactionId, $storeId, &$message)
@@ -434,11 +409,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             if (!$this->getConfigData(BamboraConstants::REMOTE_INTERFACE)) {
                 return null;
             }
-            
-            /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth */
             $auth = $this->getAuth($storeId);
-
-            /** @var \Bambora\Online\Model\Api\Epay\Action */
             $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
             $transactionResponse = $actionProvider->getTransaction($transactionId, $auth);
 
@@ -454,7 +425,9 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         }
     }
 
-    /**{@inheritDoc}*/
+    /**
+     * @inheritDoc
+     */
     public function canCapture()
     {
         if ($this->_canCapture && $this->canAction($this::METHOD_REFERENCE)) {
@@ -464,7 +437,9 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         return false;
     }
 
-    /**{@inheritDoc}*/
+    /**
+     * @inheritDoc
+     */
     public function canRefund()
     {
         if ($this->_canRefund && $this->canAction($this::METHOD_REFERENCE)) {
@@ -474,7 +449,9 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         return false;
     }
 
-    /**{@inheritDoc}*/
+    /**
+     * @inheritDoc
+     */
     public function canVoid()
     {
         if ($this->_canVoid && $this->canAction($this::METHOD_REFERENCE)) {
@@ -491,9 +468,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function getEpayPaymentTypeUrl()
     {
-        /** @var \Bambora\Online\Model\Api\Epay\Action */
         $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
-
         return $actionProvider->getPaymentLogoUrl($this->getAuth(null)->merchantNumber);
     }
 
@@ -504,9 +479,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function getEpayLogoUrl()
     {
-        /** @var \Bambora\Online\Model\Api\Epay\Action */
         $actionProvider = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
-
         return $actionProvider->getEpayLogoUrl();
     }
 
@@ -537,9 +510,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
      */
     public function getEPayPaymentWindowJsUrl()
     {
-        /** @var \Bambora\Online\Model\Api\Epay\Action */
         $assetsApi = $this->_bamboraHelper->getEpayApi(EpayApi::API_ACTION);
-
         return $assetsApi->getPaymentWindowJSUrl();
     }
 }

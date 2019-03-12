@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Block\Adminhtml\Sales\Order\View;
 
@@ -37,11 +36,12 @@ class PaymentInfo extends \Magento\Backend\Block\Template
 
     /**
      * PaymentInfo constructor.
+     *
      * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
-     * @param \Bambora\Online\Helper\Data $bamboraHelper
-     * @param array $data
+     * @param \Magento\Framework\Registry             $registry
+     * @param \Magento\Framework\Pricing\Helper\Data  $priceHelper
+     * @param \Bambora\Online\Helper\Data             $bamboraHelper
+     * @param array                                   $data
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
@@ -85,9 +85,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $paymentMethod = $payment->getMethod();
 
         if ($paymentMethod === CheckoutPayment::METHOD_CODE) {
-            /** @var \Bambora\Online\Model\Method\Checkout\Payment */
             $checkoutMethod = $payment->getMethodInstance();
-
             if (isset($checkoutMethod)) {
                 $transactionId = $payment->getAdditionalInformation($checkoutMethod::METHOD_REFERENCE);
                 if (!empty($transactionId)) {
@@ -104,9 +102,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 }
             }
         } elseif ($paymentMethod === EpayPayment::METHOD_CODE) {
-            /** @var \Bambora\Online\Model\Method\Epay\Payment */
             $ePayMethod = $payment->getMethodInstance();
-
             if (isset($ePayMethod)) {
                 $transactionId = $payment->getAdditionalInformation($ePayMethod::METHOD_REFERENCE);
                 if (!empty($transactionId)) {
@@ -130,7 +126,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     /**
      * Create Checkout Transaction HTML
      *
-     * @param \Bambora\Online\Model\Api\Checkout\Response\Models\Transaction $transaction
+     * @param  \Bambora\Online\Model\Api\Checkout\Response\Models\Transaction $transaction
      * @return string
      */
     public function createCheckoutTransactionHtml($transaction)
@@ -147,12 +143,12 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $res .= '<tr><td>' . __("Transaction date") . ':</td>';
         $res .= '<td>' . $this->formatDate($transaction->createdDate, \IntlDateFormatter::SHORT, true) . '</td></tr>';
 
-        if(is_array($transaction->information->paymentTypes) && count($transaction->information->paymentTypes) > 0) {
+        if (is_array($transaction->information->paymentTypes) && count($transaction->information->paymentTypes) > 0) {
             $res .= '<tr><td>' . __("Card type") . ':</td>';
             $res .= '<td>' . $transaction->information->paymentTypes[0]->displayName . $this->getPaymentLogoUrl($transaction->information->paymentTypes[0]->groupid). '</td></tr>';
         }
         
-        if(is_array($transaction->information->primaryAccountnumbers) && count($transaction->information->primaryAccountnumbers) > 0) {
+        if (is_array($transaction->information->primaryAccountnumbers) && count($transaction->information->primaryAccountnumbers) > 0) {
             $res .= '<tr><td>' . __("Card number") . ':</td>';
             $res .= '<td>' . $transaction->information->primaryAccountnumbers[0]->number . '</td></tr>';
         }
@@ -169,7 +165,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $creditedAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->credited, $transaction->currency->minorunits);
         $res .= '<td>' . $this->_priceHelper->currency($creditedAmount, true, false) . '</td></tr>';
 
-        if(is_array($transaction->information->acquirers) && count($transaction->information->acquirers) > 0) {
+        if (is_array($transaction->information->acquirers) && count($transaction->information->acquirers) > 0) {
             $res .= '<tr><td>' . __("Acquirer") . ':</td>';
             $res .= '<td>' . $transaction->information->acquirers[0]->name . '</td></tr>';
         }
@@ -184,7 +180,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     /**
      * Set the first letter to uppercase
      *
-     * @param string $status
+     * @param  string $status
      * @return string
      */
     public function checkoutStatus($status)
@@ -202,7 +198,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     /**
      * Create html for paymentLogoUrl
      *
-     * @param mixed $paymentId
+     * @param  mixed $paymentId
      * @return string
      */
     public function getPaymentLogoUrl($paymentId)
@@ -213,8 +209,8 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     /**
      * Create ePay Transaction HTML
      *
-     * @param \Bambora\Online\Model\Api\Epay\Response\Models\TransactionInformationType $transactionInformation
-     * @param \Magento\Sales\Model\Order $order
+     * @param  \Bambora\Online\Model\Api\Epay\Response\Models\TransactionInformationType $transactionInformation
+     * @param  \Magento\Sales\Model\Order                                                $order
      * @return string
      */
     public function createEpayTransactionHtml($transactionInformation, $order)
@@ -290,7 +286,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
             $historyArray = $transactionInformation->history->TransactionHistoryInfo;
             if (count($transactionInformation->history->TransactionHistoryInfo) == 1) {
                 // convert to array
-                $historyArray = array($transactionInformation->history->TransactionHistoryInfo);
+                $historyArray = [$transactionInformation->history->TransactionHistoryInfo];
             }
             $res .= '<br /><br />';
             $res .= '<tr><td colspan="2" class="bambora_table_title bambora_table_title_padding">' . __("History") . '</td></tr>';

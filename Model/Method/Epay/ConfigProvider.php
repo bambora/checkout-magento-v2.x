@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Model\Method\Epay;
 
@@ -60,7 +59,7 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
                     'paymentTypeLogoSrc' => $this->_ePayMethod->getEpayPaymentTypeUrl(),
                     'checkoutUrl'=> $this->_ePayMethod->getCheckoutUrl(),
                     'cancelUrl'=> $this->_ePayMethod->getCancelUrl()
-                ]
+                 ]
             ]
         ];
 

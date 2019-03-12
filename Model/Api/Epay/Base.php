@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Model\Api\Epay;
 
@@ -23,11 +22,11 @@ class Base extends DataObject
      *
      * @return array
      */
-    protected $endpoints = array(
+    protected $endpoints = [
         'remote' => 'https://ssl.ditonlinebetalingssystem.dk/remote',
         'integration' => 'https://ssl.ditonlinebetalingssystem.dk/integration',
         'assets' => 'https://d3r1pwhfz7unl9.cloudfront.net/bambora'
-    );
+    ];
 
     /**
      * @var \Bambora\Online\Helper\Data
@@ -42,14 +41,14 @@ class Base extends DataObject
     /**
      * ePay Api
      *
-     * @param \Bambora\Online\Helper\Data $bamboraHelper
+     * @param \Bambora\Online\Helper\Data          $bamboraHelper
      * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
-     * @param array $data
+     * @param array                                $data
      */
     public function __construct(
         \Bambora\Online\Helper\Data $bamboraHelper,
         \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
-         array $data = []
+        array $data = []
     ) {
         parent::__construct($data);
         $this->_bamboraHelper = $bamboraHelper;
@@ -59,7 +58,7 @@ class Base extends DataObject
     /**
      * Return the address of the endpoint type
      *
-     * @param string $type
+     * @param  string $type
      * @return string
      */
     public function _getEndpoint($type)
@@ -70,7 +69,7 @@ class Base extends DataObject
     /**
      * Initilize a Soap Client
      *
-     * @param string $wsdlUrl
+     * @param  string $wsdlUrl
      * @return \Zend\Soap\Client
      */
     protected function _initSoapClient($wsdlUrl)

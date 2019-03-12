@@ -10,15 +10,14 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Controller\Adminhtml\Order;
 
 class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
 {
     /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Ui\Component\MassAction\Filter $filter
+     * @param \Magento\Backend\App\Action\Context                        $context
+     * @param \Magento\Ui\Component\MassAction\Filter                    $filter
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      */
     public function __construct(
@@ -33,17 +32,16 @@ class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassA
     /**
      * Hold selected orders
      *
-     * @param \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
+     * @param  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
         $countDeleteOrder = 0;
-        $deleted = array();
-        $notDeleted = array();
+        $deleted = [];
+        $notDeleted = [];
 
         $collectionItems = $collection->getItems();
-        /** @var \Magento\Sales\Model\Order $order */
         foreach ($collectionItems as $order) {
             try {
                 $order->delete();

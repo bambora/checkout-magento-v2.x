@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Helper;
 
@@ -38,10 +37,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Bambora Helper
      *
-     * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
+     * @param \Magento\Framework\App\Helper\Context            $context
+     * @param \Bambora\Online\Logger\BamboraLogger             $bamboraLogger
      * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
-     * @param \Magento\Framework\Module\ModuleListInterface $moduleList
+     * @param \Magento\Framework\Module\ModuleListInterface    $moduleList
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -58,8 +57,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Gives back bambora_checkout configuration values
      *
-     * @param $field
-     * @param null|int $storeId
+     * @param  $field
+     * @param  null|int $storeId
      * @return mixed
      */
     public function getBamboraEpayConfigData($field, $storeId = null)
@@ -70,8 +69,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Gives back bambora_checkout configuration values
      *
-     * @param $field
-     * @param null|int $storeId
+     * @param  $field
+     * @param  null|int $storeId
      * @return mixed
      */
     public function getBamboraCheckoutConfigData($field, $storeId = null)
@@ -82,8 +81,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Gives back bambora_checkout configuration values
      *
-     * @param $field
-     * @param null|int $storeId
+     * @param  $field
+     * @param  null|int $storeId
      * @return mixed
      */
     public function getBamboraAdvancedConfigData($field, $storeId = null)
@@ -94,10 +93,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Retrieve information from payment configuration
      *
-     * @param $field
-     * @param $paymentMethodCode
-     * @param $storeId
-     * @param bool|false $flag
+     * @param  $field
+     * @param  $paymentMethodCode
+     * @param  $storeId
+     * @param  bool|false        $flag
      * @return bool|mixed
      */
     public function getConfigData($field, $paymentMethodCode, $storeId, $flag = false)
@@ -114,7 +113,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Retrieve a Checkout Api class
      *
-     * @param $apiName
+     * @param  $apiName
      * @return object
      */
     public function getCheckoutApi($apiName)
@@ -141,7 +140,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Retrieve a Checkout Api class
      *
-     * @param $apiName
+     * @param  $apiName
      * @return object
      */
     public function getEpayApi($apiName)
@@ -168,7 +167,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Decrypt data
      *
-     * @param mixed $data
+     * @param  mixed $data
      * @return string
      */
     public function decryptData($data)
@@ -192,9 +191,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert an amount to minorunits
      *
-     * @param $amount
-     * @param $minorunits
-     * @param $roundingMode
+     * @param  $amount
+     * @param  $minorunits
+     * @param  $roundingMode
      * @return int
      */
     public function convertPriceToMinorunits($amount, $minorunits, $roundingMode)
@@ -220,8 +219,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert an amount from minorunits
      *
-     * @param $amount
-     * @param $minorunits
+     * @param  $amount
+     * @param  $minorunits
      * @return float
      */
     public function convertPriceFromMinorunits($amount, $minorunits)
@@ -237,18 +236,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Return minorunits based on Currency Code
      *
-     * @param $currencyCode
+     * @param  $currencyCode
      * @return int
      */
     public function getCurrencyMinorunits($currencyCode)
     {
-        $currencyArray = array(
+        $currencyArray = [
         'TTD' => 0, 'KMF' => 0, 'ADP' => 0, 'TPE' => 0, 'BIF' => 0,
         'DJF' => 0, 'MGF' => 0, 'XPF' => 0, 'GNF' => 0, 'BYR' => 0,
         'PYG' => 0, 'JPY' => 0, 'CLP' => 0, 'XAF' => 0, 'TRL' => 0,
         'VUV' => 0, 'CLF' => 0, 'KRW' => 0, 'XOF' => 0, 'RWF' => 0,
         'IQD' => 3, 'TND' => 3, 'BHD' => 3, 'JOD' => 3, 'OMR' => 3,
-        'KWD' => 3, 'LYD' => 3);
+        'KWD' => 3, 'LYD' => 3];
 
         return array_key_exists($currencyCode, $currencyArray) ? $currencyArray[$currencyCode] : 2;
     }
@@ -256,7 +255,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Format currency
      *
-     * @param float $amount
+     * @param  float $amount
      * @return string
      */
     public function formatCurrency($amount)
@@ -270,7 +269,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Generate Checkout Api key
      *
-     * @param $storeId
+     * @param  $storeId
      * @return string
      */
     public function generateCheckoutApiKey($storeId)
@@ -289,12 +288,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Generate Epay Auth object
      *
-     * @param int $storeId
+     * @param  int $storeId
      * @return \Bambora\Online\Model\Api\Epay\Request\Models\Auth
      */
     public function generateEpayAuth($storeId)
     {
-        /** @var \Bambora\Online\Model\Api\Epay\Request\Models\Auth */
         $auth = $this->getEpayApiModel(EpayApiModels::REQUEST_MODEL_AUTH);
         $auth->merchantNumber = $this->getBamboraEpayConfigData(BamboraConstants::MERCHANT_NUMBER, $storeId);
         $auth->pwd = $this->decryptData($this->getBamboraEpayConfigData(BamboraConstants::REMOTE_INTERFACE_PASSWORD, $storeId));
@@ -330,15 +328,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Calculate Md5key hash
      *
-     * @param \Magento\Sales\Model\Order $order
-     * @param \Bambora\Online\Model\Api\Epay\Request\Payment $paymentRequest
+     * @param  \Magento\Sales\Model\Order                     $order
+     * @param  \Bambora\Online\Model\Api\Epay\Request\Payment $paymentRequest
      * @return string
      */
     public function calcEpayMd5Key($order, $paymentRequest)
     {
         $shopMd5 = $this->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
         $md5stamp = md5(
-                    $paymentRequest->encoding.
+            $paymentRequest->encoding.
                     $paymentRequest->cms.
                     $paymentRequest->windowstate.
                     $paymentRequest->mobile.
@@ -355,7 +353,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $paymentRequest->ownreceipt.
                     $paymentRequest->timeout.
                     $paymentRequest->invoice.
-                    $shopMd5);
+            $shopMd5
+        );
 
         return $md5stamp;
     }
@@ -363,7 +362,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Translate Payment status
      *
-     * @param string $status
+     * @param  string $status
      * @return \Magento\Framework\Phrase
      */
     public function translatePaymentStatus($status)
@@ -382,10 +381,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Return if Checkout Api Result is valid
      *
-     * @param \Bambora\Online\Model\Api\Checkout\Response\Base $request
-     * @param mixed $id
-     * @param bool $isBackoffice
-     * @param string &$message
+     * @param  \Bambora\Online\Model\Api\Checkout\Response\Base $request
+     * @param  mixed                                            $id
+     * @param  bool                                             $isBackoffice
+     * @param  string                                           &$message
      * @return bool
      */
     public function validateCheckoutApiResult($response, $id, $isBackoffice, &$message)
@@ -407,10 +406,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Return if Epay Api Result is valid
      *
-     * @param \Bambora\Online\Model\Api\Epay\Response\Base $response
-     * @param mixed $id
-     * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
-     * @param string &$message
+     * @param  \Bambora\Online\Model\Api\Epay\Response\Base       $response
+     * @param  mixed                                              $id
+     * @param  \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
+     * @param  string                                             &$message
      * @return bool
      */
     public function validateEpayApiResult($response, $id, $auth, &$message)
@@ -421,7 +420,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $this->_bamboraLogger->addEpayError($id, $message);
             return false;
         } elseif (!$response->result) {
-            /** @var \Bambora\Online\Model\Api\Epay\Error */
             $errorProvicer = $this->getEpayApi(EpayApi::API_ERROR);
 
             if (isset($response->epayResponse) && $response->epayResponse != -1) {
@@ -443,7 +441,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert country code to a number
      *
-     * @param mixed $lan
+     * @param  mixed $lan
      * @return string
      */
     public function calcLanguage($lan = null)
@@ -452,7 +450,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $lan = $this->getShopLocalCode();
         }
 
-        $languageArray = array(
+        $languageArray = [
             'da_DK' => '1',
             'de_CH' => '7',
             'de_DE' => '7',
@@ -463,7 +461,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'sv_SE' => '3',
             'nn_NO' => '4',
             'nb_NO' => '4',
-            );
+            ];
 
         return array_key_exists($lan, $languageArray) ? $languageArray[$lan] : '0';
     }
@@ -471,12 +469,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert card id to name
      *
-     * @param mixed $cardid
+     * @param  mixed $cardid
      * @return string
      */
     public function calcCardtype($cardid)
     {
-        $cardIdArray = array(
+        $cardIdArray = [
             '1' => 'Dankort / VISA/Dankort',
             '2' => 'eDankort',
             '3' => 'VISA / VISA Electron',
@@ -498,7 +496,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             '22' => 'Swedbank Direktbetalningar',
             '23' => 'ViaBill',
             '24' => 'NemPay',
-            '25' => 'iDeal');
+            '25' => 'iDeal'];
 
         return array_key_exists($cardid, $cardIdArray) ? $cardIdArray[$cardid] : '';
     }
@@ -506,13 +504,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert Iso code
      *
-     * @param string $code
-     * @param bool $isKey
+     * @param  string $code
+     * @param  bool   $isKey
      * @return string
      */
     public function convertIsoCode($code, $isKey = true)
     {
-        $isoCodeArray = array(
+        $isoCodeArray = [
            'ADP' => '020', 'AED' => '784', 'AFA' => '004', 'ALL' => '008', 'AMD' => '051', 'ANG' => '532',
            'AOA' => '973', 'ARS' => '032', 'AUD' => '036', 'AWG' => '533', 'AZM' => '031', 'BAM' => '052',
            'BBD' => '004', 'BDT' => '050', 'BGL' => '100', 'BGN' => '975', 'BHD' => '048', 'BIF' => '108',
@@ -541,7 +539,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
            'TRL' => '792', 'TRY' => '949', 'TTD' => '780', 'TWD' => '901', 'TZS' => '834', 'UAH' => '980',
            'UGX' => '800', 'USD' => '840', 'UYU' => '858', 'UZS' => '860', 'VEB' => '862', 'VND' => '704',
            'VUV' => '548', 'XAF' => '950', 'XCD' => '951', 'XOF' => '952', 'XPF' => '953', 'YER' => '886',
-           'YUM' => '891', 'ZAR' => '710', 'ZMK' => '894', 'ZWD' => '716');
+           'YUM' => '891', 'ZAR' => '710', 'ZMK' => '894', 'ZWD' => '716'];
 
         if ($isKey) {
             return $isoCodeArray[$code];
@@ -553,20 +551,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Create an Surcharge fee item
      *
-     * @param mixed $baseFeeAmount
-     * @param mixed $feeAmount
-     * @param mixed $storeId
-     * @param mixed $orderId
-     * @param mixed $text
+     * @param  mixed $baseFeeAmount
+     * @param  mixed $feeAmount
+     * @param  mixed $storeId
+     * @param  mixed $orderId
+     * @param  mixed $text
      * @return \Magento\Sales\Model\Order\Item
      */
     public function createSurchargeItem($baseFeeAmount, $feeAmount, $storeId, $orderId, $text)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        /** @var \Magento\Sales\Model\Order\Item */
         $feeItem = $objectManager->create('\Magento\Sales\Model\Order\Item');
         $feeItem->setSku(BamboraConstants::BAMBORA_SURCHARGE);
-
         $feeItem->setName($text);
         $feeItem->setBaseCost($baseFeeAmount);
         $feeItem->setBasePrice($baseFeeAmount);

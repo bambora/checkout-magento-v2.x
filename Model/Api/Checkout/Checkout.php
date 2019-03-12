@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Model\Api\Checkout;
 
@@ -22,8 +21,8 @@ class Checkout extends Base
     /**
      * Create the checkout request
      *
-     * @param \Bambora\Online\Model\Api\Checkout\Request\Checkout $setcheckoutrequest
-     * @param string $apiKey
+     * @param  \Bambora\Online\Model\Api\Checkout\Request\Checkout $setcheckoutrequest
+     * @param  string                                              $apiKey
      * @return \Bambora\Online\Model\Api\Checkout\Response\Checkout
      */
     public function setCheckout($setcheckoutrequest, $apiKey)
@@ -34,8 +33,6 @@ class Checkout extends Base
             $jsonData = json_encode($setcheckoutrequest);
             $checkoutResponseJson = $this->_callRestService($serviceUrl, $jsonData, Base::POST, $apiKey);
             $checkoutResponseArray = json_decode($checkoutResponseJson, true);
-
-            /** @var \Bambora\Online\Model\Api\Checkout\Response\Checkout */
             $checkoutResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_CHECKOUT);
             $checkoutResponse->meta = $this->_mapMeta($checkoutResponseArray);
             $checkoutResponse->token = $checkoutResponseArray['token'];

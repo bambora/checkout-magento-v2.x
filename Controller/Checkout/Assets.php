@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Controller\Checkout;
 
@@ -29,16 +28,14 @@ class Assets extends \Bambora\Online\Controller\AbstractActionController
 
     /**
      * Get an array of paymentcardids the order
+     *
      * @return array
      */
     public function getPaymentcardIds()
     {
-        $paymentCardIds = array();
+        $paymentCardIds = [];
         try {
-            /** @var \Bambora\Online\Model\Method\Checkout\Payment */
             $checkoutMethod =  $this->_getPaymentMethodInstance(CheckoutPayment::METHOD_CODE);
-
-
             if ($checkoutMethod) {
                 $paymentCardIds = $checkoutMethod->getPaymentCardIds();
             }

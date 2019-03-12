@@ -12,12 +12,14 @@ define(
                 type: 'bambora_checkout',
                 component: 'Bambora_Online/js/view/payment/method-renderer/bambora-checkout-method'
             },
-             {
-                 type: 'bambora_epay',
-                 component: 'Bambora_Online/js/view/payment/method-renderer/bambora-epay-method'
+            {
+                type: 'bambora_epay',
+                component: 'Bambora_Online/js/view/payment/method-renderer/bambora-epay-method'
              }
         );
-        /** Add view logic here if needed */
+        /**
+    * Add view logic here if needed 
+    */
         return Component.extend({});
     }
 );

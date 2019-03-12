@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Controller\Epay;
 
@@ -27,8 +26,6 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     public function execute()
     {
         $posted = $this->getRequest()->getParams();
-
-        /** @var \Magento\Sales\Model\Order */
         $order = null;
         $message = "Callback Failed: ";
         $responseCode = Exception::HTTP_BAD_REQUEST;
@@ -51,9 +48,9 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     /**
      * Validate the callback
      *
-     * @param mixed $posted
-     * @param \Magento\Sales\Model\Order $order
-     * @param string $message
+     * @param  mixed                      $posted
+     * @param  \Magento\Sales\Model\Order $order
+     * @param  string                     $message
      * @return bool
      */
     public function validateCallback($posted, &$order, &$message)
@@ -107,9 +104,10 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
 
     /**
      * Process the callback from Bambora
-     * @param mixed $posted
-     * @param \Magento\Sales\Model\Order $order
-     * @param int $responseCode
+     *
+     * @param  mixed                      $posted
+     * @param  \Magento\Sales\Model\Order $order
+     * @param  int                        $responseCode
      * @return void
      */
     public function processCallback($posted, $order, &$responseCode)
@@ -120,7 +118,6 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         try {
             $pspReference = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
             if (empty($pspReference)) {
-                /** @var \Bambora\Online\Model\Method\Epay\Payment */
                 $paymentMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
                 $currency = $this->_bamboraHelper->convertIsoCode($posted['currency'], false);
                 $minorUnits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
@@ -130,19 +127,20 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                 $txnFee = array_key_exists('txnfee', $posted) ? $posted['txnfee'] : 0;
                 $fraud = array_key_exists('fraud', $posted) ? $posted['fraud'] : 0;
 
-                $this->_processCallbackData($order,
-                     $paymentMethod,
-                     $ePayTransactionId,
-                     EpayPayment::METHOD_REFERENCE,
-                     $paymentType,
-                     $cardNumber,
-                     $txnFee,
-                     $minorUnits,
-                     $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::ORDER_STATUS),
-                     $isInstantCapture,
-                     $payment,
-                     $fraud
-                 );
+                $this->_processCallbackData(
+                    $order,
+                    $paymentMethod,
+                    $ePayTransactionId,
+                    EpayPayment::METHOD_REFERENCE,
+                    $paymentType,
+                    $cardNumber,
+                    $txnFee,
+                    $minorUnits,
+                    $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::ORDER_STATUS),
+                    $isInstantCapture,
+                    $payment,
+                    $fraud
+                );
 
                 $message = "Callback Success - Order created";
             } else {
@@ -152,7 +150,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         } catch (\Exception $ex) {
             $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
             $order->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
-            $payment->setAdditionalInformation(array(EpayPayment::METHOD_REFERENCE => ""));
+            $payment->setAdditionalInformation([EpayPayment::METHOD_REFERENCE => ""]);
             $payment->save();
             $order->save();
 

@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Controller\Adminhtml\Order;
 
@@ -36,15 +35,15 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
     protected $_bamboraHelper;
 
     /**
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Ui\Component\MassAction\Filter $filter
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
-     * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender
-     * @param \Magento\Payment\Helper\Data $paymentHelper
-     * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
-     * @param \Bambora\Online\Helper\Data $bamboraHelper
-     * @param \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
-     * @param \Magento\Sales\Model\Service\CreditmemoService $creditmemoService
+     * @param \Magento\Backend\App\Action\Context                                $context
+     * @param \Magento\Ui\Component\MassAction\Filter                            $filter
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory         $collectionFactory
+     * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender              $invoiceSender
+     * @param \Magento\Payment\Helper\Data                                       $paymentHelper
+     * @param \Bambora\Online\Logger\BamboraLogger                               $bamboraLogger
+     * @param \Bambora\Online\Helper\Data                                        $bamboraHelper
+     * @param \Magento\Sales\Model\Order\CreditmemoFactory                       $creditmemoFactory
+     * @param \Magento\Sales\Model\Service\CreditmemoService                     $creditmemoService
      * @param \Magento\Sales\Model\ResourceModel\Order\Invoice\CollectionFactory $invoiceCollectionFactory
      */
     public function __construct(
@@ -65,25 +64,21 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
     /**
      * Hold selected orders
      *
-     * @param \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
+     * @param  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
     protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
     {
         $countInvoicedOrder = 0;
-        $invoiced = array();
-        $notInvoiced = array();
-
+        $invoiced = [];
+        $notInvoiced = [];
         $collectionItems = $collection->getItems();
-        /** @var \Magento\Sales\Model\Order $order */
         foreach ($collectionItems as $order) {
             try {
                 if (!$order->canInvoice()) {
                     $notInvoiced[] = $order->getIncrementId(). '('.__("Invoice not available"). ')';
                     continue;
                 }
-
-                /** @var \Magento\Sales\Model\Order\Invoice */
                 $invoice = $order->prepareInvoice();
                 $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
                 $invoice->register();

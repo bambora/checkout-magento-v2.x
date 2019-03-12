@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Logger;
 
@@ -21,8 +20,8 @@ class BamboraLogger extends Logger
     /**
      * Add Checkout error to log
      *
-     * @param mixed $id
-     * @param mixed $reason
+     * @param  mixed $id
+     * @param  mixed $reason
      * @return void
      */
     public function addCheckoutError($id, $reason)
@@ -34,8 +33,8 @@ class BamboraLogger extends Logger
     /**
      * Add Checkout info to log
      *
-     * @param mixed $id
-     * @param mixed $reason
+     * @param  mixed $id
+     * @param  mixed $reason
      * @return void
      */
     public function addCheckoutInfo($id, $reason)
@@ -47,8 +46,8 @@ class BamboraLogger extends Logger
     /**
      * Add ePay error to log
      *
-     * @param mixed $id
-     * @param mixed $reason
+     * @param  mixed $id
+     * @param  mixed $reason
      * @return void
      */
     public function addEpayError($id, $reason)
@@ -60,8 +59,8 @@ class BamboraLogger extends Logger
     /**
      * Add ePay info to log
      *
-     * @param mixed $id
-     * @param mixed $reason
+     * @param  mixed $id
+     * @param  mixed $reason
      * @return void
      */
     public function addEpayInfo($id, $reason)

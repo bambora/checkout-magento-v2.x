@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Logger;
 
@@ -20,12 +19,14 @@ class BamboraHandler extends \Magento\Framework\Logger\Handler\Base
 {
     /**
      * Logging level
+     *
      * @var int
      */
     protected $loggerType = Logger::DEBUG;
 
     /**
      * File name
+     *
      * @var string
      */
     protected $fileName = '/var/log/bambora.log';

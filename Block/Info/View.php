@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Block\Info;
 
@@ -20,7 +19,7 @@ use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 class View extends \Magento\Payment\Block\Info
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function _construct()
     {
@@ -29,7 +28,7 @@ class View extends \Magento\Payment\Block\Info
     }
     
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function _prepareSpecificInformation($transport = null)
     {
@@ -68,6 +67,7 @@ class View extends \Magento\Payment\Block\Info
 
     /**
      * Get translated payment information title
+     *
      * @return string
      */
     public function getPaymentInformationTitle()

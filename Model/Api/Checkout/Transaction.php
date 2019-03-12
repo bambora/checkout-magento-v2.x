@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Model\Api\Checkout;
 
@@ -21,9 +20,10 @@ class Transaction extends Base
 {
     /**
      * Capture an amount for a given transaction
-     * @param string $transactionId
-     * @param \Bambora\Online\Model\Api\Checkout\Request\Capture $captureRequest
-     * @param string $apikey
+     *
+     * @param  string                                             $transactionId
+     * @param  \Bambora\Online\Model\Api\Checkout\Request\Capture $captureRequest
+     * @param  string                                             $apikey
      * @return \Bambora\Online\Model\Api\Checkout\Response\Capture
      */
     public function capture($transactionId, $captureRequest, $apikey)
@@ -32,24 +32,18 @@ class Transaction extends Base
             $serviceEndpoint = $this->_getEndpoint(ApiEndpoints::ENDPOINT_TRANSACTION);
             $serviceUrl = "{$serviceEndpoint}/transactions/{$transactionId}/capture";
             $captureRequestJson = json_encode($captureRequest);
-
             $resultJson = $this->_callRestService($serviceUrl, $captureRequestJson, Base::POST, $apikey);
             $result = json_decode($resultJson, true);
-
-            /** @var \Bambora\Online\Model\Api\Checkout\Response\Capture */
             $captureResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_CAPTURE);
             $captureResponse->meta = $this->_mapMeta($result);
-
             if ($captureResponse->meta->result) {
-                $captureResponse->transactionOperations = array();
+                $captureResponse->transactionOperations = [];
                 foreach ($result['transactionoperations'] as $operation) {
-                    /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation */
                     $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION);
                     $transactionOperation->id = $operation['id'];
                     $captureResponse->transactionOperations[] = $transactionOperation;
                 }
             }
-
             return $captureResponse;
         } catch (\Exception $ex) {
             $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
@@ -59,9 +53,10 @@ class Transaction extends Base
 
     /**
      * Credit an amount for a given transaction
-     * @param string $transactionId
-     * @param \Bambora\Online\Model\Api\Checkout\Request\Credit $creditRequest
-     * @param string $apikey
+     *
+     * @param  string                                            $transactionId
+     * @param  \Bambora\Online\Model\Api\Checkout\Request\Credit $creditRequest
+     * @param  string                                            $apikey
      * @return \Bambora\Online\Model\Api\Checkout\Response\Credit
      */
     public function credit($transactionId, $creditRequest, $apikey)
@@ -73,21 +68,16 @@ class Transaction extends Base
 
             $resultJson = $this->_callRestService($serviceUrl, $creditRequestJson, Base::POST, $apikey);
             $result = json_decode($resultJson, true);
-
-            /** @var \Bambora\Online\Model\Api\Checkout\Response\Credit */
             $creditResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_CREDIT);
             $creditResponse->meta = $this->_mapMeta($result);
-
             if ($creditResponse->meta->result) {
-                $creditResponse->transactionOperations = array();
+                $creditResponse->transactionOperations = [];
                 foreach ($result['transactionoperations'] as $operation) {
-                    /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation */
                     $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION);
                     $transactionOperation->id = $operation['id'];
                     $creditResponse->transactionOperations[] = $transactionOperation;
                 }
             }
-
             return $creditResponse;
         } catch (\Exception $ex) {
             $this->_bamboraLogger->addCheckoutError("-1", $ex->getMessage());
@@ -98,8 +88,8 @@ class Transaction extends Base
     /**
      * Detete a transaction
      *
-     * @param string $transactionId
-     * @param string $apikey
+     * @param  string $transactionId
+     * @param  string $apikey
      * @return \Bambora\Online\Model\Api\Checkout\Response\Delete
      */
     public function delete($transactionId, $apikey)
@@ -109,15 +99,11 @@ class Transaction extends Base
             $serviceUrl = "{$serviceEndpoint}/transactions/{$transactionId}/delete";
             $resultJson = $this->_callRestService($serviceUrl, null, Base::POST, $apikey);
             $result = json_decode($resultJson, true);
-
-            /** @var \Bambora\Online\Model\Api\Checkout\Response\Delete */
             $deleteResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_DELETE);
             $deleteResponse->meta = $this->_mapMeta($result);
-
             if ($deleteResponse->meta->result) {
-                $deleteResponse->transactionOperations = array();
+                $deleteResponse->transactionOperations = [];
                 foreach ($result['transactionoperations'] as $operation) {
-                    /** @var \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation */
                     $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION);
                     $transactionOperation->id = $operation['id'];
                     $deleteResponse->transactionOperations[] = $transactionOperation;

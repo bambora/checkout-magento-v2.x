@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Observer;
 
@@ -31,13 +30,13 @@ class ManageInventoryObserver implements \Magento\Framework\Event\ObserverInterf
      */
     protected $_bamboraLogger;
 
-   /**
-    * ManageInventoryObeserver constructor.
-    *
-    * @param \Magento\CatalogInventory\Api\StockManagementInterface $stockManagement
-    * @param \Magento\CatalogInventory\Model\Indexer\Stock\Processor $stockIndexerProcessor
-    * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
-    */
+    /**
+     * ManageInventoryObeserver constructor.
+     *
+     * @param \Magento\CatalogInventory\Api\StockManagementInterface  $stockManagement
+     * @param \Magento\CatalogInventory\Model\Indexer\Stock\Processor $stockIndexerProcessor
+     * @param \Bambora\Online\Logger\BamboraLogger                    $bamboraLogger
+     */
     public function __construct(
         \Magento\CatalogInventory\Api\StockManagementInterface $stockManagement,
         \Magento\CatalogInventory\Model\Indexer\Stock\Processor $stockIndexerProcessor,
@@ -51,18 +50,16 @@ class ManageInventoryObserver implements \Magento\Framework\Event\ObserverInterf
     /**
      * Subtract the un-cancled products from the store inventory.
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param  \Magento\Framework\Event\Observer $observer
      * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        /** @var \Magento\Sales\Model\Order $order*/
         $order = $observer->getEvent()->getOrder();
         $productQty = $observer->getEvent()->getProductQty();
         if ($order->getInventoryProcessed()) {
             return $this;
         }
-        /** @var \Magento\CatalogInventory\Observer\ItemsForReindex  $itemsForReindex*/
         $itemsForReindex = $this->stockManagement->registerProductsSale(
             $productQty,
             $order->getStore()->getWebsiteId()

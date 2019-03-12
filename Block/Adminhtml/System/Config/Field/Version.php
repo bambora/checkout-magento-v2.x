@@ -10,7 +10,6 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
 namespace Bambora\Online\Block\Adminhtml\System\Config\Field;
 
@@ -23,9 +22,10 @@ class Version extends \Magento\Config\Block\System\Config\Form\Field
 
     /**
      * Version constructor.
-     * @param \Bambora\Online\Helper\Data $bamboraHelper
+     *
+     * @param \Bambora\Online\Helper\Data             $bamboraHelper
      * @param \Magento\Backend\Block\Template\Context $context
-     * @param array $data
+     * @param array                                   $data
      */
     public function __construct(
         \Bambora\Online\Helper\Data $bamboraHelper,
@@ -38,7 +38,8 @@ class Version extends \Magento\Config\Block\System\Config\Form\Field
 
     /**
      * Retrieve the setup version of the extension
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     *
+     * @param  \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
      */
     protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
