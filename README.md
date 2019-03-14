@@ -1,9 +1,7 @@
 # Bambora Online Magento 2
 
-## Currently we do not support Magento 2.3 but we are working on it so stay tuned.
-
 ## Supported Magento 2 versions
- * Supports Magento 2.1.x and 2.2.x
+ * Supports Magento 2.1.x ,2.2.x and 2.3.x
  * If you want to run the module with a Magento version lower then 2.1 you must remove these two files
      * view\adminhtml\ui_component\sales_order_grid.xml
      * view\adminhtml\ui_component\sales_order_invoice_grid.xml
@@ -13,4 +11,4 @@
  * Bambora Checkout
  * ePay | Payment solutions
 
-Documentation: http://dev.bambora.com/shopping-carts/guides/shopping-carts/magento2
+Documentation: https://developer.bambora.com/europe/shopping-carts/shopping-carts/magento2
