@@ -68,4 +68,17 @@ class BamboraLogger extends Logger
         $errorMessage = 'Bambora ePay Info - ID: ' .$id . ' - ' . $reason;
         $this->addInfo($errorMessage);
     }
+
+     /**
+     * Add Common error to log
+     *
+     * @param  mixed $id
+     * @param  mixed $reason
+     * @return void
+     */
+    public function addCommonError($id, $reason)
+    {
+        $errorMessage = 'Bambora Error - ID: ' .$id . ' - ' . $reason;
+        $this->addError($errorMessage);
+    }
 }

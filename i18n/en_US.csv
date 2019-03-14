@@ -76,3 +76,4 @@
 "Bambora Online ePay - Transaction information", "Bambora Online ePay - Transaction information"
 "The order was un-canceled by the Bambora Checkout Callback", "The order was un-canceled by the Bambora Checkout Callback"
 "The order could not be un-canceled - Reason:","The order could not be un-canceled - Reason:"
+"An error occurred while fetching the transaction information. Please see the Bambora log file for more information.","An error occurred while fetching the transaction information. Please see the Bambora log file for more information."

@@ -35,12 +35,18 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     protected $_bamboraHelper;
 
     /**
+     * @var \Bambora\Online\Logger\BamboraLogger
+     */
+    protected $_bamboraLogger;
+
+    /**
      * PaymentInfo constructor.
      *
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry             $registry
      * @param \Magento\Framework\Pricing\Helper\Data  $priceHelper
      * @param \Bambora\Online\Helper\Data             $bamboraHelper
+     * @param \Bambora\Online\Logger\BamboraLogger    $bamboraLogger
      * @param array                                   $data
      */
     public function __construct(
@@ -48,12 +54,14 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
         \Bambora\Online\Helper\Data $bamboraHelper,
+        \Bambora\Online\Logger\BamboraLogger $bamboraLogger,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->_registry = $registry;
         $this->_priceHelper = $priceHelper;
         $this->_bamboraHelper = $bamboraHelper;
+        $this->_bamboraLogger = $bamboraLogger;
     }
     /**
      * @return string
@@ -78,46 +86,53 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     public function getTransactionData()
     {
-        $result = __("Can not display transaction informations");
-        $order = $this->getOrder();
-        $storeId = $order->getStoreId();
-        $payment = $order->getPayment();
-        $paymentMethod = $payment->getMethod();
+        try {
+            $result = __("Can not display transaction informations");
+            $order = $this->getOrder();
+            $storeId = $order->getStoreId();
+            $payment = $order->getPayment();
+            $paymentMethod = $payment->getMethod();
 
-        if ($paymentMethod === CheckoutPayment::METHOD_CODE) {
-            $checkoutMethod = $payment->getMethodInstance();
-            if (isset($checkoutMethod)) {
-                $transactionId = $payment->getAdditionalInformation($checkoutMethod::METHOD_REFERENCE);
-                if (!empty($transactionId)) {
-                    $message = "";
-                    $transaction = $checkoutMethod->getTransaction($transactionId, $storeId, $message);
+            if ($paymentMethod === CheckoutPayment::METHOD_CODE) {
+                $checkoutMethod = $payment->getMethodInstance();
+                if (isset($checkoutMethod)) {
+                    $transactionId = $payment->getAdditionalInformation($checkoutMethod::METHOD_REFERENCE);
+                    if (!empty($transactionId)) {
+                        $message = "";
+                        $transaction = $checkoutMethod->getTransaction($transactionId, $storeId, $message);
 
-                    if (isset($transaction)) {
-                        $result = $this->createCheckoutTransactionHtml($transaction);
-                    } elseif ($checkoutMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0) {
-                        $result .= ' '.__("Please enable remote payment processing from the module configuration");
-                    } else {
-                        $result .= ': ' .  $message;
+                        if (isset($transaction)) {
+                            $result = $this->createCheckoutTransactionHtml($transaction);
+                        } elseif ($checkoutMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0) {
+                            $result .= ' '.__("Please enable remote payment processing from the module configuration");
+                        } else {
+                            $result .= ': ' .  $message;
+                        }
+                    }
+                }
+            } elseif ($paymentMethod === EpayPayment::METHOD_CODE) {
+                $ePayMethod = $payment->getMethodInstance();
+                if (isset($ePayMethod)) {
+                    $transactionId = $payment->getAdditionalInformation($ePayMethod::METHOD_REFERENCE);
+                    if (!empty($transactionId)) {
+                        $message = "";
+                        $transaction = $ePayMethod->getTransaction($transactionId, $storeId, $message);
+
+                        if (isset($transaction)) {
+                            $result = $this->createEpayTransactionHtml($transaction, $order);
+                        } elseif ($ePayMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0) {
+                            $result .= ' - '.__("Please enable remote payment processing from the module configuration");
+                        } else {
+                            $result .= ': ' .  $message;
+                        }
                     }
                 }
             }
-        } elseif ($paymentMethod === EpayPayment::METHOD_CODE) {
-            $ePayMethod = $payment->getMethodInstance();
-            if (isset($ePayMethod)) {
-                $transactionId = $payment->getAdditionalInformation($ePayMethod::METHOD_REFERENCE);
-                if (!empty($transactionId)) {
-                    $message = "";
-                    $transaction = $ePayMethod->getTransaction($transactionId, $storeId, $message);
-
-                    if (isset($transaction)) {
-                        $result = $this->createEpayTransactionHtml($transaction, $order);
-                    } elseif ($ePayMethod->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) == 0) {
-                        $result .= ' - '.__("Please enable remote payment processing from the module configuration");
-                    } else {
-                        $result .= ': ' .  $message;
-                    }
-                }
-            }
+        } catch(\Exception $ex) {
+            $errorMessage = $ex->getMessage();
+            $result = __("An error occurred while fetching the transaction information. Please see the Bambora log file for more information.");
+            $this->_bamboraLogger->addCommonError($transactionId,
+             "An error occurred while fetching the transaction information. Error: {$errorMessage}");
         }
 
         return $result;
@@ -280,26 +295,38 @@ class PaymentInfo extends \Magento\Backend\Block\Template
             }
         }
 
-        if (isset($transactionInformation->history) && isset($transactionInformation->history->TransactionHistoryInfo) && count($transactionInformation->history->TransactionHistoryInfo) > 0) {
-            // Important to convert this item to array. If only one item is to be found in the array of history items
-            // the object will be handled as non-array but object only.
-            $historyArray = $transactionInformation->history->TransactionHistoryInfo;
-            if (count($transactionInformation->history->TransactionHistoryInfo) == 1) {
-                // convert to array
-                $historyArray = [$transactionInformation->history->TransactionHistoryInfo];
-            }
+        $transactionHistory = $transactionInformation->history;
+        $transactionHistoryInfo = isset($transactionHistory) ? $transactionHistory->TransactionHistoryInfo : null;
+        if (isset($transactionHistoryInfo)) {
             $res .= '<br /><br />';
             $res .= '<tr><td colspan="2" class="bambora_table_title bambora_table_title_padding">' . __("History") . '</td></tr>';
-            foreach ($historyArray as $history) {
-                $res .= '<tr class="bambora_table_history_tr"><td class="bambora_table_history_td">' . str_replace('T', ' ', $history->created) . '</td>';
-                $res .= '<td>';
-                if (strlen($history->username) > 0) {
-                    $res .= ($history->username . ': ');
+
+            if(is_array($transactionHistoryInfo)) {
+                foreach ($transactionHistoryInfo as $history) {
+                    $res .= $this->createEpayHistoryItemHtml($history);
                 }
-                $res .= $history->eventMsg . '</td></tr>';
+            } else {
+                $res .= $this->createEpayHistoryItemHtml($transactionHistoryInfo);
             }
         }
-
         return $res;
+    }
+    /**
+     * Create the html for an History Item
+     *
+     * @param mixed $history
+     * @return string
+     */
+    public function createEpayHistoryItemHtml($history)
+    {
+        $html = "";
+        $html .= '<tr class="bambora_table_history_tr"><td class="bambora_table_history_td">' . str_replace('T', ' ', $history->created) . '</td>';
+        $html .= '<td>';
+        if (strlen($history->username) > 0) {
+            $html .= ($history->username . ': ');
+        }
+        $html .= $history->eventMsg . '</td></tr>';
+
+        return $html;
     }
 }
