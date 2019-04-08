@@ -87,7 +87,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
             $var = "";
 
             foreach ($posted as $key => $value) {
-                if ($key != "hash") {
+                if ($key !== "hash") {
                     $var .= $value;
                 }
             }
