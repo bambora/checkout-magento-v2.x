@@ -123,6 +123,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                 $customer->zip = $orderBillingAddress->getPostcode();
                 $customer->city = $orderBillingAddress->getCity();
                 $customer->country = $orderBillingAddress->getCountryId();
+                $customer->phone = $orderBillingAddress->getTelephone();
                 if ($orderBillingAddress->getEmail()) {
                     $customer->emailaddress = $orderBillingAddress->getEmail();
                 } else {
@@ -145,6 +146,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
                 $shippingAddress->zip = $orderShippingAddress->getPostcode();
                 $shippingAddress->city = $orderShippingAddress->getCity();
                 $shippingAddress->country = $orderShippingAddress->getCountryId();
+                $shippingAddress->phone = $orderShippingAddress->getTelephone();
                 $invoice->shippingaddress = $shippingAddress;
             }
             $invoice->lines = [];

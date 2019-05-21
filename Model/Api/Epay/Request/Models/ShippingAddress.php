@@ -42,4 +42,9 @@ class ShippingAddress
      * @var string
      */
     public $country;
+
+    /**
+     * @var string
+     */
+    public $phone;
 }
