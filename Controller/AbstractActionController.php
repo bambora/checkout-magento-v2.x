@@ -170,40 +170,27 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      */
     protected function cancelOrder()
     {
-        $this->cancelCurrentOrder();
-        $this->restoreQuote();
-        $this->_redirect('checkout/cart');
-    }
-
-    /**
-     * Cancel last placed order with specified comment message
-     *
-     * @return bool
-     */
-    protected function cancelCurrentOrder()
-    {
         $order = $this->_getOrder();
-        if ($order->getId() && $order->getState() != Order::STATE_CANCELED) {
-            $comment =  __("The order was canceled through the payment window");
-            $this->_bamboraLogger->addCheckoutInfo($order->getIncrementId(), $comment);
-            $order->cancel();
-            $order->addStatusHistoryComment($comment);
-            $order->save();
-
-            return true;
+        if(isset($order) && $order->getId() && $order->getState() != Order::STATE_CANCELED) {
+            $payment = $order->getPayment();
+            if(isset($payment)) {
+                $epayReference = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
+                $checkoutReference = $payment->getAdditionalInformation(CheckoutPayment::METHOD_REFERENCE);
+                if(empty($epayReference) && empty($checkoutReference)) {
+                    $comment =  __("The order was canceled through the payment window");
+                    $orderIncrementId = $order->getIncrementId();
+                    $this->_bamboraLogger->addCheckoutInfo($orderIncrementId, $comment);
+                    $order->addStatusHistoryComment($comment);
+                    $order->cancel();
+                    $order->save();
+        
+                    //Restore Quote
+                    $this->_checkoutSession->restoreQuote();
+                }
+            }
         }
-
-        return false;
-    }
-
-    /**
-     * Restores quote
-     *
-     * @return bool
-     */
-    protected function restoreQuote()
-    {
-        return $this->_checkoutSession->restoreQuote();
+        
+        $this->_redirect('checkout/cart');
     }
 
     /**
