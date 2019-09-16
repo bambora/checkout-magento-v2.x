@@ -22,18 +22,7 @@ define(
                     template: 'Bambora_Online/payment/checkout-form',
                     paymentLogos: function () {
                         var result = ko.observable();
-                        var evaluator = function () {
-                            var response = $.get(window.checkoutConfig.payment.bambora_checkout.assetsUrl);
-                            if (!response) {
-                                response = new [];
-                            }
-                            return response;
-                        }
-                        ko.computed(
-                            function () {
-                                evaluator.call(this).done(result);
-                            }
-                        );
+                        $.get(window.checkoutConfig.payment.bambora_checkout.assetsUrl, null, result, 'json');
                         return result;
                     }()
                 },
