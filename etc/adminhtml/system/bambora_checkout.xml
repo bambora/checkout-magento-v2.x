@@ -17,7 +17,7 @@
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
   <group id="bambora_checkout" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
     <label>Bambora Online Checkout</label>
-    <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
+    <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
     <fieldset_css>bambora-checkout-method</fieldset_css>
     <comment><![CDATA[Accept online payments in Magento 2 using the Bambora Checkout payment window.<br /> Go to <a href='https://developer.bambora.com/europe/shopping-carts/shopping-carts/magento2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
     <field id="version" type="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
