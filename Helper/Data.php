@@ -439,6 +439,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Format the shop local code by replacing '_' with '-'
+     *
+     * @param  mixed $lan
+     * @return string
+     */
+    public function getFormattedShopLocalCode($lan = null)
+    {
+        if (!isset($lan)) {
+            $lan = $this->getShopLocalCode();
+        }
+        $formattedLocalCode = str_replace('_', '-', $lan);
+        return $formattedLocalCode;
+    }
+
+    /**
      * Convert country code to a number
      *
      * @param  mixed $lan

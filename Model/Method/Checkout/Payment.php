@@ -132,7 +132,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $totalAmountMinorUnits = $this->_bamboraHelper->convertPriceToMinorunits($order->getBaseTotalDue(), $minorUnits, $roundingMode);
         $checkoutRequest = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_CHECKOUT);
         $checkoutRequest->instantcaptureamount = $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::INSTANT_CAPTURE, $storeId) == 0 ? 0 : $totalAmountMinorUnits;
-        $checkoutRequest->language = $this->_bamboraHelper->getShopLocalCode();
+        $checkoutRequest->language = $this->_bamboraHelper->getFormattedShopLocalCode();
         $checkoutRequest->paymentwindowid = $this->getConfigData(BamboraConstants::PAYMENT_WINDOW_ID, $storeId);
         $bamboraOrder = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::REQUEST_MODEL_ORDER);
         $bamboraOrder->currency = $order->getBaseCurrencyCode();
