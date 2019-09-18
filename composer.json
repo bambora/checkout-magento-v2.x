@@ -1,8 +1,8 @@
 {
   "name": "bambora/module-payment-magento2",
-  "description": "Magento 2 payment module for Bambora Online",
+  "description": "Magento 2 payment module for Bambora Online Checkout and ePay",
   "type": "magento2-module",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "authors": [
     {
       "name": "Bambora Online A/S",
