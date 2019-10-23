@@ -16,7 +16,6 @@ namespace Bambora\Online\Helper;
 use Bambora\Online\Model\Api\EpayApi;
 use Bambora\Online\Model\Api\EpayApiModels;
 use Bambora\Online\Helper\BamboraConstants;
-use \Magento\Framework\Encryption\Encryptor;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -367,7 +366,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getHashFromString($rawString)
     {
-        $md5stamp =  $this->_encryptor->getHash($rawString, false, Encryptor::HASH_VERSION_MD5);
+        $md5stamp =  hash('md5', $rawString);
         return $md5stamp;
     }
 
