@@ -16,6 +16,7 @@ namespace Bambora\Online\Helper;
 use Bambora\Online\Model\Api\EpayApi;
 use Bambora\Online\Model\Api\EpayApiModels;
 use Bambora\Online\Helper\BamboraConstants;
+use \Magento\Framework\Encryption\Encryptor;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -25,7 +26,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_bamboraLogger;
 
     /**
-     * @var \Magento\Framework\Encryption\EncryptorInterface
+     * @var \Magento\Framework\Encryption\Encryptor
      */
     protected $_encryptor;
 
@@ -39,7 +40,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param \Magento\Framework\App\Helper\Context            $context
      * @param \Bambora\Online\Logger\BamboraLogger             $bamboraLogger
-     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
+     * @param \Magento\Framework\Encryption\Encryptor $encryptor
      * @param \Magento\Framework\Module\ModuleListInterface    $moduleList
      */
     public function __construct(
@@ -335,8 +336,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function calcEpayMd5Key($order, $paymentRequest)
     {
         $shopMd5 = $this->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
-        $md5stamp = md5(
-            $paymentRequest->encoding.
+        $md5stampsValueString = $paymentRequest->encoding.
                     $paymentRequest->cms.
                     $paymentRequest->windowstate.
                     $paymentRequest->mobile.
@@ -353,9 +353,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $paymentRequest->ownreceipt.
                     $paymentRequest->timeout.
                     $paymentRequest->invoice.
-            $shopMd5
-        );
+                    $shopMd5;
+        $md5stamp = $this->getHashFromString($md5stampsValueString);
+                
+        return $md5stamp;
+    }
 
+    /**
+     * Generate the Hash string for callback
+     *
+     * @param string $rawString
+     * @return string
+     */
+    public function getHashFromString($rawString)
+    {
+        $md5stamp =  $this->_encryptor->getHash($rawString, false, Encryptor::HASH_VERSION_MD5);
         return $md5stamp;
     }
 

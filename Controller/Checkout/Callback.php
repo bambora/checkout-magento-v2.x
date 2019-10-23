@@ -93,7 +93,8 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                 if ($key === "hash") break;
                 $var .= $value;
             }
-            $genstamp = md5($var . $shopMd5);
+
+            $genstamp = $this->_bamboraHelper->getHashFromString($var . $shopMd5);
             if ($genstamp != $posted["hash"]) {
                 $message .= "Bambora MD5 check failed";
                 return false;
