@@ -624,10 +624,11 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         //Adjustment refund
         if ($creditMemo->getBaseAdjustment() > 0) {
             $adjustmentRefundDescription = __("Adjustment refund");
+            $adjustmentId = __("adjustment");
             $adjustmentQty = 1;
             $lines[] = $this->createInvoiceLine(
-                $adjustmentRefundName,
-                $adjustmentRefundName,
+                $adjustmentRefundDescription,
+                $adjustmentId,
                 $lineNumber,
                 $adjustmentQty,
                 "",

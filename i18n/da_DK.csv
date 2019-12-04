@@ -66,6 +66,7 @@
 "The void action could not, be processed online. Please enable remote payment processing from the module configuration","Betalingen kunne ikke annulleres online. Du skal aktivere remote payment processing i modulets configuration"
 "The void action failed.","Annullering af betalingen fejlede"
 "Adjustment refund","Justerings bel&oslash;b"
+"adjustment", "justering"
 "You will be redirected to Bambora Checkout.","Du vil blive videre sendt til Bambora Online Checkout."
 "Place order","Godkend og betal"
 "You will be redirected to the ePay | Payment solutions.","Du vil blive videre sendt til ePay | Payment solutions."

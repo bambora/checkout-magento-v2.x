@@ -66,6 +66,7 @@
 "The void action could not, be processed online. Please enable remote payment processing from the module configuration","The void action could not, be processed online. Please enable remote payment processing from the module configuration"
 "The void action failed.","The void action failed."
 "Adjustment refund","Adjustment refund"
+"adjustment", "adjustment"
 "You will be redirected to Bambora Checkout.","You will be redirected to Bambora Online Checkout."
 "Place order","Place order"
 "You will be redirected to the ePay | Payment solutions.","You will be redirected to the ePay | Payment solutions."
