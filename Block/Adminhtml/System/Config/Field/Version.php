@@ -13,6 +13,8 @@
  */
 namespace Bambora\Online\Block\Adminhtml\System\Config\Field;
 
+use Magento\Framework\Data\Form\Element\AbstractElement;
+
 class Version extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**
@@ -37,12 +39,24 @@ class Version extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Retrieve the setup version of the extension
+     * Remove scope label
      *
-     * @param  \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param  AbstractElement $element
      * @return string
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function render(AbstractElement $element)
+    {
+        $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
+        return parent::render($element);
+    }
+
+    /**
+     * Retrieve the setup version of the extension
+     *
+     * @param  AbstractElement $element
+     * @return string
+     */
+    protected function _getElementHtml(AbstractElement $element)
     {
         return $this->_bamboraHelper->getModuleVersion();
     }
