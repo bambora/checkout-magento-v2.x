@@ -13,10 +13,10 @@
  */
 namespace Bambora\Online\Controller\Epay;
 
-use \Magento\Framework\Webapi\Exception;
-use \Magento\Framework\Webapi\Response;
-use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
-use \Bambora\Online\Helper\BamboraConstants;
+use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
+use Bambora\Online\Helper\BamboraConstants;
+use Magento\Framework\Webapi\Exception;
+use Magento\Framework\Webapi\Response;
 
 class Callback extends \Bambora\Online\Controller\AbstractActionController
 {

@@ -13,8 +13,8 @@
  */
 namespace Bambora\Online\Model\Api\Checkout;
 
-use \Bambora\Online\Model\Api\Checkout\ApiEndpoints;
-use \Bambora\Online\Model\Api\CheckoutApiModels;
+use Bambora\Online\Model\Api\Checkout\ApiEndpoints;
+use Bambora\Online\Model\Api\CheckoutApiModels;
 
 class Transaction extends Base
 {

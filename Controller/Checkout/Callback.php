@@ -13,12 +13,12 @@
  */
 namespace Bambora\Online\Controller\Checkout;
 
-use \Magento\Framework\Webapi\Exception;
-use \Magento\Framework\Webapi\Response;
-use \Bambora\Online\Model\Api\CheckoutApi;
-use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use \Bambora\Online\Model\Api\CheckoutApiModels;
-use \Bambora\Online\Helper\BamboraConstants;
+use Bambora\Online\Model\Api\CheckoutApi;
+use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
+use Bambora\Online\Model\Api\CheckoutApiModels;
+use Bambora\Online\Helper\BamboraConstants;
+use Magento\Framework\Webapi\Exception;
+use Magento\Framework\Webapi\Response;
 
 class Callback extends \Bambora\Online\Controller\AbstractActionController
 {

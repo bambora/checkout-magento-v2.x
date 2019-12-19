@@ -13,9 +13,9 @@
  */
 namespace Bambora\Online\Helper;
 
+use Bambora\Online\Helper\BamboraConstants;
 use Bambora\Online\Model\Api\EpayApi;
 use Bambora\Online\Model\Api\EpayApiModels;
-use Bambora\Online\Helper\BamboraConstants;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {

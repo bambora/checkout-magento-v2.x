@@ -13,8 +13,8 @@
  */
 namespace Bambora\Online\Model\Method\Epay;
 
-use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
-use \Bambora\Online\Helper\BamboraConstants;
+use Bambora\Online\Helper\BamboraConstants;
+use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
 class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
 {

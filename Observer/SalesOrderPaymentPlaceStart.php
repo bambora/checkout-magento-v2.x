@@ -13,8 +13,8 @@
  */
 namespace Bambora\Online\Observer;
 
-use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
+use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
+use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
 class SalesOrderPaymentPlaceStart implements \Magento\Framework\Event\ObserverInterface
 {

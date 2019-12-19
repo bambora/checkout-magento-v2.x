@@ -13,11 +13,11 @@
  */
 namespace Bambora\Online\Controller;
 
-use \Magento\Sales\Model\Order;
-use \Magento\Sales\Model\Order\Payment\Transaction;
-use \Bambora\Online\Helper\BamboraConstants;
-use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
+use Bambora\Online\Helper\BamboraConstants;
+use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
+use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Payment\Transaction;
 
 abstract class AbstractActionController extends \Magento\Framework\App\Action\Action
 {
