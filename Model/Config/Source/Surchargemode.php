@@ -25,8 +25,8 @@ class Surchargemode implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-            ['value' => BamboraConstants::SURCHARGE_ORDER_LINE, 'label' => "Create order line"],
-            ['value' => BamboraConstants::SURCHARGE_SHIPMENT, 'label' => "Add to shipment & handling"],
+            ['value' => BamboraConstants::SURCHARGE_ORDER_LINE, 'label' => __("Create order line")],
+            ['value' => BamboraConstants::SURCHARGE_SHIPMENT, 'label' => __("Add to shipment & handling")],
         ];
     }
 }

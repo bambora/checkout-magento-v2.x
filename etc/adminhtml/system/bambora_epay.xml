@@ -15,37 +15,37 @@
  */
 -->
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-  <group id="bambora_epay" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+  <group id="bambora_epay" type="text" translate="label comment" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
     <label>ePay | Payment Solutions</label>
     <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
     <fieldset_css>bambora-epay-method</fieldset_css>
     <comment><![CDATA[Accept online payments in Magento 2 using the ePay payment window..<br /> Go to <a href='https://developer.bambora.com/europe/shopping-carts/shopping-carts/magento2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
-    <field id="version" type="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="version" type="label" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Module version:</b>]]></label>
       <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Field\Version</frontend_model>
     </field>
-    <field id="active" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="active" type="select" translate="label comment" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enabled:</b>]]></label>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <comment><![CDATA[To enable and disable this payment method.]]></comment>
       <config_path>payment/bambora_epay/active</config_path>
     </field>
-    <field id="title" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="title" type="text" translate="label comment" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Title:</b>]]></label>
       <comment><![CDATA[The title of the payment method displayed to the customers.]]></comment>
       <config_path>payment/bambora_epay/title</config_path>
     </field>
-    <field id="merchantnumber" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="merchantnumber" type="text" translate="label comment" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Merchant number:</b>]]></label>
       <comment><![CDATA[The unique merchantnumber received from the payment system. If you don't know your merchantnumber please log into your account <a href="https://ssl.ditonlinebetalingssystem.dk/admin/" target="_blank">here</a>. You can then find your merchantnumber from the menu <b>Settings</b> -> <b>Payment System</b>.]]></comment>
       <config_path>payment/bambora_epay/merchantnumber</config_path>
     </field>
-    <field id="paymentwindowid" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="paymentwindowid" type="text" translate="label comment" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Payment Window ID:</b>]]></label>
       <comment><![CDATA[Defines the window to use. You can find the available windows on your account <a href="https://ssl.ditonlinebetalingssystem.dk/admin/" target="_blank">here</a>. Go to the menu <b>Settings</b> -> <b>Payment window</b>.]]></comment>
       <config_path>payment/bambora_epay/paymentwindowid</config_path>
     </field>
-    <field id="remoteinterface" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="remoteinterface" type="select" translate="label comment" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Process payments from within the order administration of Magento:</b>]]></label>
       <comment>
         <![CDATA[
@@ -61,100 +61,99 @@
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/remoteinterface</config_path>
     </field>
-    <field id="remoteinterfacepassword" type="obscure" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="remoteinterfacepassword" type="obscure" translate="label comment" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Remote password:</b>]]></label>
       <comment><![CDATA[If payments is processed from within the order administration and a password is added in the ePay administration is should also be added here.]]></comment>
       <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
       <config_path>payment/bambora_epay/remoteinterfacepassword</config_path>
     </field>
-    <field id="instantcapture" type="select" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="instantcapture" type="select" translate="label comment" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant capture:</b>]]></label>
       <comment><![CDATA[This is used if you wish to capture the payments at the same time as it is authorized. This option may only be used if the cardholder receives the goods at once.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/instantcapture</config_path>
     </field>
-    <field id="instantinvoice" type="select" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="instantinvoice" type="select" translate="label comment" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant invoice:</b>]]></label>
       <comment><![CDATA[Enable this to automatic create an invoice once the payment is completed. Notice that this will also capture the payment]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/instantinvoice</config_path>
     </field>
-    <field id="instantinvoicemail" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="instantinvoicemail" type="select" translate="label comment" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant invoice mail:</b>]]></label>
       <comment><![CDATA[If instant invoice then send invoice to customer.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/instantinvoicemail</config_path>
     </field>
-    <field id="md5key" type="text" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="md5key" type="text" translate="label comment" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>MD5 Key:</b>]]></label>
       <comment><![CDATA[This is the secret password you must enter both here and within the payment system if you enable MD5 above. Notice that the secret password must be 100% the same. Otherwise the customer will be declined as payments are made. You can log into your account on the payment system <a href="https://ssl.ditonlinebetalingssystem.dk/admin/" target="_blank">here</a>. The MD5 settings are to be found from the menu <b>Settings</b> -> <b>Payment System</b>.]]></comment>
      <config_path>payment/bambora_epay/md5key</config_path>
     </field>
-    <field id="ownreceipt" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="ownreceipt" type="select" translate="label comment" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Use own receipt:</b>]]></label>
       <comment><![CDATA[If this option is enabled the customer will be redirected instantly to the Magento accept-page on approved authorization.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/ownreceipt</config_path>
     </field>
-    <field id="addsurchargetopayment" type="select" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="addsurchargetopayment" type="select" translate="label comment" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enable Surcharge fee:</b>]]></label>
       <comment><![CDATA[Enable to add surcharge to the order]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/addsurchargetopayment</config_path>
     </field>
-    <field id="surchargemode" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="surchargemode" type="select" translate="label comment" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Surcharge mode:</b>]]></label>
       <comment><![CDATA[Select if the surcharge should be added as an order line or if it should be added to the shipping & handling fee]]></comment>
       <source_model>Bambora\Online\Model\Config\Source\Surchargemode</source_model>
       <config_path>payment/bambora_epay/surchargemode</config_path>
     </field>
-    <field id="enableinvoicedata" type="select" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="enableinvoicedata" type="select" translate="label comment" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enable invoice data:</b>]]></label>
       <comment><![CDATA[Collect invoice data and send to the payment window]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/enableinvoicedata</config_path>
     </field>
-    <field id="enablemobilepaymentwindow" type="select" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="enablemobilepaymentwindow" type="select" translate="label comment" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enable Mobile Payment Window:</b>]]></label>
       <comment><![CDATA[When using a mobile device use the mobile payment window]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/enablemobilepaymentwindow</config_path>
     </field>
-    <field id="sendmailorderconfirmation" type="select" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="sendmailorderconfirmation" type="select" translate="label comment" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Send Email Order Confirmation:</b>]]></label>
       <comment><![CDATA[Enabling this setting will result in an order confirmation is e-mailed to the customer as the payment is made.]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/sendmailorderconfirmation</config_path>
     </field>
-    <field id="masscaptureinvoicemail" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="masscaptureinvoicemail" type="select" translate="label comment" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Mass invoice and capture mail:</b>]]></label>
       <comment><![CDATA[When bulk invoice and capture then send invoice mail to customer(s).]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/masscaptureinvoicemail</config_path>
     </field>
-    <field id="roundingmode" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="roundingmode" type="select" translate="label comment" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Rounding mode:</b>]]></label>
       <comment><![CDATA[Please select how you want the rounding of the amount sendt to the payment system]]></comment>
       <source_model>Bambora\Online\Model\Config\Source\Roundingmode</source_model>
       <config_path>payment/bambora_epay/roundingmode</config_path>
     </field>
-     <field id="order_status" type="select" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
+     <field id="order_status" type="select" translate="label comment" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Order Status After Payment:</b>]]></label>
       <source_model>Magento\Sales\Model\Config\Source\Order\Status\Processing</source_model>
       <config_path>payment/bambora_epay/order_status</config_path>
       <comment><![CDATA[The order status after payment is compleated]]></comment>
     </field>
-    <field id="sort_order" type="text" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
+    <field id="sort_order" type="text" translate="label comment" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Sort order:</b>]]></label>
       <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
       <config_path>payment/bambora_epay/sort_order</config_path>
     </field>
-     <field id="uncancelorderlines" type="select" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1">
+     <field id="uncancelorderlines" type="select" translate="label comment" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Un-Cancel order lines:</b>]]></label>
       <comment><![CDATA[When this is enabled, the module will try to restore the canceled order lines if the order gets paid after the order is canceled. This feature is against normal Magento behavior and we cannot guarantee that there will not be any side effects. ]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_epay/uncancelorderlines</config_path>
     </field>
-    
   </group>
 </include>
