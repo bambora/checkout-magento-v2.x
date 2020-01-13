@@ -151,7 +151,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
         $order->save();
     }
 
-    protected function acceptOrder()
+    protected function acceptOrder($methodReference)
     {
         $posted = $this->getRequest()->getParams();
         if (array_key_exists('orderid', $posted)) {
@@ -161,6 +161,13 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $this->_checkoutSession->setLastRealOrderId($order->getIncrementId());
             $this->_checkoutSession->setLastQuoteId($order->getQuoteId());
             $this->_checkoutSession->setLastSuccessQuoteId($order->getQuoteId());
+
+            $payment = $order->getPayment();
+            if(isset($payment))
+            {
+                $payment->setAdditionalInformation(BamboraConstants::PAYMENT_STATUS_ACCEPTED, true);
+                $payment->save();
+            }
         }
         $this->_redirect('checkout/onepage/success');
     }
@@ -176,17 +183,21 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             if(isset($payment)) {
                 $epayReference = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
                 $checkoutReference = $payment->getAdditionalInformation(CheckoutPayment::METHOD_REFERENCE);
-                if(empty($epayReference) && empty($checkoutReference)) {
+                $paymentStatusAccepted = $payment->getAdditionalInformation(BamboraConstants::PAYMENT_STATUS_ACCEPTED);
+                if(empty($epayReference) && empty($checkoutReference) && $paymentStatusAccepted != true) {
                     $comment =  __("The order was canceled through the payment window");
                     $orderIncrementId = $order->getIncrementId();
                     $this->_bamboraLogger->addCheckoutInfo($orderIncrementId, $comment);
                     $order->addStatusHistoryComment($comment);
                     $order->cancel();
-                    $order->save();
-        
+
                     //Restore Quote
                     $this->_checkoutSession->restoreQuote();
+                } else {
+                    $comment = __("Order cancelling attempt avoided");
+                    $order->addStatusHistoryComment($comment);
                 }
+                $order->save();
             }
         }
         

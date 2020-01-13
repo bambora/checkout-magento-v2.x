@@ -12,6 +12,7 @@
  * @license   Bambora Online
  */
 namespace Bambora\Online\Controller\Epay;
+use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
 class Accept extends \Bambora\Online\Controller\AbstractActionController
 {
@@ -20,6 +21,6 @@ class Accept extends \Bambora\Online\Controller\AbstractActionController
      */
     public function execute()
     {
-        $this->acceptOrder();
+        $this->acceptOrder(EpayPayment::METHOD_REFERENCE);
     }
 }

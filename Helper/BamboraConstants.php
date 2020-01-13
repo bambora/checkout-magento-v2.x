@@ -56,4 +56,7 @@ class BamboraConstants
     const REFUND = 'refund';
     const VOID = 'void';
     const GET_TRANSACTION = 'gettransaction';
+
+    //Action lock
+    const PAYMENT_STATUS_ACCEPTED = 'payment_status_accepted';
 }

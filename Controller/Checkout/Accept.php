@@ -12,6 +12,7 @@
  * @license   Bambora Online
  */
 namespace Bambora\Online\Controller\Checkout;
+use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
 
 class Accept extends \Bambora\Online\Controller\AbstractActionController
 {
@@ -20,6 +21,6 @@ class Accept extends \Bambora\Online\Controller\AbstractActionController
      */
     public function execute()
     {
-        $this->acceptOrder();
+        $this->acceptOrder(CheckoutPayment::METHOD_REFERENCE);
     }
 }
