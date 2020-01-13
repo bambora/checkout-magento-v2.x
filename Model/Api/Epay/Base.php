@@ -13,9 +13,7 @@
  */
 namespace Bambora\Online\Model\Api\Epay;
 
-use \Magento\Framework\DataObject;
-
-class Base extends DataObject
+class Base extends \Magento\Framework\DataObject
 {
     /**
      * List of ePay endpoints

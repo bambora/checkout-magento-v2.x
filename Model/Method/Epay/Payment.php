@@ -13,10 +13,10 @@
  */
 namespace Bambora\Online\Model\Method\Epay;
 
-use \Bambora\Online\Model\Api\EpayApi;
-use \Bambora\Online\Model\Api\EpayApiModels;
-use \Magento\Sales\Model\Order\Payment\Transaction;
-use \Bambora\Online\Helper\BamboraConstants;
+use Bambora\Online\Model\Api\EpayApi;
+use Bambora\Online\Model\Api\EpayApiModels;
+use Bambora\Online\Helper\BamboraConstants;
+use Magento\Sales\Model\Order\Payment\Transaction;
 
 class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \Bambora\Online\Model\Method\IPayment
 {

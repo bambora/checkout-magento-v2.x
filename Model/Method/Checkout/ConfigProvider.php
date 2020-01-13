@@ -14,7 +14,7 @@
 namespace Bambora\Online\Model\Method\Checkout;
 
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use \Bambora\Online\Helper\BamboraConstants;
+use Bambora\Online\Helper\BamboraConstants;
 
 class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
 {

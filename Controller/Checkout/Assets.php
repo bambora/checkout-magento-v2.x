@@ -13,7 +13,7 @@
  */
 namespace Bambora\Online\Controller\Checkout;
 
-use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
+use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
 
 class Assets extends \Bambora\Online\Controller\AbstractActionController
 {

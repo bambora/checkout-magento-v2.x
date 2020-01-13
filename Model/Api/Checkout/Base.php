@@ -13,8 +13,8 @@
  */
 namespace Bambora\Online\Model\Api\Checkout;
 
-use \Magento\Framework\DataObject;
-use \Bambora\Online\Model\Api\CheckoutApiModels;
+use Bambora\Online\Model\Api\CheckoutApiModels;
+use Magento\Framework\DataObject;
 
 abstract class Base extends DataObject
 {
