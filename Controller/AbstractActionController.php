@@ -303,6 +303,9 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $payment->setCcNumberEnc($ccNumber);
 
             $payment->setAdditionalInformation(BamboraConstants::INSTANT_CAPTURE, $isInstantCapture);
+            if (!$payment->getAdditionalInformation(BamboraConstants::PAYMENT_STATUS_ACCEPTED)) {
+                $payment->setAdditionalInformation(BamboraConstants::PAYMENT_STATUS_ACCEPTED, true);
+            }
             $payment->save();
 
             $order->save();
