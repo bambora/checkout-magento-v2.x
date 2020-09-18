@@ -141,7 +141,9 @@ class Merchant extends Base
                 $transaction->reference = $result['reference'];
                 $transaction->status = $result['status'];
                 $subscription = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_SUBSCRIPTION);
-                $subscription->id = $result['subscription']['id'];
+                if (isset($result['subscription'])) {
+                    $subscription->id = $result['subscription']['id'];
+                }
                 $transaction->subscription = $subscription;
                 $total = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_TOTAL);
                 $total->authorized = $result['total']['authorized'];
