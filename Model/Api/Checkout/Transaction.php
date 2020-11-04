@@ -86,7 +86,7 @@ class Transaction extends Base
     }
 
     /**
-     * Detete a transaction
+     * Delete a transaction
      *
      * @param  string $transactionId
      * @param  string $apikey

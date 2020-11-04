@@ -48,6 +48,18 @@ class Line
      */
     public $totalpricevatamount;
     /**
+     * @var int|long
+     */
+    public $unitprice;
+    /**
+     * @var int|long
+     */
+    public $unitpriceinclvat;
+    /**
+     * @var int|long
+     */
+    public $unitpricevatamount;
+    /**
      * @var string
      */
     public $unit;

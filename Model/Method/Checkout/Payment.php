@@ -287,6 +287,9 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $line->totalprice = $this->_bamboraHelper->convertPriceToMinorunits(($totalPrice - $discountAmount), $minorunits, $roundingMode);
         $line->totalpriceinclvat = $this->_bamboraHelper->convertPriceToMinorunits((($totalPrice + $totalPriceVatAmount) - $discountAmount), $minorunits, $roundingMode);
         $line->totalpricevatamount = $this->_bamboraHelper->convertPriceToMinorunits($totalPriceVatAmount, $minorunits, $roundingMode);
+        $line->unitprice = $this->_bamboraHelper->convertPriceToMinorunits(($totalPrice - $discountAmount)/$quantity, $minorunits, $roundingMode);
+        $line->unitpriceinclvat = $this->_bamboraHelper->convertPriceToMinorunits((($totalPrice + $totalPriceVatAmount) - $discountAmount)/$quantity, $minorunits, $roundingMode);
+        $line->unitpricevatamount = $this->_bamboraHelper->convertPriceToMinorunits($totalPriceVatAmount/$quantity, $minorunits, $roundingMode);
         $line->unit = __("pcs.");
         if (!isset($taxPercent)) {
             $vat = $totalPriceVatAmount > 0 && $totalPrice > 0  ? floatval($totalPriceVatAmount / $totalPrice * 100) : 0;
