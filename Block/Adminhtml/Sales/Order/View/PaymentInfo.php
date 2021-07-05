@@ -87,7 +87,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     public function getTransactionData()
     {
         try {
-            $result = __("Can not display transaction informations");
+            $result = __("Can not display transaction information");
             $order = $this->getOrder();
             $storeId = $order->getStoreId();
             $payment = $order->getPayment();

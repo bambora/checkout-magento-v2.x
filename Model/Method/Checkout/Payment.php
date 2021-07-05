@@ -110,7 +110,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
 
         $message = "";
         if (!$this->_bamboraHelper->validateCheckoutApiResult($checkoutResponse, $order->getIncrementId(), false, $message)) {
-            $this->_messageManager->addError(__("The payment window could not be retrived") . ": {$message}");
+            $this->_messageManager->addError(__("The payment window could not be retrieved") . ": {$message}");
             $this->_messageManager->addError(__("Bambora Checkout error") . ': ' . $message);
             $checkoutResponse = null;
         }
@@ -287,12 +287,12 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
         $line->totalprice = $this->_bamboraHelper->convertPriceToMinorunits(($totalPrice - $discountAmount), $minorunits, $roundingMode);
         $line->totalpriceinclvat = $this->_bamboraHelper->convertPriceToMinorunits((($totalPrice + $totalPriceVatAmount) - $discountAmount), $minorunits, $roundingMode);
         $line->totalpricevatamount = $this->_bamboraHelper->convertPriceToMinorunits($totalPriceVatAmount, $minorunits, $roundingMode);
-        $line->unitprice = $this->_bamboraHelper->convertPriceToMinorunits(($totalPrice - $discountAmount)/$quantity, $minorunits, $roundingMode);
-        $line->unitpriceinclvat = $this->_bamboraHelper->convertPriceToMinorunits((($totalPrice + $totalPriceVatAmount) - $discountAmount)/$quantity, $minorunits, $roundingMode);
-        $line->unitpricevatamount = $this->_bamboraHelper->convertPriceToMinorunits($totalPriceVatAmount/$quantity, $minorunits, $roundingMode);
+        $line->unitprice = $this->_bamboraHelper->convertPriceToMinorunits(($totalPrice - $discountAmount) / $quantity, $minorunits, $roundingMode);
+        $line->unitpriceinclvat = $this->_bamboraHelper->convertPriceToMinorunits((($totalPrice + $totalPriceVatAmount) - $discountAmount) / $quantity, $minorunits, $roundingMode);
+        $line->unitpricevatamount = $this->_bamboraHelper->convertPriceToMinorunits($totalPriceVatAmount / $quantity, $minorunits, $roundingMode);
         $line->unit = __("pcs.");
         if (!isset($taxPercent)) {
-            $vat = $totalPriceVatAmount > 0 && $totalPrice > 0  ? floatval($totalPriceVatAmount / $totalPrice * 100) : 0;
+            $vat = $totalPriceVatAmount > 0 && $totalPrice > 0 ? floatval($totalPriceVatAmount / $totalPrice * 100) : 0;
             $line->vat = $vat;
         } else {
             $line->vat = floatval($taxPercent);
@@ -341,7 +341,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $captureResponse = $transactionProvider->capture($transactionId, $captureRequest, $this->getApiKey($storeId));
             $message = "";
             if (!$this->_bamboraHelper->validateCheckoutApiResult($captureResponse, $transactionId, true, $message)) {
-                throw new \Exception(__("The capture action failed.") . ' - '.$message);
+                throw new \Exception(__("The capture action failed.") . ' - ' . $message);
             }
             $transactinOperationId = "";
             foreach ($captureResponse->transactionOperations as $transactionoperation) {
@@ -390,7 +390,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $creditResponse = $transactionProvider->credit($transactionId, $creditRequest, $this->getApiKey($storeId));
             $message = "";
             if (!$this->_bamboraHelper->validateCheckoutApiResult($creditResponse, $transactionId, true, $message)) {
-                throw new \Exception(__('The refund action failed.') . ' - '.$message);
+                throw new \Exception(__('The refund action failed.') . ' - ' . $message);
             }
             $transactionoperationId = "";
             foreach ($creditResponse->transactionOperations as $transactionoperation) {
@@ -447,7 +447,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements \B
             $deleteResponse = $transactionProvider->delete($transactionId, $this->getApiKey($storeId));
             $message = "";
             if (!$this->_bamboraHelper->validateCheckoutApiResult($deleteResponse, $transactionId, true, $message)) {
-                throw new \Exception(__("The void action failed.") . ' - '.$message);
+                throw new \Exception(__("The void action failed.") . ' - ' . $message);
             }
             $transactionoperationId = "";
             foreach ($deleteResponse->transactionOperations as $transactionoperation) {
