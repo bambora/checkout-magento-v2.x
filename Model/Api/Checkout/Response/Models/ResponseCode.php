@@ -1,7 +1,6 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
- * Copyright (c) 2019. All rights reserved Bambora Online.
+ * Copyright (c) 2021. All rights reserved Bambora Online.
  *
  * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
  * It is also not legal to do any changes to the software and distribute it in your own name / brand.
@@ -11,15 +10,26 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-  <module name="Bambora_Online" setup_version="2.3.0">
-    <sequence>
-      <module name="Magento_Sales" />
-      <module name="Magento_Quote" />
-      <module name="Magento_Checkout" />
-    </sequence>
-  </module>
-</config>
+namespace Bambora\Online\Model\Api\Checkout\Response\Models;
+
+class ResponseCode
+{
+    /**
+     * @var string
+     */
+    public $actioncode;
+    /**
+     * @var string
+     */
+    public $source;
+    /**
+     * @var string
+     */
+    public $enduserlabel;
+    /**
+     * @var string
+     */
+    public $merchantlabel;
+
+}

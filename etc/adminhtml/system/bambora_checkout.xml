@@ -60,6 +60,7 @@
       <label><![CDATA[<b>Payment Window ID:</b>]]></label>
       <comment><![CDATA[The ID of the payment window to use.]]></comment>
       <config_path>payment/bambora_checkout/paymentwindowid</config_path>
+        <validate>validate-digits validate-not-negative-number</validate>
     </field>
     <field id="instantcapture" type="select" translate="label comment" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant capture:</b>]]></label>
@@ -137,6 +138,7 @@
       <label><![CDATA[<b>Sort order:</b>]]></label>
       <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
       <config_path>payment/bambora_checkout/sort_order</config_path>
+        <validate>validate-digits validate-not-negative-number</validate>
     </field>
     <field id="uncancelorderlines" translate="label comment" type="select" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Un-Cancel order lines:</b>]]></label>
@@ -144,5 +146,17 @@
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/uncancelorderlines</config_path>
     </field>
+      <field id="allowlowvalueexemption" type="select" translate="label comment" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1">
+          <label><![CDATA[<b>Enable Low Value Exemption:</b>]]></label>
+          <comment><![CDATA[Allow you as a merchant to skip Strong Customer Authentication(SCA) when the value of the order is below your defined limit. Note: the liability will be on you as a merchant.]]></comment>
+          <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+          <config_path>payment/bambora_checkout/allowlowvalueexemption</config_path>
+      </field>
+      <field id="limitlowvalueexemption" type="text" translate="label comment" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1">
+          <label><![CDATA[<b>Max Amount for Low Value Exemption:</b>]]></label>
+          <comment><![CDATA[Any amount below this max amount might skip SCA if the issuer would allow it. Recommended amount is about €30 in your local currency. <a href='https://developer.bambora.com/europe/checkout/psd2/lowvalueexemption'  target='_blank'>See more information here.</a>]]></comment>
+          <config_path>payment/bambora_checkout/limitlowvalueexemption</config_path>
+          <validate>validate-digits validate-not-negative-number</validate>
+      </field>
   </group>
 </include>

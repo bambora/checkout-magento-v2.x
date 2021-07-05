@@ -31,6 +31,7 @@ class CheckoutApiModels
     //Response
     const RESPONSE_CHECKOUT = 'Response\Checkout';
     const RESPONSE_LISTPAYMENTTYPES = 'Response\ListPaymentTypes';
+    const RESPONSE_LISTTRANSACTIONOPERATIONS = 'Response\ListTransactionOperations';
     const RESPONSE_TRANSACTION = 'Response\Transaction';
     const RESPONSE_CAPTURE = 'Response\Capture';
     const RESPONSE_CREDIT = 'Response\Credit';
@@ -48,9 +49,12 @@ class CheckoutApiModels
     const RESPONSE_MODEL_INFORMATION = 'Response\Models\Information';
     const RESPONSE_MODEL_ACQUIRER = 'Response\Models\Acquirer';
     const RESPONSE_MODEL_PRIMARYACCOUNTNUMBER = 'Response\Models\PrimaryAccountnumber';
+    const RESPONSE_MODEL_ECI = 'Response\Models\Eci';
+    const RESPONSE_MODEL_EXEMPTION = 'Response\Models\Exemption';
     const RESPONSE_MODEL_LINKS = 'Response\Models\Links';
     const RESPONSE_MODEL_SUBSCRIPTION = 'Response\Models\Subscription';
     const RESPONSE_MODEL_TOTAL = 'Response\Models\Total';
     const RESPONSE_MODEL_TRANSACTION = 'Response\Models\Transaction';
     const RESPONSE_MODEL_TRANSACTIONOPERATION = 'Response\Models\TransactionOperation';
+    const RESPONSE_MODEL_RESPONSE_CODE = 'Response\Models\ResponseCode';
 }

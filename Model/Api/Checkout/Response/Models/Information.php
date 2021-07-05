@@ -27,4 +27,12 @@ class Information
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\PrimaryAccountnumber[]
      */
     public $primaryAccountnumbers;
+    /**
+     * @var \Bambora\Online\Model\Api\Checkout\Response\Models\Eci[]
+     */
+    public $ecis;
+    /**
+     * @var \Bambora\Online\Model\Api\Checkout\Response\Models\Exemption[]
+     */
+    public $exemptions;
 }

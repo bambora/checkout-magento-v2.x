@@ -28,6 +28,7 @@ abstract class Base extends DataObject
     protected $endpoints = [
         'merchant' => 'https://merchant-v1.api-eu.bambora.com',
         'checkout' => 'https://api.v1.checkout.bambora.com',
+        'data' => 'https://data-v1.api-eu.bambora.com',
         'transaction' => 'https://transaction-v1.api-eu.bambora.com',
         'checkoutCDN' => 'https://static.bambora.com',
         'globalAssets' => 'https://d3r1pwhfz7unl9.cloudfront.net/bambora'

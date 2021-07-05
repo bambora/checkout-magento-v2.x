@@ -11,11 +11,15 @@
  * @license   Bambora Online
  *
  */
-.bambora_action_container {
+.bambora_action_container, .bambora_transaction_history_container {
     line-height: 2.6rem;
 }
-.bambora_action_container tr:nth-child(even) {
+.bambora_action_container tr:nth-child(even), .bambora_transaction_history_container tr:nth-child(even) {
     background: #f1f1f1;
+}
+.bambora_transaction_history_container td{
+    padding-left: 5px;
+    padding-right: 5px;
 }
 .bambora_action_container td {
     width: 50%;
@@ -48,9 +52,9 @@
 .bambora-checkout-method > .entry-edit-head > .config-heading .heading strong {
     padding-left: 134px;
     background: url(https://d3r1pwhfz7unl9.cloudfront.net/bambora/bambora-logo.png) no-repeat 0 0;
-    -ms-background-size: 127px 40px;
-    background-size: 127px 40px;
-    line-height: 44px;
+    -ms-background-size: 127px 35px;
+    background-size: 127px 35px;
+    line-height: 35px;
 }
 
 .bambora-epay-method > .entry-edit-head > .config-heading .heading strong {

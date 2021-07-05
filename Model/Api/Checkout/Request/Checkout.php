@@ -39,4 +39,12 @@ class Checkout
      * @var int
      */
     public $paymentwindowid;
+    /**
+     * @var string
+     */
+    public  $securityexemption;
+    /**
+     * @var string
+     */
+    public  $securitylevel;
 }

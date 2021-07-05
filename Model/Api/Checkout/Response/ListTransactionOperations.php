@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  * Copyright (c) 2019. All rights reserved Bambora Online.
  *
@@ -11,15 +10,13 @@
  * @author    Bambora Online
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
- *
  */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-  <module name="Bambora_Online" setup_version="2.3.0">
-    <sequence>
-      <module name="Magento_Sales" />
-      <module name="Magento_Quote" />
-      <module name="Magento_Checkout" />
-    </sequence>
-  </module>
-</config>
+namespace Bambora\Online\Model\Api\Checkout\Response;
+
+class ListTransactionOperations extends Base
+{
+    /**
+     * @var \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation[]
+     */
+    public $transactionOperations;
+}

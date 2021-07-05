@@ -19,4 +19,5 @@ class CheckoutApi
     const API_CHECKOUT = 'Checkout';
     const API_TRANSACTION = 'Transaction';
     const API_ASSETS = 'Assets';
+    const API_DATA = 'Data';
 }

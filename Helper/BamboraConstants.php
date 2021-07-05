@@ -50,7 +50,8 @@ class BamboraConstants
     const ENABLE_INVOICE_DATA = 'enableinvoicedata';
     const ROUNDING_MODE = 'roundingmode';
     const UNCANCEL_ORDER_LINES = 'uncancelorderlines';
-
+    const ALLOW_LOW_VALUE_EXEMPTION = 'allowlowvalueexemption';
+    const LIMIT_LOW_VALUE_EXEMPTION = 'limitlowvalueexemption';
     //Actions
     const CAPTURE = 'capture';
     const REFUND = 'refund';
