@@ -148,7 +148,7 @@
     </field>
       <field id="allowlowvalueexemption" type="select" translate="label comment" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1">
           <label><![CDATA[<b>Enable Low Value Exemption:</b>]]></label>
-          <comment><![CDATA[Allow you as a merchant to skip Strong Customer Authentication(SCA) when the value of the order is below your defined limit. Note: the liability will be on you as a merchant.]]></comment>
+          <comment><![CDATA[Allow you as a merchant to let the customer attempt to skip Strong Customer Authentication(SCA) when the value of the order is below your defined limit. Note: the liability will be on you as a merchant.]]></comment>
           <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
           <config_path>payment/bambora_checkout/allowlowvalueexemption</config_path>
       </field>

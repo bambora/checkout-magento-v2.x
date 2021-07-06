@@ -232,11 +232,12 @@ class Merchant extends Base
             $transactionOperation->createddate = $operation['createddate'];
 
             $currency = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_CURRENCY);
-            $currency->code = $operation['currency']['code'];
-            $currency->minorunits = $operation['currency']['minorunits'];
-            $currency->name = $operation['currency']['name'];
-            $currency->number = $operation['currency']['number'];
-
+            if (isset($operation['currency'])) {
+                $currency->code = $operation['currency']['code'];
+                $currency->minorunits = $operation['currency']['minorunits'];
+                $currency->name = $operation['currency']['name'];
+                $currency->number = $operation['currency']['number'];
+            }
             $transactionOperation->currency = $currency;
             $transactionOperation->acquirername = $operation['acquirername'];
             $transactionOperation->currentbalance = $operation['currentbalance'];

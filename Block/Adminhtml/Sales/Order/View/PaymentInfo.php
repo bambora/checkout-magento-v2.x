@@ -447,7 +447,6 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     $eventInfo['description'] = $description;
 
                     return $eventInfo;
-
                 }
 
                 case "redirect":
@@ -459,7 +458,6 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     $eventInfo['description'] = $statusText . ' redirected to ' . $thirdPartyName . ' for authentication.';
 
                     return $eventInfo;
-
                 }
             }
         }

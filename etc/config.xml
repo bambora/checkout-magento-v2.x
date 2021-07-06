@@ -36,9 +36,9 @@
         <windowstate>1</windowstate>
         <roundingmode>round_default</roundingmode>
         <uncancelorderlines>0</uncancelorderlines>
-          <allowlowvalueexemption>0</allowlowvalueexemption>
-          <limitlowvalueexemption>0</limitlowvalueexemption>
-          <group>bambora</group>
+        <allowlowvalueexemption>0</allowlowvalueexemption>
+        <limitlowvalueexemption>0</limitlowvalueexemption>
+        <group>bambora</group>
       </bambora_checkout>
       <bambora_epay>
         <active>0</active>
