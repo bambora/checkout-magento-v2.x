@@ -276,6 +276,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 }
             }
         }
+        $html = str_replace("CollectorBank", "Walley", $html);
         return $html;
     }
 
@@ -350,11 +351,11 @@ class PaymentInfo extends \Magento\Backend\Block\Template
             if (is_array($operation->paymenttypes) && count($operation->paymenttypes) > 0) {
                 $threeDSecureBrandName = $this->getCardAuthenticationBrandName($operation->paymenttypes[0]->id);
             }
-            // Temporary renaming for Lindorff to Collector Bank required until implemented in Acquire
+            // Temporary renaming for Lindorff & Collector Bank to Walley required until implemented in Acquire
             $thirdPartyName = $operation->acquirername;
-            $thirdPartyName = strtolower($thirdPartyName) !== "lindorff"
+            $thirdPartyName = strtolower($thirdPartyName) !== ("lindorff" || "collectorbank")
                 ? $thirdPartyName
-                : "Collector Bank";
+                : "Walley";
 
             switch ($subAction) {
                 case "threed":
