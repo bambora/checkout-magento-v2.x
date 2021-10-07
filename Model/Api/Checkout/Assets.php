@@ -36,6 +36,6 @@ class Assets extends Base
     public function getCheckoutIconUrl()
     {
         $serviceEndpoint = $this->_getEndpoint(ApiEndpoints::ENDPOINT_GLOBAL_ASSETS);
-        return "{$serviceEndpoint}/bambora_icon_64x64.png";
+        return "{$serviceEndpoint}/worldline_icon_64x64.png";
     }
 }

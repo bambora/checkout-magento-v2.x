@@ -79,7 +79,7 @@ class Action extends Base
      */
     public function getEpayLogoUrl()
     {
-        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_ASSETS)."/ePay-logo.png";
+        $url = $this->_getEndpoint(ApiEndpoints::ENDPOINT_EPAY_ASSETS)."/worldline_icon_64x64.png";
         return $url;
     }
 
