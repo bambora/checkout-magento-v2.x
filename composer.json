@@ -1,8 +1,8 @@
 {
   "name": "bambora/module-payment-magento2",
-  "description": "Magento 2 payment module for Bambora Online Checkout and ePay",
+  "description": "Worldline / Bambora Checkout and Bambora ePay payment module for Magento 2  ",
   "type": "magento2-module",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "authors": [
     {
       "name": "Bambora Online A/S",

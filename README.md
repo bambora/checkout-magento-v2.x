@@ -1,4 +1,4 @@
-# Bambora Online Magento 2
+# Wordline / Bambora Online for Magento 2
 
 ## Supported Magento 2 versions
  * Supports Magento 2.1.x ,2.2.x, 2.3.x and 2.4.x
