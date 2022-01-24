@@ -101,7 +101,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
         $this->_paymentHelper = $paymentHelper;
         $this->_orderSender = $orderSender;
         $this->_invoiceSender = $invoiceSender;
-       
+
         $this->_eventManager = $context->getEventManager();
     }
 
@@ -200,7 +200,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
                 $order->save();
             }
         }
-        
+
         $this->_redirect('checkout/cart');
     }
 
@@ -247,9 +247,11 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             if (!$order->getEmailSent() && $paymentMethodInstance->getConfigData(BamboraConstants::SEND_MAIL_ORDER_CONFIRMATION, $storeId) == 1) {
                 $this->sendOrderEmail($order);
             }
-
-            if ($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_INVOICE, $storeId) == 1) {
-                $this->createInvoice($order, $paymentMethodInstance);
+            if ($isInstantCapture) {
+                $this->createInvoice($order, $paymentMethodInstance, false);
+            }
+            if (!$isInstantCapture && $paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_INVOICE, $storeId) == 1) {
+                $this->createInvoice($order, $paymentMethodInstance, true) ;
             }
         } catch (\Exception $ex) {
             throw $ex;
@@ -436,14 +438,21 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      *
      * @param \Magento\Sales\Model\Order                   $order
      * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
+     * @param boolean
      */
-    public function createInvoice($order, $paymentMethodInstance)
+    public function createInvoice($order, $paymentMethodInstance, $isOnlineCapture = true)
     {
         try {
             if ($order->canInvoice()) {
                 $invoice = $order->prepareInvoice();
                 $storeId = $order->getStoreId();
-                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+
+                if ($isOnlineCapture) {
+                    $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+                } else {
+                    $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
+                }
+
                 $invoice->register();
                 $invoice->save();
                 $transactionSave = $this->_objectManager->create('Magento\Framework\DB\Transaction')
