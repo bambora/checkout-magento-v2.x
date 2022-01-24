@@ -117,6 +117,12 @@ class Merchant extends Base
                     $acquirer->name = $acq['name'];
                     $information->acquirers[] = $acquirer;
                 }
+                $information->acquirerReferences = [];
+                foreach ($result['information']['acquirerreferences'] as $acqref) {
+                    $acquirerReference = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_ACQUIRERREFERENCE);
+                    $acquirerReference->reference = $acqref['reference'];
+                    $information->acquirerReferences[] = $acquirerReference;
+                }
                 $information->paymenttypes = [];
                 foreach ($result['information']['paymenttypes'] as $type) {
                     $paymentType = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_PAYMENTYPE);

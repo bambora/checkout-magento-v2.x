@@ -20,6 +20,10 @@ class Information
      */
     public $acquirers;
     /**
+     * @var \Bambora\Online\Model\Api\Checkout\Response\Models\AcquirerReference[]
+     */
+    public $acquirerReferences;
+    /**
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentType[]
      */
     public $paymentTypes;

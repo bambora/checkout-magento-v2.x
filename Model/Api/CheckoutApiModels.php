@@ -48,6 +48,7 @@ class CheckoutApiModels
     const RESPONSE_MODEL_CURRENCY = 'Response\Models\Currency';
     const RESPONSE_MODEL_INFORMATION = 'Response\Models\Information';
     const RESPONSE_MODEL_ACQUIRER = 'Response\Models\Acquirer';
+    const RESPONSE_MODEL_ACQUIRERREFERENCE = 'Response\Models\AcquirerReference';
     const RESPONSE_MODEL_PRIMARYACCOUNTNUMBER = 'Response\Models\PrimaryAccountnumber';
     const RESPONSE_MODEL_ECI = 'Response\Models\Eci';
     const RESPONSE_MODEL_EXEMPTION = 'Response\Models\Exemption';

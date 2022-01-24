@@ -187,6 +187,10 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $res .= '<tr><td>' . __("Transaction ID") . ':</td>';
         $res .= '<td>' . $transaction->id . '</td></tr>';
 
+        if (is_array($transaction->information->acquirerReferences) && count($transaction->information->acquirerReferences) > 0) {
+            $res .= '<tr><td>' . __("Acquirer Reference") . ':</td>';
+            $res .= '<td>' . $transaction->information->acquirerReferences[0]->reference . '</td></tr>';
+        }
         $res .= '<tr><td>' . __("Authorized amount") . ':</td>';
         $authAmount = $this->_bamboraHelper->convertPriceFromMinorunits($transaction->total->authorized, $transaction->currency->minorunits);
         $res .= '<td>' . $this->_priceHelper->currency($authAmount, true, false) . '</td></tr>';
