@@ -26,7 +26,7 @@ class Information
     /**
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentType[]
      */
-    public $paymentTypes;
+    public $paymenttypes;
     /**
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\PrimaryAccountnumber[]
      */

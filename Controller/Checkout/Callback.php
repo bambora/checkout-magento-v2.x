@@ -145,8 +145,8 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                 }
                 $paymentTypeDisplayName = "N/A";
                 $paymentTypeAccountNumber = "";
-                if (is_array($transaction->information->paymentTypes) && count($transaction->information->paymentTypes) > 0) {
-                    $paymentTypeDisplayName = $transaction->information->paymentTypes[0]->displayName;
+                if (is_array($transaction->information->paymenttypes) && count($transaction->information->paymenttypes) > 0) {
+                    $paymentTypeDisplayName = $transaction->information->paymenttypes[0]->displayName;
                 }
                 if (is_array($transaction->information->primaryAccountnumbers) && count($transaction->information->primaryAccountnumbers) > 0) {
                     $paymentTypeAccountNumber = $transaction->information->primaryAccountnumbers[0]->number;
