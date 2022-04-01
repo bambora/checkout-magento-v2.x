@@ -30,5 +30,5 @@ class PaymentGroup
     /**
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentType[]
      */
-    public $paymentTypes;
+    public $paymenttypes;
 }

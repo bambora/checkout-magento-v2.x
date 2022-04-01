@@ -51,7 +51,7 @@ class Merchant extends Base
                         $paymentGroup->displayName = $group['displayname'];
                         $paymentGroup->id = $group['id'];
                         $paymentGroup->name = $group['name'];
-                        $paymentGroup->paymentTypes = [];
+                        $paymentGroup->paymenttypes = [];
 
                         foreach ($group['paymenttypes'] as $type) {
                             $paymentType = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_PAYMENTYPE);
