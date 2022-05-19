@@ -68,11 +68,11 @@ class Base extends \Magento\Framework\DataObject
      * Initilize a Soap Client
      *
      * @param  string $wsdlUrl
-     * @return \Zend\Soap\Client
+     * @return \Laminas\Soap\Client
      */
     protected function _initSoapClient($wsdlUrl)
     {
-        $soapClient = new \Zend\Soap\Client($wsdlUrl);
+        $soapClient = new \Laminas\Soap\Client($wsdlUrl);
         $soapClient->setSoapVersion(2);
 
         return $soapClient;

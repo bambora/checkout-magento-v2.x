@@ -164,6 +164,8 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                         }
                     }
                 }
+            } else {
+                $result = "";
             }
         } catch(\Exception $ex) {
             $errorMessage = $ex->getMessage();

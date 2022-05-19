@@ -26,7 +26,7 @@
     "magento/module-store": "100.* | 101.*",
     "magento/module-tax": "100.*",
     "magento/module-ui": "100.* | 101.*",
-    "zendframework/zend-soap": "^2.4.6"
+    "laminas/laminas-soap": "^2.9"
   },
   "autoload": {
     "files": [ "registration.php" ],

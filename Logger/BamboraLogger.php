@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Logger;
 
 use Monolog\Logger;
@@ -20,65 +21,65 @@ class BamboraLogger extends Logger
     /**
      * Add Checkout error to log
      *
-     * @param  mixed $id
-     * @param  mixed $reason
+     * @param mixed $id
+     * @param mixed $reason
      * @return void
      */
     public function addCheckoutError($id, $reason)
     {
-        $errorMessage = 'Bambora Checkout Error - ID: ' .$id . ' - ' . $reason;
-        $this->addError($errorMessage);
+        $errorMessage = 'Bambora Checkout Error - ID: ' . $id . ' - ' . $reason;
+        $this->addRecord(self::ERROR, $errorMessage);
     }
 
     /**
      * Add Checkout info to log
      *
-     * @param  mixed $id
-     * @param  mixed $reason
+     * @param mixed $id
+     * @param mixed $reason
      * @return void
      */
     public function addCheckoutInfo($id, $reason)
     {
-        $errorMessage = 'Bambora Checkout Info - ID: ' .$id . ' - ' . $reason;
-        $this->addInfo($errorMessage);
+        $errorMessage = 'Bambora Checkout Info - ID: ' . $id . ' - ' . $reason;
+        $this->addRecord(self::INFO, $errorMessage);
     }
 
     /**
      * Add ePay error to log
      *
-     * @param  mixed $id
-     * @param  mixed $reason
+     * @param mixed $id
+     * @param mixed $reason
      * @return void
      */
     public function addEpayError($id, $reason)
     {
-        $errorMessage = 'Bambora ePay Error - ID: ' .$id . ' - ' . $reason;
-        $this->addError($errorMessage);
+        $errorMessage = 'Bambora ePay Error - ID: ' . $id . ' - ' . $reason;
+        $this->addRecord(self::ERROR, $errorMessage);
     }
 
     /**
      * Add ePay info to log
      *
-     * @param  mixed $id
-     * @param  mixed $reason
+     * @param mixed $id
+     * @param mixed $reason
      * @return void
      */
     public function addEpayInfo($id, $reason)
     {
-        $errorMessage = 'Bambora ePay Info - ID: ' .$id . ' - ' . $reason;
-        $this->addInfo($errorMessage);
+        $errorMessage = 'Bambora ePay Info - ID: ' . $id . ' - ' . $reason;
+        $this->addRecord(self::INFO, $errorMessage);
     }
 
-     /**
+    /**
      * Add Common error to log
      *
-     * @param  mixed $id
-     * @param  mixed $reason
+     * @param mixed $id
+     * @param mixed $reason
      * @return void
      */
     public function addCommonError($id, $reason)
     {
-        $errorMessage = 'Bambora Error - ID: ' .$id . ' - ' . $reason;
-        $this->addError($errorMessage);
+        $errorMessage = 'Bambora Error - ID: ' . $id . ' - ' . $reason;
+        $this->addRecord(self::ERROR, $errorMessage);
     }
 }
