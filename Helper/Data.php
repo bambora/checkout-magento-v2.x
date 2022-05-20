@@ -172,7 +172,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function decryptData($data)
     {
-        return $this->_encryptor->decrypt(trim($data));
+        return $this->_encryptor->decrypt(trim((string) $data));
     }
 
     /**
