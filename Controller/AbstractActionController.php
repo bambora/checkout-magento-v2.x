@@ -423,11 +423,11 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     {
         try {
             $this->_orderSender->send($order);
-            $order->addStatusHistoryComment(__("Notified customer about order #%1", $order->getId()))
+            $order->addStatusHistoryComment(__("Notified customer about order #%1", $order->getIncrementId()))
                 ->setIsCustomerNotified(1)
                 ->save();
         } catch (\Exception $ex) {
-            $order->addStatusHistoryComment(__("Could not send order confirmation for order #%1", $order->getId()))
+            $order->addStatusHistoryComment(__("Could not send order confirmation for order #%1", $order->getIncrementId()))
                 ->setIsCustomerNotified(0)
                 ->save();
         }
