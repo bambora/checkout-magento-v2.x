@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Api\Checkout\Response\Models;
 
 class Information
@@ -39,4 +40,10 @@ class Information
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\Exemption[]
      */
     public $exemptions;
+
+    /**
+     * @var \Bambora\Online\Model\Api\Checkout\Response\Models\Wallet[]
+     */
+    public $wallets;
+
 }

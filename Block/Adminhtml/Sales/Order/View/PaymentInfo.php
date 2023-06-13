@@ -202,7 +202,23 @@ class PaymentInfo extends \Magento\Backend\Block\Template
 
         if (is_array($transaction->information->paymenttypes) && count($transaction->information->paymenttypes) > 0) {
             $res .= '<tr><td>' . __("Card type") . ':</td>';
-            $res .= '<td>' . $transaction->information->paymenttypes[0]->displayName . $this->getPaymentLogoUrl($transaction->information->paymenttypes[0]->groupid). '</td></tr>';
+            $res .= '<td>' . $transaction->information->paymenttypes[0]->displayName . $this->getPaymentLogoUrl($transaction->information->paymenttypes[0]->groupid, $transaction->information->paymenttypes[0]->displayName) ;
+            if (is_array($transaction->information->wallets) && count(
+                    $transaction->information->wallets
+                ) > 0) {
+                $wallet_name = $transaction->information->wallets[0]->name;
+                if ($wallet_name == "MobilePay") {
+                    $wallet_img_id = "13";
+                }
+                if ($wallet_name == "Vipps") {
+                    $wallet_img_id = "14";
+                }
+                if (isset($wallet_img_id)) {
+                    $res .= $this->getPaymentLogoUrl($wallet_img_id, $wallet_name);
+                }
+            }
+            $res .= '</td></tr>';
+
         }
 
         if (is_array($transaction->information->primaryAccountnumbers) && count($transaction->information->primaryAccountnumbers) > 0) {
@@ -634,11 +650,12 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      * Create html for paymentLogoUrl
      *
      * @param  mixed $paymentId
+     * @param string $name
      * @return string
      */
-    public function getPaymentLogoUrl($paymentId)
+    public function getPaymentLogoUrl($paymentId, $name)
     {
-        return '<img class="bambora_paymentcard" src="https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/'.$paymentId . '.svg"';
+        return '<img class="bambora_paymentcard" src="https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/'.$paymentId . '.svg" alt ="' . $name . '">';
     }
 
     /**
