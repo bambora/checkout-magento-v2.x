@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Helper;
 
 use Bambora\Online\Helper\BamboraConstants;
@@ -37,10 +38,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Bambora Helper
      *
-     * @param \Magento\Framework\App\Helper\Context            $context
-     * @param \Bambora\Online\Logger\BamboraLogger             $bamboraLogger
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
      * @param \Magento\Framework\Encryption\Encryptor $encryptor
-     * @param \Magento\Framework\Module\ModuleListInterface    $moduleList
+     * @param \Magento\Framework\Module\ModuleListInterface $moduleList
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -58,7 +59,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Gives back bambora_checkout configuration values
      *
      * @param  $field
-     * @param  null|int $storeId
+     * @param null|int $storeId
      * @return mixed
      */
     public function getBamboraEpayConfigData($field, $storeId = null)
@@ -70,7 +71,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Gives back bambora_checkout configuration values
      *
      * @param  $field
-     * @param  null|int $storeId
+     * @param null|int $storeId
      * @return mixed
      */
     public function getBamboraCheckoutConfigData($field, $storeId = null)
@@ -82,7 +83,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Gives back bambora_checkout configuration values
      *
      * @param  $field
-     * @param  null|int $storeId
+     * @param null|int $storeId
      * @return mixed
      */
     public function getBamboraAdvancedConfigData($field, $storeId = null)
@@ -96,17 +97,29 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param  $field
      * @param  $paymentMethodCode
      * @param  $storeId
-     * @param  bool|false        $flag
+     * @param bool|false $flag
      * @return bool|mixed
      */
-    public function getConfigData($field, $paymentMethodCode, $storeId, $flag = false)
-    {
+    public function getConfigData(
+        $field,
+        $paymentMethodCode,
+        $storeId,
+        $flag = false
+    ) {
         $path = 'payment/' . $paymentMethodCode . '/' . $field;
 
         if (!$flag) {
-            return $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+            return $this->scopeConfig->getValue(
+                $path,
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $storeId
+            );
         } else {
-            return $this->scopeConfig->isSetFlag($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+            return $this->scopeConfig->isSetFlag(
+                $path,
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                $storeId
+            );
         }
     }
 
@@ -119,7 +132,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getCheckoutApi($apiName)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $api = $objectManager->create('Bambora\Online\Model\Api\Checkout\\'.$apiName);
+        $api = $objectManager->create(
+            'Bambora\Online\Model\Api\Checkout\\' . $apiName
+        );
 
         return $api;
     }
@@ -132,7 +147,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getCheckoutApiModel($modelName)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $model = $objectManager->create('Bambora\Online\Model\Api\Checkout\\'.$modelName);
+        $model = $objectManager->create(
+            'Bambora\Online\Model\Api\Checkout\\' . $modelName
+        );
 
         return $model;
     }
@@ -146,7 +163,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getEpayApi($apiName)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $api = $objectManager->create('Bambora\Online\Model\Api\Epay\\'.$apiName);
+        $api = $objectManager->create('Bambora\Online\Model\Api\Epay\\' . $apiName);
 
         return $api;
     }
@@ -159,7 +176,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getEpayApiModel($modelName)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $model = $objectManager->create('Bambora\Online\Model\Api\Epay\\'.$modelName);
+        $model = $objectManager->create(
+            'Bambora\Online\Model\Api\Epay\\' . $modelName
+        );
 
         return $model;
     }
@@ -167,12 +186,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Decrypt data
      *
-     * @param  mixed $data
+     * @param mixed $data
      * @return string
      */
     public function decryptData($data)
     {
-        return $this->_encryptor->decrypt(trim((string) $data));
+        return $this->_encryptor->decrypt(trim((string)$data));
     }
 
     /**
@@ -242,26 +261,53 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getCurrencyMinorunits($currencyCode)
     {
         $currencyArray = [
-        'TTD' => 0, 'KMF' => 0, 'ADP' => 0, 'TPE' => 0, 'BIF' => 0,
-        'DJF' => 0, 'MGF' => 0, 'XPF' => 0, 'GNF' => 0, 'BYR' => 0,
-        'PYG' => 0, 'JPY' => 0, 'CLP' => 0, 'XAF' => 0, 'TRL' => 0,
-        'VUV' => 0, 'CLF' => 0, 'KRW' => 0, 'XOF' => 0, 'RWF' => 0,
-        'IQD' => 3, 'TND' => 3, 'BHD' => 3, 'JOD' => 3, 'OMR' => 3,
-        'KWD' => 3, 'LYD' => 3];
+            'TTD' => 0,
+            'KMF' => 0,
+            'ADP' => 0,
+            'TPE' => 0,
+            'BIF' => 0,
+            'DJF' => 0,
+            'MGF' => 0,
+            'XPF' => 0,
+            'GNF' => 0,
+            'BYR' => 0,
+            'PYG' => 0,
+            'JPY' => 0,
+            'CLP' => 0,
+            'XAF' => 0,
+            'TRL' => 0,
+            'VUV' => 0,
+            'CLF' => 0,
+            'KRW' => 0,
+            'XOF' => 0,
+            'RWF' => 0,
+            'IQD' => 3,
+            'TND' => 3,
+            'BHD' => 3,
+            'JOD' => 3,
+            'OMR' => 3,
+            'KWD' => 3,
+            'LYD' => 3
+        ];
 
-        return array_key_exists($currencyCode, $currencyArray) ? $currencyArray[$currencyCode] : 2;
+        return array_key_exists(
+            $currencyCode,
+            $currencyArray
+        ) ? $currencyArray[$currencyCode] : 2;
     }
 
     /**
      * Format currency
      *
-     * @param  float $amount
+     * @param float $amount
      * @return string
      */
     public function formatCurrency($amount)
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data');
+        $priceHelper = $objectManager->create(
+            'Magento\Framework\Pricing\Helper\Data'
+        );
 
         return $priceHelper->currency($amount, true, false);
     }
@@ -274,13 +320,24 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function generateCheckoutApiKey($storeId)
     {
-        $accesstoken = $this->getBamboraCheckoutConfigData(BamboraConstants::ACCESS_TOKEN, $storeId);
-        $merchantNumber = $this->getBamboraCheckoutConfigData(BamboraConstants::MERCHANT_NUMBER, $storeId);
-        $secrettoken = $this->decryptData($this->getBamboraCheckoutConfigData(BamboraConstants::SECRET_TOKEN, $storeId));
+        $accesstoken = $this->getBamboraCheckoutConfigData(
+            BamboraConstants::ACCESS_TOKEN,
+            $storeId
+        );
+        $merchantNumber = $this->getBamboraCheckoutConfigData(
+            BamboraConstants::MERCHANT_NUMBER,
+            $storeId
+        );
+        $secrettoken = $this->decryptData(
+            $this->getBamboraCheckoutConfigData(
+                BamboraConstants::SECRET_TOKEN,
+                $storeId
+            )
+        );
 
-        $combined = $accesstoken . '@' . $merchantNumber .':'. $secrettoken;
+        $combined = $accesstoken . '@' . $merchantNumber . ':' . $secrettoken;
         $encodedKey = base64_encode($combined);
-        $apiKey = 'Basic '.$encodedKey;
+        $apiKey = 'Basic ' . $encodedKey;
 
         return $apiKey;
     }
@@ -288,14 +345,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Generate Epay Auth object
      *
-     * @param  int $storeId
+     * @param int $storeId
      * @return \Bambora\Online\Model\Api\Epay\Request\Models\Auth
      */
     public function generateEpayAuth($storeId)
     {
         $auth = $this->getEpayApiModel(EpayApiModels::REQUEST_MODEL_AUTH);
-        $auth->merchantNumber = $this->getBamboraEpayConfigData(BamboraConstants::MERCHANT_NUMBER, $storeId);
-        $auth->pwd = $this->decryptData($this->getBamboraEpayConfigData(BamboraConstants::REMOTE_INTERFACE_PASSWORD, $storeId));
+        $auth->merchantNumber = $this->getBamboraEpayConfigData(
+            BamboraConstants::MERCHANT_NUMBER,
+            $storeId
+        );
+        $auth->pwd = $this->decryptData(
+            $this->getBamboraEpayConfigData(
+                BamboraConstants::REMOTE_INTERFACE_PASSWORD,
+                $storeId
+            )
+        );
 
         return $auth;
     }
@@ -319,42 +384,48 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $bamboraVersion = $this->getModuleVersion();
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+        $productMetadata = $objectManager->get(
+            'Magento\Framework\App\ProductMetadataInterface'
+        );
         $magentoVersion = $productMetadata->getVersion();
-        $result = 'Magento/' . $magentoVersion. ' Module/' . $bamboraVersion . ' PHP/' . phpversion();
+        $result = 'Magento/' . $magentoVersion . ' Module/' . $bamboraVersion . ' PHP/' . phpversion(
+            );
         return $result;
     }
 
     /**
      * Calculate Md5key hash
      *
-     * @param  \Magento\Sales\Model\Order                     $order
-     * @param  \Bambora\Online\Model\Api\Epay\Request\Payment $paymentRequest
+     * @param \Magento\Sales\Model\Order $order
+     * @param \Bambora\Online\Model\Api\Epay\Request\Payment $paymentRequest
      * @return string
      */
     public function calcEpayMd5Key($order, $paymentRequest)
     {
-        $shopMd5 = $this->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
-        $md5stampsValueString = $paymentRequest->encoding.
-                    $paymentRequest->cms.
-                    $paymentRequest->windowstate.
-                    $paymentRequest->mobile.
-                    $paymentRequest->merchantnumber.
-                    $paymentRequest->windowid.
-                    $paymentRequest->amount.
-                    $paymentRequest->currency.
-                    $paymentRequest->orderid.
-                    $paymentRequest->accepturl.
-                    $paymentRequest->cancelurl.
-                    $paymentRequest->callbackurl.
-                    $paymentRequest->instantcapture.
-                    $paymentRequest->language.
-                    $paymentRequest->ownreceipt.
-                    $paymentRequest->timeout.
-                    $paymentRequest->invoice.
-                    $shopMd5;
+        $shopMd5 = $this->getBamboraEpayConfigData(
+            BamboraConstants::MD5_KEY,
+            $order->getStoreId()
+        );
+        $md5stampsValueString = $paymentRequest->encoding .
+            $paymentRequest->cms .
+            $paymentRequest->windowstate .
+            $paymentRequest->mobile .
+            $paymentRequest->merchantnumber .
+            $paymentRequest->windowid .
+            $paymentRequest->amount .
+            $paymentRequest->currency .
+            $paymentRequest->orderid .
+            $paymentRequest->accepturl .
+            $paymentRequest->cancelurl .
+            $paymentRequest->callbackurl .
+            $paymentRequest->instantcapture .
+            $paymentRequest->language .
+            $paymentRequest->ownreceipt .
+            $paymentRequest->timeout .
+            $paymentRequest->invoice .
+            $shopMd5;
         $md5stamp = $this->getHashFromString($md5stampsValueString);
-                
+
         return $md5stamp;
     }
 
@@ -366,21 +437,24 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getHashFromString($rawString)
     {
-        $md5stamp =  hash('md5', $rawString);
+        $md5stamp = hash('md5', $rawString);
         return $md5stamp;
     }
 
     /**
      * Translate Payment status
      *
-     * @param  string $status
+     * @param string $status
      * @return \Magento\Framework\Phrase
      */
     public function translatePaymentStatus($status)
     {
         if (strcmp($status, "PAYMENT_NEW") == 0) {
             return __("New");
-        } elseif (strcmp($status, "PAYMENT_CAPTURED") == 0 || strcmp($status, "PAYMENT_EUROLINE_WAIT_CAPTURE") == 0 || strcmp($status, "PAYMENT_EUROLINE_WAIT_CREDIT") == 0) {
+        } elseif (strcmp($status, "PAYMENT_CAPTURED") == 0 || strcmp(
+                $status,
+                "PAYMENT_EUROLINE_WAIT_CAPTURE"
+            ) == 0 || strcmp($status, "PAYMENT_EUROLINE_WAIT_CREDIT") == 0) {
             return __("Captured");
         } elseif (strcmp($status, "PAYMENT_DELETED") == 0) {
             return __("Deleted");
@@ -392,14 +466,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Return if Checkout Api Result is valid
      *
-     * @param  \Bambora\Online\Model\Api\Checkout\Response\Base $request
-     * @param  mixed                                            $id
-     * @param  bool                                             $isBackoffice
-     * @param  string                                           &$message
+     * @param \Bambora\Online\Model\Api\Checkout\Response\Base $request
+     * @param mixed $id
+     * @param bool $isBackoffice
+     * @param string                                           &$message
      * @return bool
      */
-    public function validateCheckoutApiResult($response, $id, $isBackoffice, &$message)
-    {
+    public function validateCheckoutApiResult(
+        $response,
+        $id,
+        $isBackoffice,
+        &$message
+    ) {
         if (!isset($response) || $response === false || !isset($response->meta)) {
             //Error without description
             $message = "No answer from Bambora";
@@ -408,7 +486,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         } elseif (!$response->meta->result) {
             // Error with description
             $message = $isBackoffice ? $response->meta->message->merchant : $response->meta->message->enduser;
-            $this->_bamboraLogger->addCheckoutError($id, $response->meta->message->merchant);
+            $this->_bamboraLogger->addCheckoutError(
+                $id,
+                $response->meta->message->merchant
+            );
             return false;
         }
         return true;
@@ -417,10 +498,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Return if Epay Api Result is valid
      *
-     * @param  \Bambora\Online\Model\Api\Epay\Response\Base       $response
-     * @param  mixed                                              $id
-     * @param  \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
-     * @param  string                                             &$message
+     * @param \Bambora\Online\Model\Api\Epay\Response\Base $response
+     * @param mixed $id
+     * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
+     * @param string                                             &$message
      * @return bool
      */
     public function validateEpayApiResult($response, $id, $auth, &$message)
@@ -437,11 +518,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 if ($response->epayResponse == -1019) {
                     $message = __("Invalid password used for webservice access!");
                 } else {
-                    $message = "({$response->epayResponse}) ".$errorProvicer->getEpayErrorText($response->epayResponse, $this->calcLanguage($this->getShopLocalCode()), $auth);
+                    $message = "({$response->epayResponse}) " . $errorProvicer->getEpayErrorText(
+                            $response->epayResponse,
+                            $this->calcLanguage($this->getShopLocalCode()),
+                            $auth
+                        );
                 }
                 $this->_bamboraLogger->addEpayError($id, "Epay Error: {$message}");
             } elseif (isset($response->pbsResponse) && $response->pbsResponse != -1) {
-                $message .= "({$response->pbsResponse}): " . $errorProvicer->getPbsErrorText($response->pbsResponse, $this->calcLanguage($this->getShopLocalCode()), $auth);
+                $message .= "({$response->pbsResponse}): " . $errorProvicer->getPbsErrorText(
+                        $response->pbsResponse,
+                        $this->calcLanguage($this->getShopLocalCode()),
+                        $auth
+                    );
                 $this->_bamboraLogger->addEpayError($id, "PBS Error: {$message}");
             }
             return false;
@@ -452,7 +541,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Format the shop local code by replacing '_' with '-'
      *
-     * @param  mixed $lan
+     * @param mixed $lan
      * @return string
      */
     public function getFormattedShopLocalCode($lan = null)
@@ -467,7 +556,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert country code to a number
      *
-     * @param  mixed $lan
+     * @param mixed $lan
      * @return string
      */
     public function calcLanguage($lan = null)
@@ -487,7 +576,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'sv_SE' => '3',
             'nn_NO' => '4',
             'nb_NO' => '4',
-            ];
+        ];
 
         return array_key_exists($lan, $languageArray) ? $languageArray[$lan] : '0';
     }
@@ -495,7 +584,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert card id to name
      *
-     * @param  mixed $cardid
+     * @param mixed $cardid
      * @return string
      */
     public function calcCardtype($cardid)
@@ -522,7 +611,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             '22' => 'Swedbank Direktbetalningar',
             '23' => 'ViaBill',
             '24' => 'NemPay',
-            '25' => 'iDeal'];
+            '25' => 'iDeal'
+        ];
 
         return array_key_exists($cardid, $cardIdArray) ? $cardIdArray[$cardid] : '';
     }
@@ -530,42 +620,186 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Convert Iso code
      *
-     * @param  string $code
-     * @param  bool   $isKey
+     * @param string $code
+     * @param bool $isKey
      * @return string
      */
     public function convertIsoCode($code, $isKey = true)
     {
         $isoCodeArray = [
-           'ADP' => '020', 'AED' => '784', 'AFA' => '004', 'ALL' => '008', 'AMD' => '051', 'ANG' => '532',
-           'AOA' => '973', 'ARS' => '032', 'AUD' => '036', 'AWG' => '533', 'AZM' => '031', 'BAM' => '052',
-           'BBD' => '004', 'BDT' => '050', 'BGL' => '100', 'BGN' => '975', 'BHD' => '048', 'BIF' => '108',
-           'BMD' => '060', 'BND' => '096', 'BOB' => '068', 'BOV' => '984', 'BRL' => '986', 'BSD' => '044',
-           'BTN' => '064', 'BWP' => '072', 'BYR' => '974', 'BZD' => '084', 'CAD' => '124', 'CDF' => '976',
-           'CHF' => '756', 'CLF' => '990', 'CLP' => '152', 'CNY' => '156', 'COP' => '170', 'CRC' => '188',
-           'CUP' => '192', 'CVE' => '132', 'CYP' => '196', 'CZK' => '203', 'DJF' => '262', 'DKK' => '208',
-           'DOP' => '214', 'DZD' => '012', 'ECS' => '218', 'ECV' => '983', 'EEK' => '233', 'EGP' => '818',
-           'ERN' => '232', 'ETB' => '230', 'EUR' => '978', 'FJD' => '242', 'FKP' => '238', 'GBP' => '826',
-           'GEL' => '981', 'GHC' => '288', 'GIP' => '292', 'GMD' => '270', 'GNF' => '324', 'GTQ' => '320',
-           'GWP' => '624', 'GYD' => '328', 'HKD' => '344', 'HNL' => '340', 'HRK' => '191', 'HTG' => '332',
-           'HUF' => '348', 'IDR' => '360', 'ILS' => '376', 'INR' => '356', 'IQD' => '368', 'IRR' => '364',
-           'ISK' => '352', 'JMD' => '388', 'JOD' => '400', 'JPY' => '392', 'KES' => '404', 'KGS' => '417',
-           'KHR' => '116', 'KMF' => '174', 'KPW' => '408', 'KRW' => '410', 'KWD' => '414', 'KYD' => '136',
-           'KZT' => '398', 'LAK' => '418', 'LBP' => '422', 'LKR' => '144', 'LRD' => '430', 'LSL' => '426',
-           'LTL' => '440', 'LVL' => '428', 'LYD' => '434', 'MAD' => '504', 'MDL' => '498', 'MGF' => '450',
-           'MKD' => '807', 'MMK' => '104', 'MNT' => '496', 'MOP' => '446', 'MRO' => '478', 'MTL' => '470',
-           'MUR' => '480', 'MVR' => '462', 'MWK' => '454', 'MXN' => '484', 'MXV' => '979', 'MYR' => '458',
-           'MZM' => '508', 'NAD' => '516', 'NGN' => '566', 'NIO' => '558', 'NOK' => '578', 'NPR' => '524',
-           'NZD' => '554', 'OMR' => '512', 'PAB' => '590', 'PEN' => '604', 'PGK' => '598', 'PHP' => '608',
-           'PKR' => '586', 'PLN' => '985', 'PYG' => '600', 'QAR' => '634', 'ROL' => '642', 'RUB' => '643',
-           'RUR' => '810', 'RWF' => '646', 'SAR' => '682', 'SBD' => '090', 'SCR' => '690', 'SDD' => '736',
-           'SEK' => '752', 'SGD' => '702', 'SHP' => '654', 'SIT' => '705', 'SKK' => '703', 'SLL' => '694',
-           'SOS' => '706', 'SRG' => '740', 'STD' => '678', 'SVC' => '222', 'SYP' => '760', 'SZL' => '748',
-           'THB' => '764', 'TJS' => '972', 'TMM' => '795', 'TND' => '788', 'TOP' => '776', 'TPE' => '626',
-           'TRL' => '792', 'TRY' => '949', 'TTD' => '780', 'TWD' => '901', 'TZS' => '834', 'UAH' => '980',
-           'UGX' => '800', 'USD' => '840', 'UYU' => '858', 'UZS' => '860', 'VEB' => '862', 'VND' => '704',
-           'VUV' => '548', 'XAF' => '950', 'XCD' => '951', 'XOF' => '952', 'XPF' => '953', 'YER' => '886',
-           'YUM' => '891', 'ZAR' => '710', 'ZMK' => '894', 'ZWD' => '716'];
+            'ADP' => '020',
+            'AED' => '784',
+            'AFA' => '004',
+            'ALL' => '008',
+            'AMD' => '051',
+            'ANG' => '532',
+            'AOA' => '973',
+            'ARS' => '032',
+            'AUD' => '036',
+            'AWG' => '533',
+            'AZM' => '031',
+            'BAM' => '052',
+            'BBD' => '004',
+            'BDT' => '050',
+            'BGL' => '100',
+            'BGN' => '975',
+            'BHD' => '048',
+            'BIF' => '108',
+            'BMD' => '060',
+            'BND' => '096',
+            'BOB' => '068',
+            'BOV' => '984',
+            'BRL' => '986',
+            'BSD' => '044',
+            'BTN' => '064',
+            'BWP' => '072',
+            'BYR' => '974',
+            'BZD' => '084',
+            'CAD' => '124',
+            'CDF' => '976',
+            'CHF' => '756',
+            'CLF' => '990',
+            'CLP' => '152',
+            'CNY' => '156',
+            'COP' => '170',
+            'CRC' => '188',
+            'CUP' => '192',
+            'CVE' => '132',
+            'CYP' => '196',
+            'CZK' => '203',
+            'DJF' => '262',
+            'DKK' => '208',
+            'DOP' => '214',
+            'DZD' => '012',
+            'ECS' => '218',
+            'ECV' => '983',
+            'EEK' => '233',
+            'EGP' => '818',
+            'ERN' => '232',
+            'ETB' => '230',
+            'EUR' => '978',
+            'FJD' => '242',
+            'FKP' => '238',
+            'GBP' => '826',
+            'GEL' => '981',
+            'GHC' => '288',
+            'GIP' => '292',
+            'GMD' => '270',
+            'GNF' => '324',
+            'GTQ' => '320',
+            'GWP' => '624',
+            'GYD' => '328',
+            'HKD' => '344',
+            'HNL' => '340',
+            'HRK' => '191',
+            'HTG' => '332',
+            'HUF' => '348',
+            'IDR' => '360',
+            'ILS' => '376',
+            'INR' => '356',
+            'IQD' => '368',
+            'IRR' => '364',
+            'ISK' => '352',
+            'JMD' => '388',
+            'JOD' => '400',
+            'JPY' => '392',
+            'KES' => '404',
+            'KGS' => '417',
+            'KHR' => '116',
+            'KMF' => '174',
+            'KPW' => '408',
+            'KRW' => '410',
+            'KWD' => '414',
+            'KYD' => '136',
+            'KZT' => '398',
+            'LAK' => '418',
+            'LBP' => '422',
+            'LKR' => '144',
+            'LRD' => '430',
+            'LSL' => '426',
+            'LTL' => '440',
+            'LVL' => '428',
+            'LYD' => '434',
+            'MAD' => '504',
+            'MDL' => '498',
+            'MGF' => '450',
+            'MKD' => '807',
+            'MMK' => '104',
+            'MNT' => '496',
+            'MOP' => '446',
+            'MRO' => '478',
+            'MTL' => '470',
+            'MUR' => '480',
+            'MVR' => '462',
+            'MWK' => '454',
+            'MXN' => '484',
+            'MXV' => '979',
+            'MYR' => '458',
+            'MZM' => '508',
+            'NAD' => '516',
+            'NGN' => '566',
+            'NIO' => '558',
+            'NOK' => '578',
+            'NPR' => '524',
+            'NZD' => '554',
+            'OMR' => '512',
+            'PAB' => '590',
+            'PEN' => '604',
+            'PGK' => '598',
+            'PHP' => '608',
+            'PKR' => '586',
+            'PLN' => '985',
+            'PYG' => '600',
+            'QAR' => '634',
+            'ROL' => '642',
+            'RUB' => '643',
+            'RUR' => '810',
+            'RWF' => '646',
+            'SAR' => '682',
+            'SBD' => '090',
+            'SCR' => '690',
+            'SDD' => '736',
+            'SEK' => '752',
+            'SGD' => '702',
+            'SHP' => '654',
+            'SIT' => '705',
+            'SKK' => '703',
+            'SLL' => '694',
+            'SOS' => '706',
+            'SRG' => '740',
+            'STD' => '678',
+            'SVC' => '222',
+            'SYP' => '760',
+            'SZL' => '748',
+            'THB' => '764',
+            'TJS' => '972',
+            'TMM' => '795',
+            'TND' => '788',
+            'TOP' => '776',
+            'TPE' => '626',
+            'TRL' => '792',
+            'TRY' => '949',
+            'TTD' => '780',
+            'TWD' => '901',
+            'TZS' => '834',
+            'UAH' => '980',
+            'UGX' => '800',
+            'USD' => '840',
+            'UYU' => '858',
+            'UZS' => '860',
+            'VEB' => '862',
+            'VND' => '704',
+            'VUV' => '548',
+            'XAF' => '950',
+            'XCD' => '951',
+            'XOF' => '952',
+            'XPF' => '953',
+            'YER' => '886',
+            'YUM' => '891',
+            'ZAR' => '710',
+            'ZMK' => '894',
+            'ZWD' => '716'
+        ];
 
         if ($isKey) {
             return $isoCodeArray[$code];
@@ -577,15 +811,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Create an Surcharge fee item
      *
-     * @param  mixed $baseFeeAmount
-     * @param  mixed $feeAmount
-     * @param  mixed $storeId
-     * @param  mixed $orderId
-     * @param  mixed $text
+     * @param mixed $baseFeeAmount
+     * @param mixed $feeAmount
+     * @param mixed $storeId
+     * @param mixed $orderId
+     * @param mixed $text
      * @return \Magento\Sales\Model\Order\Item
      */
-    public function createSurchargeItem($baseFeeAmount, $feeAmount, $storeId, $orderId, $text)
-    {
+    public function createSurchargeItem(
+        $baseFeeAmount,
+        $feeAmount,
+        $storeId,
+        $orderId,
+        $text
+    ) {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $feeItem = $objectManager->create('\Magento\Sales\Model\Order\Item');
         $feeItem->setSku(BamboraConstants::BAMBORA_SURCHARGE);

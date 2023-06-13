@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Observer;
 
 class ManageInventoryObserver implements \Magento\Framework\Event\ObserverInterface
@@ -24,7 +25,7 @@ class ManageInventoryObserver implements \Magento\Framework\Event\ObserverInterf
      * @var \Magento\CatalogInventory\Model\Indexer\Stock\Processor
      */
     protected $stockIndexerProcessor;
-       
+
     /**
      * @var \Bambora\Online\Logger\BamboraLogger
      */
@@ -33,9 +34,9 @@ class ManageInventoryObserver implements \Magento\Framework\Event\ObserverInterf
     /**
      * ManageInventoryObeserver constructor.
      *
-     * @param \Magento\CatalogInventory\Api\StockManagementInterface  $stockManagement
+     * @param \Magento\CatalogInventory\Api\StockManagementInterface $stockManagement
      * @param \Magento\CatalogInventory\Model\Indexer\Stock\Processor $stockIndexerProcessor
-     * @param \Bambora\Online\Logger\BamboraLogger                    $bamboraLogger
+     * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
      */
     public function __construct(
         \Magento\CatalogInventory\Api\StockManagementInterface $stockManagement,
@@ -50,7 +51,7 @@ class ManageInventoryObserver implements \Magento\Framework\Event\ObserverInterf
     /**
      * Subtract the un-cancled products from the store inventory.
      *
-     * @param  \Magento\Framework\Event\Observer $observer
+     * @param \Magento\Framework\Event\Observer $observer
      * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)

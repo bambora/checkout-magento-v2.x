@@ -11,13 +11,15 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Controller\Adminhtml\Order;
 
 use Bambora\Online\Helper\BamboraConstants;
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
 use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
-class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
+class MassInvoiceCapture extends
+    \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
 {
     /**
      * @var \Magento\Sales\Model\Order\Email\Sender\InvoiceSender
@@ -35,15 +37,15 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
     protected $_bamboraHelper;
 
     /**
-     * @param \Magento\Backend\App\Action\Context                                $context
-     * @param \Magento\Ui\Component\MassAction\Filter                            $filter
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory         $collectionFactory
-     * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender              $invoiceSender
-     * @param \Magento\Payment\Helper\Data                                       $paymentHelper
-     * @param \Bambora\Online\Logger\BamboraLogger                               $bamboraLogger
-     * @param \Bambora\Online\Helper\Data                                        $bamboraHelper
-     * @param \Magento\Sales\Model\Order\CreditmemoFactory                       $creditmemoFactory
-     * @param \Magento\Sales\Model\Service\CreditmemoService                     $creditmemoService
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Ui\Component\MassAction\Filter $filter
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
+     * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender
+     * @param \Magento\Payment\Helper\Data $paymentHelper
+     * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
+     * @param \Bambora\Online\Helper\Data $bamboraHelper
+     * @param \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
+     * @param \Magento\Sales\Model\Service\CreditmemoService $creditmemoService
      * @param \Magento\Sales\Model\ResourceModel\Order\Invoice\CollectionFactory $invoiceCollectionFactory
      */
     public function __construct(
@@ -64,11 +66,12 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
     /**
      * Hold selected orders
      *
-     * @param  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
+     * @param \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
-    protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
-    {
+    protected function massAction(
+        \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
+    ) {
         $countInvoicedOrder = 0;
         $invoiced = [];
         $notInvoiced = [];
@@ -76,15 +79,21 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
         foreach ($collectionItems as $order) {
             try {
                 if (!$order->canInvoice()) {
-                    $notInvoiced[] = $order->getIncrementId(). '('.__("Invoice not available"). ')';
+                    $notInvoiced[] = $order->getIncrementId() . '(' . __(
+                            "Invoice not available"
+                        ) . ')';
                     continue;
                 }
                 $invoice = $order->prepareInvoice();
-                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+                $invoice->setRequestedCaptureCase(
+                    \Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE
+                );
                 $invoice->register();
                 $invoice->save();
 
-                $transactionSave = $this->_objectManager->create('Magento\Framework\DB\Transaction')
+                $transactionSave = $this->_objectManager->create(
+                    'Magento\Framework\DB\Transaction'
+                )
                     ->addObject($invoice)
                     ->addObject($invoice->getOrder());
                 $transactionSave->save();
@@ -92,11 +101,21 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
                 $payment = $order->getPayment();
                 $paymentMethod = $payment->getMethod();
                 if ($paymentMethod === CheckoutPayment::METHOD_CODE || $paymentMethod === EpayPayment::METHOD_CODE) {
-                    $methodInstance = $this->_paymentHelper->getMethodInstance($paymentMethod);
-                    if ($methodInstance->getConfigData(BamboraConstants::MASS_CAPTURE_INVOICE_MAIL, $order->getStoreId()) == 1) {
+                    $methodInstance = $this->_paymentHelper->getMethodInstance(
+                        $paymentMethod
+                    );
+                    if ($methodInstance->getConfigData(
+                            BamboraConstants::MASS_CAPTURE_INVOICE_MAIL,
+                            $order->getStoreId()
+                        ) == 1) {
                         $invoice->setEmailSent(1);
                         $this->_invoiceSender->send($invoice);
-                        $order->addStatusHistoryComment(__("Notified customer about invoice #%1", $invoice->getIncrementId()))
+                        $order->addStatusHistoryComment(
+                            __(
+                                "Notified customer about invoice #%1",
+                                $invoice->getIncrementId()
+                            )
+                        )
                             ->setIsCustomerNotified(1)
                             ->save();
                     }
@@ -105,20 +124,36 @@ class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\Abstr
                 $countInvoicedOrder++;
                 $invoiced[] = $order->getIncrementId();
             } catch (\Exception $ex) {
-                $notInvoiced[] = $order->getIncrementId(). '('.$ex->getMessage().')';
+                $notInvoiced[] = $order->getIncrementId() . '(' . $ex->getMessage(
+                    ) . ')';
                 continue;
             }
         }
         $countNonInvoicedOrder = count($collectionItems) - $countInvoicedOrder;
 
         if ($countNonInvoicedOrder && $countInvoicedOrder) {
-            $this->messageManager->addError(__("%1 order(s) cannot be Invoiced and Captured.", $countNonInvoicedOrder). ' (' .implode(" , ", $notInvoiced) . ')');
+            $this->messageManager->addError(
+                __(
+                    "%1 order(s) cannot be Invoiced and Captured.",
+                    $countNonInvoicedOrder
+                ) . ' (' . implode(" , ", $notInvoiced) . ')'
+            );
         } elseif ($countNonInvoicedOrder) {
-            $this->messageManager->addError(__("You cannot Invoice and Capture the order(s)."). ' (' .implode(" , ", $notInvoiced) . ')');
+            $this->messageManager->addError(
+                __("You cannot Invoice and Capture the order(s).") . ' (' . implode(
+                    " , ",
+                    $notInvoiced
+                ) . ')'
+            );
         }
 
         if ($countInvoicedOrder) {
-            $this->messageManager->addSuccess(__("You Invoiced and Captured %1 order(s).", $countInvoicedOrder). ' (' .implode(" , ", $invoiced) . ')');
+            $this->messageManager->addSuccess(
+                __(
+                    "You Invoiced and Captured %1 order(s).",
+                    $countInvoicedOrder
+                ) . ' (' . implode(" , ", $invoiced) . ')'
+            );
         }
         $resultRedirect = $this->resultRedirectFactory->create();
         $resultRedirect->setPath($this->getComponentRefererUrl());

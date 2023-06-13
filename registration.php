@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 use \Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Bambora_Online', __DIR__);

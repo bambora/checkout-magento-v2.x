@@ -71,10 +71,12 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
             ) . '</span></button>';
 
         $html .= '</div>';
-        $html .= '<div class="heading"><strong>' . $element->getLegend() . '</strong>';
+        $html .= '<div class="heading"><strong>' . $element->getLegend(
+            ) . '</strong>';
 
         if ($element->getComment()) {
-            $html .= '<span class="heading-intro">' . $element->getComment() . '</span>';
+            $html .= '<span class="heading-intro">' . $element->getComment(
+                ) . '</span>';
         }
         $html .= '<div class="config-alt"></div>';
         $html .= '</div></div>';

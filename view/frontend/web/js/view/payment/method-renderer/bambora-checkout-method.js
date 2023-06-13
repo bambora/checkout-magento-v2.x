@@ -23,7 +23,7 @@ define(
                     paymentLogos: function () {
                         var result = ko.observable();
                         var assetsUrl = window.checkoutConfig.payment.bambora_checkout.assetsUrl;
-                        if(assetsUrl) {
+                        if (assetsUrl) {
                             $.get(assetsUrl, null, result, 'json');
                         }
                         return result;
@@ -41,8 +41,8 @@ define(
                     this.setCheckoutSession();
                 },
                 setCheckoutSession: function () {
-                     var self = this;
-                     var url = window.checkoutConfig.payment.bambora_checkout.checkoutUrl;
+                    var self = this;
+                    var url = window.checkoutConfig.payment.bambora_checkout.checkoutUrl;
                     $.get(url)
                         .done(
                             function (response) {
@@ -53,17 +53,17 @@ define(
                                     } else {
                                         self.showError($t("Error opening payment window") + ': ' + response.meta.message.enduser);
                                     }
-                                
+
                                     $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
                                 }
                                 self.openCheckoutPaymentWindow(response.token);
                             }
                         ).fail(
-                            function (error) {
-                                    self.showError($t("Error opening payment window") + ': ' + error.statusText);
-                                    $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
-                            }
-                        );
+                        function (error) {
+                            self.showError($t("Error opening payment window") + ': ' + error.statusText);
+                            $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
+                        }
+                    );
                 },
                 openCheckoutPaymentWindow: function (checkoutToken) {
                     var windowState = parseInt(window.checkoutConfig.payment.bambora_checkout.windowState);

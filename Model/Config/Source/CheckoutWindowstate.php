@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Config\Source;
 
 class CheckoutWindowstate implements \Magento\Framework\Option\ArrayInterface

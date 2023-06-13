@@ -11,13 +11,14 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Controller\Adminhtml\Order;
 
 class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
 {
     /**
-     * @param \Magento\Backend\App\Action\Context                        $context
-     * @param \Magento\Ui\Component\MassAction\Filter                    $filter
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Ui\Component\MassAction\Filter $filter
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      */
     public function __construct(
@@ -32,11 +33,12 @@ class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassA
     /**
      * Hold selected orders
      *
-     * @param  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
+     * @param \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
-    protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
-    {
+    protected function massAction(
+        \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
+    ) {
         $countDeleteOrder = 0;
         $deleted = [];
         $notDeleted = [];
@@ -48,8 +50,8 @@ class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassA
                 $countDeleteOrder++;
                 $deleted[] = $order->getIncrementId();
             } catch (\Exception $ex) {
-                $notDeleted[] = $order->getIncrementId(). '('.$ex->getMessage().')';
-                ;
+                $notDeleted[] = $order->getIncrementId() . '(' . $ex->getMessage(
+                    ) . ')';;
                 continue;
             }
         }
@@ -57,13 +59,28 @@ class MassDelete extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassA
         $countNonDeleteOrder = count($collectionItems) - $countDeleteOrder;
 
         if ($countNonDeleteOrder && $countDeleteOrder) {
-            $this->messageManager->addError(__("%1 order(s) were not deleted.", $countNonDeleteOrder). ' (' .implode(" , ", $notDeleted) . ')');
+            $this->messageManager->addError(
+                __(
+                    "%1 order(s) were not deleted.",
+                    $countNonDeleteOrder
+                ) . ' (' . implode(" , ", $notDeleted) . ')'
+            );
         } elseif ($countNonDeleteOrder) {
-            $this->messageManager->addError(__("No order(s) were deleted."). ' (' .implode(" , ", $notDeleted) . ')');
+            $this->messageManager->addError(
+                __("No order(s) were deleted.") . ' (' . implode(
+                    " , ",
+                    $notDeleted
+                ) . ')'
+            );
         }
 
         if ($countDeleteOrder) {
-            $this->messageManager->addSuccess(__("You have deleted %1 order(s).", $countDeleteOrder). ' (' .implode(" , ", $deleted) . ')');
+            $this->messageManager->addSuccess(
+                __(
+                    "You have deleted %1 order(s).",
+                    $countDeleteOrder
+                ) . ' (' . implode(" , ", $deleted) . ')'
+            );
         }
 
         $resultRedirect = $this->resultRedirectFactory->create();

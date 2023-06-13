@@ -33,9 +33,16 @@ class Data extends Base
             $serviceEndpoint = $this->_getEndpoint(ApiEndpoints::ENDPOINT_DATA);
             $serviceUrl = "{$serviceEndpoint}/responsecodes/{$source}/{$actioncode}";
             $jsonData = null;
-            $dataResponseJson = $this->_callRestService($serviceUrl, $jsonData, Base::GET, $apiKey);
+            $dataResponseJson = $this->_callRestService(
+                $serviceUrl,
+                $jsonData,
+                Base::GET,
+                $apiKey
+            );
             $dataResponseJsonArray = json_decode($dataResponseJson, true);
-            $dataResponse = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_RESPONSE_CODE);
+            $dataResponse = $this->_bamboraHelper->getCheckoutApiModel(
+                CheckoutApiModels::RESPONSE_MODEL_RESPONSE_CODE
+            );
             $dataResponse->meta = $this->_mapMeta($dataResponseJsonArray);
             $dataResponse->merchantlabel = $dataResponseJsonArray['responsecode']['merchantlabel'];
             $dataResponse->actioncode = $dataResponseJsonArray['responsecode']['actioncode'];

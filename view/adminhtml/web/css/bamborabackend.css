@@ -14,13 +14,16 @@
 .bambora_action_container, .bambora_transaction_history_container {
     line-height: 2.6rem;
 }
+
 .bambora_action_container tr:nth-child(even), .bambora_transaction_history_container tr:nth-child(even) {
     background: #f1f1f1;
 }
-.bambora_transaction_history_container td{
+
+.bambora_transaction_history_container td {
     padding-left: 5px;
     padding-right: 5px;
 }
+
 .bambora_action_container td {
     width: 50%;
     padding-left: 5px;
@@ -31,6 +34,7 @@
     border-bottom: 1px solid gray;
     font-weight: bold;
 }
+
 .bambora_table_title_padding {
     padding-top: 20px;
 }
@@ -38,6 +42,7 @@
 .bambora_table_history_td {
     vertical-align: top;
 }
+
 .bambora_table_history_tr {
     border-bottom: 1px solid gray;
 }

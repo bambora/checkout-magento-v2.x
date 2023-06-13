@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Method;
 
 interface IPayment
@@ -18,7 +19,7 @@ interface IPayment
     /**
      * Get payment window
      *
-     * @param  \Magento\Sales\Model\Order
+     * @param \Magento\Sales\Model\Order
      * @return mixed
      */
     public function getPaymentWindow($order);
@@ -26,8 +27,8 @@ interface IPayment
     /**
      * Capture payment
      *
-     * @param  \Magento\Payment\Model\InfoInterface $payment
-     * @param  float                                $amount
+     * @param \Magento\Payment\Model\InfoInterface $payment
+     * @param float $amount
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -36,8 +37,8 @@ interface IPayment
     /**
      * Refund payment
      *
-     * @param  \Magento\Payment\Model\InfoInterface $payment
-     * @param  float                                $amount
+     * @param \Magento\Payment\Model\InfoInterface $payment
+     * @param float $amount
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -46,7 +47,7 @@ interface IPayment
     /**
      * Void payment
      *
-     * @param  \Magento\Payment\Model\InfoInterface $payment
+     * @param \Magento\Payment\Model\InfoInterface $payment
      * @return $this
      */
     public function void(\Magento\Payment\Model\InfoInterface $payment);
@@ -54,7 +55,7 @@ interface IPayment
     /**
      * Cancel payment
      *
-     * @param  \Magento\Payment\Model\InfoInterface $payment
+     * @param \Magento\Payment\Model\InfoInterface $payment
      * @return $this
      */
     public function cancel(\Magento\Payment\Model\InfoInterface $payment);
@@ -62,9 +63,9 @@ interface IPayment
     /**
      * Get Bambora Checkout Transaction
      *
-     * @param  mixed  $transactionId
-     * @param  string $storeId
-     * @param  string &$message
+     * @param mixed $transactionId
+     * @param string $storeId
+     * @param string &$message
      * @return mixed
      */
     public function getTransaction($transactionId, $storeId, &$message);

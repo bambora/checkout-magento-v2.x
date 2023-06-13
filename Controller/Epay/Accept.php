@@ -11,7 +11,9 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Controller\Epay;
+
 use \Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
 class Accept extends \Bambora\Online\Controller\AbstractActionController

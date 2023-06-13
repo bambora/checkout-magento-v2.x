@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Controller\Epay;
 
 class Cancel extends \Bambora\Online\Controller\AbstractActionController

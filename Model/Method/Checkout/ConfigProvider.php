@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Method\Checkout;
 
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
@@ -42,7 +43,9 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
         \Magento\Payment\Helper\Data $paymentHelper
     ) {
         $this->_paymentHelper = $paymentHelper;
-        $this->_checkoutMethod = $this->_paymentHelper->getMethodInstance($this->methodCode);
+        $this->_checkoutMethod = $this->_paymentHelper->getMethodInstance(
+            $this->methodCode
+        );
     }
 
     /**
@@ -53,13 +56,18 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
         $config = [
             'payment' => [
                 $this->methodCode => [
-                    'paymentTitle' => $this->_checkoutMethod->getConfigData(BamboraConstants::TITLE),
+                    'paymentTitle' => $this->_checkoutMethod->getConfigData(
+                        BamboraConstants::TITLE
+                    ),
                     'paymentIconSrc' => $this->_checkoutMethod->getCheckoutIconUrl(),
-                    'checkoutWebSdkUrl' => $this->_checkoutMethod->getCheckoutWebSdkUrl(),
-                    'windowState' => $this->_checkoutMethod->getConfigData(BamboraConstants::WINDOW_STATE),
-                    'checkoutUrl'=> $this->_checkoutMethod->getCheckoutUrl(),
-                    'assetsUrl'=> $this->_checkoutMethod->getAssetsUrl(),
-                    'cancelUrl'=> $this->_checkoutMethod->getCancelUrl()
+                    'checkoutWebSdkUrl' => $this->_checkoutMethod->getCheckoutWebSdkUrl(
+                    ),
+                    'windowState' => $this->_checkoutMethod->getConfigData(
+                        BamboraConstants::WINDOW_STATE
+                    ),
+                    'checkoutUrl' => $this->_checkoutMethod->getCheckoutUrl(),
+                    'assetsUrl' => $this->_checkoutMethod->getAssetsUrl(),
+                    'cancelUrl' => $this->_checkoutMethod->getCancelUrl()
                 ]
             ]
         ];

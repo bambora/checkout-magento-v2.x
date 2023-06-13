@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Method\Epay;
 
 use Bambora\Online\Helper\BamboraConstants;
@@ -42,7 +43,9 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
         \Magento\Payment\Helper\Data $paymentHelper
     ) {
         $this->_paymentHelper = $paymentHelper;
-        $this->_ePayMethod = $this->_paymentHelper->getMethodInstance($this->methodCode);
+        $this->_ePayMethod = $this->_paymentHelper->getMethodInstance(
+            $this->methodCode
+        );
     }
 
     /**
@@ -52,14 +55,18 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
     {
         $config = [
             'payment' => [
-                 $this->methodCode => [
-                    'paymentTitle' => $this->_ePayMethod->getConfigData(BamboraConstants::TITLE),
+                $this->methodCode => [
+                    'paymentTitle' => $this->_ePayMethod->getConfigData(
+                        BamboraConstants::TITLE
+                    ),
                     'paymentLogoSrc' => $this->_ePayMethod->getEpayLogoUrl(),
-                    'paymentWindowJsUrl' => $this->_ePayMethod->getEPayPaymentWindowJsUrl(),
-                    'paymentTypeLogoSrc' => $this->_ePayMethod->getEpayPaymentTypeUrl(),
-                    'checkoutUrl'=> $this->_ePayMethod->getCheckoutUrl(),
-                    'cancelUrl'=> $this->_ePayMethod->getCancelUrl()
-                 ]
+                    'paymentWindowJsUrl' => $this->_ePayMethod->getEPayPaymentWindowJsUrl(
+                    ),
+                    'paymentTypeLogoSrc' => $this->_ePayMethod->getEpayPaymentTypeUrl(
+                    ),
+                    'checkoutUrl' => $this->_ePayMethod->getCheckoutUrl(),
+                    'cancelUrl' => $this->_ePayMethod->getCancelUrl()
+                ]
             ]
         ];
 

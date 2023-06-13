@@ -12,18 +12,21 @@
  * @license   Bambora Online
  *
  */
+
 ?>
 <div>
-  <br/>
-  <table class="bambora_action_container" border="0" width="100%">
+    <br/>
+    <table class="bambora_action_container" border="0" width="100%">
 
-    <?php echo $block->getTransactionData(); ?>
+        <?php
+        echo $block->getTransactionData(); ?>
 
-  </table>
+    </table>
     <br/> <br/>
     <table class="bambora_transaction_history_container" border="0" width="100%">
 
-        <?php echo $block->getTransactionLogData(); ?>
+        <?php
+        echo $block->getTransactionLogData(); ?>
 
     </table>
 

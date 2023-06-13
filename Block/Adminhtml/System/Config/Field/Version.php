@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Block\Adminhtml\System\Config\Field;
 
 use Magento\Framework\Data\Form\Element\AbstractElement;
@@ -25,9 +26,9 @@ class Version extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Version constructor.
      *
-     * @param \Bambora\Online\Helper\Data             $bamboraHelper
+     * @param \Bambora\Online\Helper\Data $bamboraHelper
      * @param \Magento\Backend\Block\Template\Context $context
-     * @param array                                   $data
+     * @param array $data
      */
     public function __construct(
         \Bambora\Online\Helper\Data $bamboraHelper,
@@ -41,7 +42,7 @@ class Version extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Remove scope label
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
@@ -53,7 +54,7 @@ class Version extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Retrieve the setup version of the extension
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
     protected function _getElementHtml(AbstractElement $element)

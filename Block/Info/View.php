@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Block\Info;
 
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
@@ -26,7 +27,7 @@ class View extends \Magento\Payment\Block\Info
         parent::_construct();
         $this->setTemplate('sales/order/view/info.phtml');
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -35,7 +36,7 @@ class View extends \Magento\Payment\Block\Info
         if ($this->_paymentSpecificInformation !== null) {
             return $this->_paymentSpecificInformation;
         }
-        
+
         $transport = parent::_prepareSpecificInformation($transport);
         $data = [];
 
@@ -52,9 +53,13 @@ class View extends \Magento\Payment\Block\Info
             $txnId = "";
             $payment = $this->getInfo()->getOrder()->getPayment();
             if ($payment->getMethod() === CheckoutPayment::METHOD_CODE) {
-                $txnId = $payment->getAdditionalInformation(CheckoutPayment::METHOD_REFERENCE);
+                $txnId = $payment->getAdditionalInformation(
+                    CheckoutPayment::METHOD_REFERENCE
+                );
             } elseif ($payment->getMethod() === EpayPayment::METHOD_CODE) {
-                $txnId = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
+                $txnId = $payment->getAdditionalInformation(
+                    EpayPayment::METHOD_REFERENCE
+                );
             }
 
             if (!empty($txnId)) {

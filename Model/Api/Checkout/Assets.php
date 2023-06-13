@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Api\Checkout;
 
 use Bambora\Online\Model\Api\Checkout\ApiEndpoints;

@@ -19,8 +19,9 @@
         <input type="radio"
                name="payment[method]"
                class="radio"
-               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()" />
-        <label data-bind="attr: {'for': getCode()}" class="label bambora_payment_title">
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label data-bind="attr: {'for': getCode()}"
+               class="label bambora_payment_title">
             <span data-bind="text: getBamboraCheckoutTitle()"></span>
         </label>
     </div>
@@ -28,12 +29,16 @@
         <!-- ko foreach: getRegion('messages') -->
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
-        <fieldset class="fieldset" data-bind='attr: {id: "payment_form_" + getCode()}'>
+        <fieldset class="fieldset"
+                  data-bind='attr: {id: "payment_form_" + getCode()}'>
             <div class="payment-method-note">
-                <!-- ko i18n: 'You will be redirected to Bambora Checkout.' --><!-- /ko -->
+                <!-- ko i18n: 'You will be redirected to Bambora Checkout.' -->
+                <!-- /ko -->
             </div>
-            <span class="bambora_paymentcards_container" data-bind="foreach: paymentLogos">
-                <img class="bambora_checkout_paymenttype" alt="Bambora Payment type" data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + $data + '.svg'}" />
+            <span class="bambora_paymentcards_container"
+                  data-bind="foreach: paymentLogos">
+                <img class="bambora_checkout_paymenttype" alt="Bambora Payment type"
+                     data-bind="attr: {src: 'https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' + $data + '.svg'}"/>
             </span>
             <div class="payment-method-billing-address">
                 <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->

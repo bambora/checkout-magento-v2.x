@@ -11,7 +11,9 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Controller\Checkout;
+
 use \Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
 
 class Accept extends \Bambora\Online\Controller\AbstractActionController

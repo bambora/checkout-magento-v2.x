@@ -11,9 +11,11 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Controller\Adminhtml\Order;
 
-class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
+class MassInvoiceRefund extends
+    \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
 {
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\Invoice\CollectionFactory
@@ -33,11 +35,11 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
     /**
      * Mass Invoice Refund Action
      *
-     * @param \Magento\Backend\App\Action\Context                                $context
-     * @param \Magento\Ui\Component\MassAction\Filter                            $filter
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Ui\Component\MassAction\Filter $filter
      * @param \Magento\Sales\Model\ResourceModel\Order\Invoice\CollectionFactory $invoiceCollectionFactory
-     * @param \Magento\Sales\Model\Order\CreditmemoFactory                       $creditmemoFactory
-     * @param \Magento\Sales\Model\Service\CreditmemoService                     $creditmemoService
+     * @param \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
+     * @param \Magento\Sales\Model\Service\CreditmemoService $creditmemoService
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -55,11 +57,12 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
     /**
      * Hold selected orders
      *
-     * @param  \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
+     * @param \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
-    protected function massAction(\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection)
-    {
+    protected function massAction(
+        \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
+    ) {
         $countRefundInvoices = 0;
         $refunded = [];
         $notRefunded = [];
@@ -68,7 +71,9 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
         foreach ($collectionItems as $invoice) {
             try {
                 if (!$invoice->canRefund()) {
-                    $notRefunded[] = $invoice->getIncrementId(). '('.__("Creditmemo not available"). ')';
+                    $notRefunded[] = $invoice->getIncrementId() . '(' . __(
+                            "Creditmemo not available"
+                        ) . ')';
                     continue;
                 }
 
@@ -82,20 +87,36 @@ class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
                 $countRefundInvoices++;
                 $refunded[] = $invoice->getIncrementId();
             } catch (\Exception $ex) {
-                $notRefunded[] = $invoice->getIncrementId(). '('.$ex->getMessage().')';
+                $notRefunded[] = $invoice->getIncrementId() . '(' . $ex->getMessage(
+                    ) . ')';
                 continue;
             }
         }
         $countNonRefundInvoice = count($collectionItems) - $countRefundInvoices;
 
         if ($countNonRefundInvoice && $countRefundInvoices) {
-            $this->messageManager->addError(__("%1 invoice(s) were not refunded.", $countNonRefundInvoice). ' (' .implode(" , ", $notRefunded) . ')');
+            $this->messageManager->addError(
+                __(
+                    "%1 invoice(s) were not refunded.",
+                    $countNonRefundInvoice
+                ) . ' (' . implode(" , ", $notRefunded) . ')'
+            );
         } elseif ($countNonRefundInvoice) {
-            $this->messageManager->addError(__("No invoice(s) were refunded."). ' (' .implode(" , ", $notRefunded) . ')');
+            $this->messageManager->addError(
+                __("No invoice(s) were refunded.") . ' (' . implode(
+                    " , ",
+                    $notRefunded
+                ) . ')'
+            );
         }
 
         if ($countRefundInvoices) {
-            $this->messageManager->addSuccess(__("You have refunded %1 invoice(s).", $countRefundInvoices). ' (' .implode(" , ", $refunded) . ')');
+            $this->messageManager->addSuccess(
+                __(
+                    "You have refunded %1 invoice(s).",
+                    $countRefundInvoices
+                ) . ' (' . implode(" , ", $refunded) . ')'
+            );
         }
 
         $resultRedirect = $this->resultRedirectFactory->create();

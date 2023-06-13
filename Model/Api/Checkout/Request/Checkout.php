@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Api\Checkout\Request;
 
 class Checkout
@@ -42,9 +43,9 @@ class Checkout
     /**
      * @var string
      */
-    public  $securityexemption;
+    public $securityexemption;
     /**
      * @var string
      */
-    public  $securitylevel;
+    public $securitylevel;
 }

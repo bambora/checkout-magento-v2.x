@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Method;
 
 class BamboraAdvanced extends \Magento\Payment\Model\Method\AbstractMethod

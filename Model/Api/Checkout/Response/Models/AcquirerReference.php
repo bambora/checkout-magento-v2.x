@@ -11,9 +11,11 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Api\Checkout\Response\Models;
 
-class AcquirerReference{
+class AcquirerReference
+{
     /**
      * @var string
      */

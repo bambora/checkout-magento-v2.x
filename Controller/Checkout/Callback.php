@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Controller\Checkout;
 
 use Bambora\Online\Model\Api\CheckoutApi;
@@ -37,8 +38,17 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         $transactionResponse = null;
         $message = "Callback Failed: ";
         $responseCode = Exception::HTTP_BAD_REQUEST;
-        if ($this->validateCallback($posted, $transactionResponse, $order, $message)) {
-            $message = $this->processCallback($transactionResponse, $order, $responseCode);
+        if ($this->validateCallback(
+            $posted,
+            $transactionResponse,
+            $order,
+            $message
+        )) {
+            $message = $this->processCallback(
+                $transactionResponse,
+                $order,
+                $responseCode
+            );
         }
 
         $id = isset($order) ? $order->getIncrementId() : 0;
@@ -57,14 +67,18 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     /**
      * Validate the callback
      *
-     * @param  mixed                                                   $posted
-     * @param  \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
-     * @param  \Magento\Sales\Model\Order                              $order
-     * @param  string                                                  $message
+     * @param mixed $posted
+     * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
+     * @param \Magento\Sales\Model\Order $order
+     * @param string $message
      * @return bool
      */
-    protected function validateCallback($posted, &$transactionResponse, &$order, &$message)
-    {
+    protected function validateCallback(
+        $posted,
+        &$transactionResponse,
+        &$order,
+        &$message
+    ) {
         //Validate response
         if (!isset($posted) || !$posted['txnid']) {
             $message .= isset($posted) ? "TransactionId is missing" : "Response is null";
@@ -86,11 +100,16 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         }
 
         //Validate MD5
-        $shopMd5 = $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
+        $shopMd5 = $this->_bamboraHelper->getBamboraCheckoutConfigData(
+            BamboraConstants::MD5_KEY,
+            $order->getStoreId()
+        );
         $var = "";
         if (strlen($shopMd5) > 0) {
             foreach ($posted as $key => $value) {
-                if ($key === "hash") break;
+                if ($key === "hash") {
+                    break;
+                }
                 $var .= $value;
             }
 
@@ -103,12 +122,21 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
 
         //Validate Transaction
         $transactionId = $posted['txnid'];
-        $apiKey = $this->_bamboraHelper->generateCheckoutApiKey($order->getStoreId());
-        $merchantApi = $this->_bamboraHelper->getCheckoutApi(CheckoutApi::API_MERCHANT);
+        $apiKey = $this->_bamboraHelper->generateCheckoutApiKey(
+            $order->getStoreId()
+        );
+        $merchantApi = $this->_bamboraHelper->getCheckoutApi(
+            CheckoutApi::API_MERCHANT
+        );
         $transactionResponse = $merchantApi->getTransaction($transactionId, $apiKey);
 
         //Validate transaction
-        if (!$this->_bamboraHelper->validateCheckoutApiResult($transactionResponse, $order->getIncrementId(), true, $message)) {
+        if (!$this->_bamboraHelper->validateCheckoutApiResult(
+            $transactionResponse,
+            $order->getIncrementId(),
+            true,
+            $message
+        )) {
             return false;
         }
 
@@ -124,9 +152,9 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     /**
      * Process the callback from Bambora
      *
-     * @param  \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
-     * @param  \Magento\Sales\Model\Order                              $order
-     * @param  int                                                     $responseCode
+     * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
+     * @param \Magento\Sales\Model\Order $order
+     * @param int $responseCode
      * @return void
      */
     protected function processCallback($transactionResponse, $order, &$responseCode)
@@ -136,19 +164,29 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         $payment = $order->getPayment();
 
         try {
-            $pspReference = $payment->getAdditionalInformation(CheckoutPayment::METHOD_REFERENCE);
+            $pspReference = $payment->getAdditionalInformation(
+                CheckoutPayment::METHOD_REFERENCE
+            );
             if (empty($pspReference)) {
-                $paymentMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
+                $paymentMethod = $this->_getPaymentMethodInstance(
+                    $order->getPayment()->getMethod()
+                );
                 $isInstantCapture = false;
                 if ($transaction->total->authorized - $transaction->total->captured === 0) {
                     $isInstantCapture = true;
                 }
                 $paymentTypeDisplayName = "N/A";
                 $paymentTypeAccountNumber = "";
-                if (is_array($transaction->information->paymenttypes) && count($transaction->information->paymenttypes) > 0) {
+                if (is_array($transaction->information->paymenttypes) && count(
+                        $transaction->information->paymenttypes
+                    ) > 0) {
                     $paymentTypeDisplayName = $transaction->information->paymenttypes[0]->displayName;
                 }
-                if (is_array($transaction->information->primaryAccountnumbers) && count($transaction->information->primaryAccountnumbers) > 0) {
+                if (is_array(
+                        $transaction->information->primaryAccountnumbers
+                    ) && count(
+                        $transaction->information->primaryAccountnumbers
+                    ) > 0) {
                     $paymentTypeAccountNumber = $transaction->information->primaryAccountnumbers[0]->number;
                 }
 
@@ -161,7 +199,9 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                     $paymentTypeAccountNumber,
                     $transaction->total->feeamount,
                     $transaction->currency->minorunits,
-                    $this->_bamboraHelper->getBamboraCheckoutConfigData(BamboraConstants::ORDER_STATUS),
+                    $this->_bamboraHelper->getBamboraCheckoutConfigData(
+                        BamboraConstants::ORDER_STATUS
+                    ),
                     $isInstantCapture,
                     $payment
                 );
@@ -174,11 +214,13 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         } catch (\Exception $ex) {
             $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
             $order->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
-            $payment->setAdditionalInformation([CheckoutPayment::METHOD_REFERENCE => ""]);
+            $payment->setAdditionalInformation(
+                [CheckoutPayment::METHOD_REFERENCE => ""]
+            );
             $payment->save();
             $order->save();
 
-            $message = "Callback Failed - " .$ex->getMessage();
+            $message = "Callback Failed - " . $ex->getMessage();
             $responseCode = Exception::HTTP_INTERNAL_ERROR;
         }
 

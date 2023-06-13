@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Method;
 
 use Bambora\Online\Helper\BamboraConstants;
@@ -60,24 +61,24 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
     /**
      * Bambora Checkout constructor.
      *
-     * @param \Magento\Framework\UrlInterface                              $urlBuilder
-     * @param \Bambora\Online\Helper\Data                                  $bamboraHelper
-     * @param \Magento\Tax\Helper\Data                                     $taxHelper
-     * @param \Magento\Store\Model\StoreManagerInterface                   $storeManager
-     * @param \Magento\Framework\Model\Context                             $context
-     * @param \Magento\Framework\Registry                                  $registry
-     * @param \Magento\Framework\Api\ExtensionAttributesFactory            $extensionFactory
-     * @param \Magento\Framework\Api\AttributeValueFactory                 $customAttributeFactory
-     * @param \Magento\Payment\Helper\Data                                 $paymentData
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface           $scopeConfig
-     * @param \Magento\Payment\Model\Method\Logger                         $logger
-     * @param \Magento\Framework\App\RequestInterface                      $request
-     * @param \Magento\Framework\App\Response\Http                         $response
-     * @param \Magento\Checkout\Model\Cart                                 $cart
-     * @param \Magento\Framework\Message\ManagerInterface                  $messageManager
+     * @param \Magento\Framework\UrlInterface $urlBuilder
+     * @param \Bambora\Online\Helper\Data $bamboraHelper
+     * @param \Magento\Tax\Helper\Data $taxHelper
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger $logger
+     * @param \Magento\Framework\App\RequestInterface $request
+     * @param \Magento\Framework\App\Response\Http $response
+     * @param \Magento\Checkout\Model\Cart $cart
+     * @param \Magento\Framework\Message\ManagerInterface $messageManager
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
-     * @param array                                                        $data
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
      */
     public function __construct(
         \Magento\Framework\UrlInterface $urlBuilder,
@@ -169,13 +170,15 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
     /**
      * Can do online action
      *
-     * @param  \Magento\Payment\Model\InfoInterface $payment
+     * @param \Magento\Payment\Model\InfoInterface $payment
      * @return boolean
      */
     protected function canOnlineAction($payment)
     {
         $storeId = $payment->getOrder()->getStoreId();
-        if (intval($this->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId)) === 1) {
+        if (intval(
+                $this->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId)
+            ) === 1) {
             return true;
         }
 

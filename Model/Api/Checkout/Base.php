@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Api\Checkout;
 
 use Bambora\Online\Model\Api\CheckoutApiModels;
@@ -52,10 +53,10 @@ abstract class Base extends DataObject
     /**
      * Bambora Api
      *
-     * @param \Bambora\Online\Helper\Data          $bamboraHelper
+     * @param \Bambora\Online\Helper\Data $bamboraHelper
      * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
-     * @param \Magento\Framework\HTTP\Client\Curl  $curl
-     * @param array                                $data
+     * @param \Magento\Framework\HTTP\Client\Curl $curl
+     * @param array $data
      */
     public function __construct(
         \Bambora\Online\Helper\Data $bamboraHelper,
@@ -72,7 +73,7 @@ abstract class Base extends DataObject
     /**
      * Return the address of the endpoint type
      *
-     * @param  string $type
+     * @param string $type
      * @return string
      */
     public function _getEndpoint($type)
@@ -83,21 +84,21 @@ abstract class Base extends DataObject
     /**
      * Sends the curl request to the given serviceurl
      *
-     * @param  string $serviceUrl
-     * @param  mixed  $jsonData
-     * @param  string $method
-     * @param  string $apiKey
+     * @param string $serviceUrl
+     * @param mixed $jsonData
+     * @param string $method
+     * @param string $apiKey
      * @return mixed
      */
     protected function _callRestService($serviceUrl, $jsonData, $method, $apiKey)
     {
         $contentLength = isset($jsonData) ? strlen($jsonData) : 0;
         $headers = [
-           'Content-Type' => 'application/json',
-           'Content-Length' => $contentLength,
-           'Accept' => 'application/json',
-           'Authorization' => $apiKey,
-           'X-EPay-System' => $this->_bamboraHelper->getModuleHeaderInfo()
+            'Content-Type' => 'application/json',
+            'Content-Length' => $contentLength,
+            'Accept' => 'application/json',
+            'Authorization' => $apiKey,
+            'X-EPay-System' => $this->_bamboraHelper->getModuleHeaderInfo()
         ];
 
         $this->_curl->setHeaders($headers);
@@ -121,7 +122,7 @@ abstract class Base extends DataObject
     /**
      * Map bambora checkout response meta json to meta object
      *
-     * @param  mixed $response
+     * @param mixed $response
      * @return Response\Models\Meta|null
      */
     protected function _mapMeta($response)
@@ -129,10 +130,14 @@ abstract class Base extends DataObject
         if (!isset($response)) {
             return null;
         }
-        $message = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_MESSAGE);
+        $message = $this->_bamboraHelper->getCheckoutApiModel(
+            CheckoutApiModels::RESPONSE_MODEL_MESSAGE
+        );
         $message->enduser = $response['meta']['message']['enduser'];
         $message->merchant = $response['meta']['message']['merchant'];
-        $meta = $this->_bamboraHelper->getCheckoutApiModel(CheckoutApiModels::RESPONSE_MODEL_META);
+        $meta = $this->_bamboraHelper->getCheckoutApiModel(
+            CheckoutApiModels::RESPONSE_MODEL_META
+        );
         $meta->message = $message;
         $meta->result = $response['meta']['result'];
 

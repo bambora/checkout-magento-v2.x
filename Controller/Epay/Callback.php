@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Controller\Epay;
 
 use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
@@ -48,9 +49,9 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     /**
      * Validate the callback
      *
-     * @param  mixed                      $posted
-     * @param  \Magento\Sales\Model\Order $order
-     * @param  string                     $message
+     * @param mixed $posted
+     * @param \Magento\Sales\Model\Order $order
+     * @param string $message
      * @return bool
      */
     public function validateCallback($posted, &$order, &$message)
@@ -82,7 +83,10 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         }
 
         //Validate MD5
-        $shopMd5 = $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::MD5_KEY, $order->getStoreId());
+        $shopMd5 = $this->_bamboraHelper->getBamboraEpayConfigData(
+            BamboraConstants::MD5_KEY,
+            $order->getStoreId()
+        );
         if (!empty($shopMd5)) {
             $var = "";
 
@@ -105,9 +109,9 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
     /**
      * Process the callback from Bambora
      *
-     * @param  mixed                      $posted
-     * @param  \Magento\Sales\Model\Order $order
-     * @param  int                        $responseCode
+     * @param mixed $posted
+     * @param \Magento\Sales\Model\Order $order
+     * @param int $responseCode
      * @return void
      */
     public function processCallback($posted, $order, &$responseCode)
@@ -116,15 +120,38 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         $payment = $order->getPayment();
 
         try {
-            $pspReference = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
+            $pspReference = $payment->getAdditionalInformation(
+                EpayPayment::METHOD_REFERENCE
+            );
             if (empty($pspReference)) {
-                $paymentMethod = $this->_getPaymentMethodInstance($order->getPayment()->getMethod());
-                $currency = $this->_bamboraHelper->convertIsoCode($posted['currency'], false);
-                $minorUnits = $this->_bamboraHelper->getCurrencyMinorunits($currency);
-                $isInstantCapture = intval($this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::INSTANT_CAPTURE, $order->getStoreId())) === 1 ? true : false;
-                $paymentType = array_key_exists('paymenttype', $posted) ? $posted['paymenttype'] : "";
-                $cardNumber = array_key_exists('cardno', $posted) ? $posted['cardno'] : "";
-                $txnFee = array_key_exists('txnfee', $posted) ? $posted['txnfee'] : 0;
+                $paymentMethod = $this->_getPaymentMethodInstance(
+                    $order->getPayment()->getMethod()
+                );
+                $currency = $this->_bamboraHelper->convertIsoCode(
+                    $posted['currency'],
+                    false
+                );
+                $minorUnits = $this->_bamboraHelper->getCurrencyMinorunits(
+                    $currency
+                );
+                $isInstantCapture = intval(
+                    $this->_bamboraHelper->getBamboraEpayConfigData(
+                        BamboraConstants::INSTANT_CAPTURE,
+                        $order->getStoreId()
+                    )
+                ) === 1 ? true : false;
+                $paymentType = array_key_exists(
+                    'paymenttype',
+                    $posted
+                ) ? $posted['paymenttype'] : "";
+                $cardNumber = array_key_exists(
+                    'cardno',
+                    $posted
+                ) ? $posted['cardno'] : "";
+                $txnFee = array_key_exists(
+                    'txnfee',
+                    $posted
+                ) ? $posted['txnfee'] : 0;
                 $fraud = array_key_exists('fraud', $posted) ? $posted['fraud'] : 0;
 
                 $this->_processCallbackData(
@@ -136,7 +163,9 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                     $cardNumber,
                     $txnFee,
                     $minorUnits,
-                    $this->_bamboraHelper->getBamboraEpayConfigData(BamboraConstants::ORDER_STATUS),
+                    $this->_bamboraHelper->getBamboraEpayConfigData(
+                        BamboraConstants::ORDER_STATUS
+                    ),
                     $isInstantCapture,
                     $payment,
                     $fraud
@@ -150,11 +179,12 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         } catch (\Exception $ex) {
             $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
             $order->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
-            $payment->setAdditionalInformation([EpayPayment::METHOD_REFERENCE => ""]);
+            $payment->setAdditionalInformation([EpayPayment::METHOD_REFERENCE => ""]
+            );
             $payment->save();
             $order->save();
 
-            $message = "Callback Failed - " .$ex->getMessage();
+            $message = "Callback Failed - " . $ex->getMessage();
             $responseCode = Exception::HTTP_INTERNAL_ERROR;
         }
 

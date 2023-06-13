@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Model\Api\Epay;
 
 class Base extends \Magento\Framework\DataObject
@@ -39,9 +40,9 @@ class Base extends \Magento\Framework\DataObject
     /**
      * ePay Api
      *
-     * @param \Bambora\Online\Helper\Data          $bamboraHelper
+     * @param \Bambora\Online\Helper\Data $bamboraHelper
      * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
-     * @param array                                $data
+     * @param array $data
      */
     public function __construct(
         \Bambora\Online\Helper\Data $bamboraHelper,
@@ -56,7 +57,7 @@ class Base extends \Magento\Framework\DataObject
     /**
      * Return the address of the endpoint type
      *
-     * @param  string $type
+     * @param string $type
      * @return string
      */
     public function _getEndpoint($type)
@@ -67,7 +68,7 @@ class Base extends \Magento\Framework\DataObject
     /**
      * Initilize a Soap Client
      *
-     * @param  string $wsdlUrl
+     * @param string $wsdlUrl
      * @return \Laminas\Soap\Client
      */
     protected function _initSoapClient($wsdlUrl)

@@ -11,6 +11,7 @@
  * @copyright Bambora Online (https://bambora.com)
  * @license   Bambora Online
  */
+
 namespace Bambora\Online\Controller;
 
 use Bambora\Online\Helper\BamboraConstants;
@@ -71,14 +72,14 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     /**
      * AbstractActionController constructor.
      *
-     * @param \Magento\Framework\App\Action\Context                 $context
-     * @param \Magento\Sales\Model\OrderFactory                     $orderFactory
-     * @param \Magento\Checkout\Model\Session                       $checkoutSession
-     * @param \Bambora\Online\Helper\Data                           $bamboraHelper
-     * @param \Magento\Framework\Controller\Result\JsonFactory      $resultJsonFactory
-     * @param \Bambora\Online\Logger\BamboraLogger                  $bamboraLogger
-     * @param \Magento\Payment\Helper\Data                          $paymentHelper
-     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender   $orderSender
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory
+     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Bambora\Online\Helper\Data $bamboraHelper
+     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+     * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
+     * @param \Magento\Payment\Helper\Data $paymentHelper
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
      * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender
      */
     public function __construct(
@@ -130,7 +131,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     /**
      * Get order object
      *
-     * @param  mixed $incrementId
+     * @param mixed $incrementId
      * @return \Magento\Sales\Model\Order
      */
     public function getOrder($incrementId)
@@ -163,9 +164,11 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $this->_checkoutSession->setLastSuccessQuoteId($order->getQuoteId());
 
             $payment = $order->getPayment();
-            if(isset($payment))
-            {
-                $payment->setAdditionalInformation(BamboraConstants::PAYMENT_STATUS_ACCEPTED, true);
+            if (isset($payment)) {
+                $payment->setAdditionalInformation(
+                    BamboraConstants::PAYMENT_STATUS_ACCEPTED,
+                    true
+                );
                 $payment->save();
             }
         }
@@ -178,16 +181,28 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     protected function cancelOrder()
     {
         $order = $this->_getOrder();
-        if(isset($order) && $order->getId() && $order->getState() != Order::STATE_CANCELED) {
+        if (isset($order) && $order->getId() && $order->getState(
+            ) != Order::STATE_CANCELED) {
             $payment = $order->getPayment();
-            if(isset($payment)) {
-                $epayReference = $payment->getAdditionalInformation(EpayPayment::METHOD_REFERENCE);
-                $checkoutReference = $payment->getAdditionalInformation(CheckoutPayment::METHOD_REFERENCE);
-                $paymentStatusAccepted = $payment->getAdditionalInformation(BamboraConstants::PAYMENT_STATUS_ACCEPTED);
-                if(empty($epayReference) && empty($checkoutReference) && $paymentStatusAccepted != true) {
-                    $comment =  __("The order was canceled through the payment window");
+            if (isset($payment)) {
+                $epayReference = $payment->getAdditionalInformation(
+                    EpayPayment::METHOD_REFERENCE
+                );
+                $checkoutReference = $payment->getAdditionalInformation(
+                    CheckoutPayment::METHOD_REFERENCE
+                );
+                $paymentStatusAccepted = $payment->getAdditionalInformation(
+                    BamboraConstants::PAYMENT_STATUS_ACCEPTED
+                );
+                if (empty($epayReference) && empty($checkoutReference) && $paymentStatusAccepted != true) {
+                    $comment = __(
+                        "The order was canceled through the payment window"
+                    );
                     $orderIncrementId = $order->getIncrementId();
-                    $this->_bamboraLogger->addCheckoutInfo($orderIncrementId, $comment);
+                    $this->_bamboraLogger->addCheckoutInfo(
+                        $orderIncrementId,
+                        $comment
+                    );
                     $order->addStatusHistoryComment($comment);
                     $order->cancel();
 
@@ -207,7 +222,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     /**
      * Get Payment method instance object
      *
-     * @param  string $method
+     * @param string $method
      * @return {MethodInstance}
      */
     protected function _getPaymentMethodInstance($method)
@@ -218,40 +233,77 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     /**
      * Process the callback data
      *
-     * @param  \Magento\Sales\Model\Order                   $order                 $order
-     * @param  \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
-     * @param  string                                       $txnId
-     * @param  string                                       $methodReference
-     * @param  string                                       $ccType
-     * @param  string                                       $ccNumber
-     * @param  mixed                                        $feeAmountInMinorUnits
-     * @param  mixed                                        $minorUnits
-     * @param  mixed                                        $status
-     * @param  boolean                                      $isInstantCapture
-     * @param  \Magento\Sales\Model\Order\Payment           $payment
+     * @param \Magento\Sales\Model\Order $order $order
+     * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
+     * @param string $txnId
+     * @param string $methodReference
+     * @param string $ccType
+     * @param string $ccNumber
+     * @param mixed $feeAmountInMinorUnits
+     * @param mixed $minorUnits
+     * @param mixed $status
+     * @param boolean $isInstantCapture
+     * @param \Magento\Sales\Model\Order\Payment $payment
      * @return void
      */
-    protected function _processCallbackData($order, $paymentMethodInstance, $txnId, $methodReference, $ccType, $ccNumber, $feeAmountInMinorUnits, $minorUnits, $status, $isInstantCapture, $payment = null, $fraudStatus = 0)
-    {
+    protected function _processCallbackData(
+        $order,
+        $paymentMethodInstance,
+        $txnId,
+        $methodReference,
+        $ccType,
+        $ccNumber,
+        $feeAmountInMinorUnits,
+        $minorUnits,
+        $status,
+        $isInstantCapture,
+        $payment = null,
+        $fraudStatus = 0
+    ) {
         try {
             if (!isset($payment)) {
                 $payment = $order->getPayment();
             }
             $storeId = $order->getStoreId();
-            $this->updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $isInstantCapture, $fraudStatus);
+            $this->updatePaymentData(
+                $order,
+                $txnId,
+                $methodReference,
+                $ccType,
+                $ccNumber,
+                $paymentMethodInstance,
+                $status,
+                $isInstantCapture,
+                $fraudStatus
+            );
 
-            if ($paymentMethodInstance->getConfigData(BamboraConstants::ADD_SURCHARGE_TO_PAYMENT, $storeId) == 1 && $feeAmountInMinorUnits > 0) {
-                $this->addSurchargeToOrder($order, $feeAmountInMinorUnits, $minorUnits, $ccType, $paymentMethodInstance);
+            if ($paymentMethodInstance->getConfigData(
+                    BamboraConstants::ADD_SURCHARGE_TO_PAYMENT,
+                    $storeId
+                ) == 1 && $feeAmountInMinorUnits > 0) {
+                $this->addSurchargeToOrder(
+                    $order,
+                    $feeAmountInMinorUnits,
+                    $minorUnits,
+                    $ccType,
+                    $paymentMethodInstance
+                );
             }
 
-            if (!$order->getEmailSent() && $paymentMethodInstance->getConfigData(BamboraConstants::SEND_MAIL_ORDER_CONFIRMATION, $storeId) == 1) {
+            if (!$order->getEmailSent() && $paymentMethodInstance->getConfigData(
+                    BamboraConstants::SEND_MAIL_ORDER_CONFIRMATION,
+                    $storeId
+                ) == 1) {
                 $this->sendOrderEmail($order);
             }
             if ($isInstantCapture) {
                 $this->createInvoice($order, $paymentMethodInstance, false);
             }
-            if (!$isInstantCapture && $paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_INVOICE, $storeId) == 1) {
-                $this->createInvoice($order, $paymentMethodInstance, true) ;
+            if (!$isInstantCapture && $paymentMethodInstance->getConfigData(
+                    BamboraConstants::INSTANT_INVOICE,
+                    $storeId
+                ) == 1) {
+                $this->createInvoice($order, $paymentMethodInstance, true);
             }
         } catch (\Exception $ex) {
             throw $ex;
@@ -261,19 +313,28 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     /**
      * Update the order and payment informations
      *
-     * @param  \Magento\Sales\Model\Order                   $order
-     * @param  string                                       $txnId
-     * @param  string                                       $methodReference
-     * @param  string                                       $ccType
-     * @param  string                                       $ccNumber
-     * @param  \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
-     * @param  mixed                                        $status
-     * @param  boolean                                      $isInstantCapture
-     * @param  mixed                                        $fraudStatus
+     * @param \Magento\Sales\Model\Order $order
+     * @param string $txnId
+     * @param string $methodReference
+     * @param string $ccType
+     * @param string $ccNumber
+     * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
+     * @param mixed $status
+     * @param boolean $isInstantCapture
+     * @param mixed $fraudStatus
      * @return void
      */
-    public function updatePaymentData($order, $txnId, $methodReference, $ccType, $ccNumber, $paymentMethodInstance, $status, $isInstantCapture, $fraudStatus)
-    {
+    public function updatePaymentData(
+        $order,
+        $txnId,
+        $methodReference,
+        $ccType,
+        $ccNumber,
+        $paymentMethodInstance,
+        $status,
+        $isInstantCapture,
+        $fraudStatus
+    ) {
         try {
             $payment = $order->getPayment();
             $payment->setTransactionId($txnId);
@@ -289,22 +350,32 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             }
             $storeId = $order->getStoreId();
             $orderCurrentState = $order->getState();
-            if ($orderCurrentState === Order::STATE_CANCELED && $paymentMethodInstance->getConfigData(BamboraConstants::UNCANCEL_ORDER_LINES, $storeId) == 1) {
+            if ($orderCurrentState === Order::STATE_CANCELED && $paymentMethodInstance->getConfigData(
+                    BamboraConstants::UNCANCEL_ORDER_LINES,
+                    $storeId
+                ) == 1) {
                 $this->unCancelOrderItems($order);
             }
 
             $order->setState(Order::STATE_PROCESSING);
             $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
-            $payment->addTransactionCommentsToOrder($transaction, $transactionComment);
+            $payment->addTransactionCommentsToOrder(
+                $transaction,
+                $transactionComment
+            );
 
-            if ($order->getPayment()->getMethod() === \Bambora\Online\Model\Method\Epay\Payment::METHOD_CODE) {
+            if ($order->getPayment()->getMethod(
+                ) === \Bambora\Online\Model\Method\Epay\Payment::METHOD_CODE) {
                 $ccType = $this->_bamboraHelper->calcCardtype($ccType);
             }
 
             $payment->setCcType($ccType);
             $payment->setCcNumberEnc($ccNumber);
 
-            $payment->setAdditionalInformation(BamboraConstants::INSTANT_CAPTURE, $isInstantCapture);
+            $payment->setAdditionalInformation(
+                BamboraConstants::INSTANT_CAPTURE,
+                $isInstantCapture
+            );
             $payment->save();
 
             $order->save();
@@ -325,7 +396,8 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             foreach ($order->getAllVisibleItems() as $item) {
                 $productStockQty[$item->getProductId()] = $item->getQtyCanceled();
                 foreach ($item->getChildrenItems() as $child) {
-                    $productStockQty[$child->getProductId()] = $item->getQtyCanceled();
+                    $productStockQty[$child->getProductId()] = $item->getQtyCanceled(
+                    );
                     $child->setQtyCanceled(0);
                     $child->setTaxCanceled(0);
                     $child->setDiscountTaxCompensationCanceled(0);
@@ -351,12 +423,16 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $order->setBaseDiscountCanceled(0);
             $order->setTotalCanceled(0);
             $order->setBaseTotalCanceled(0);
-            $comment = __("The order was un-canceled by the Bambora Checkout Callback");
+            $comment = __(
+                "The order was un-canceled by the Bambora Checkout Callback"
+            );
             $order->addStatusHistoryComment($comment, false);
             $order->save();
             $this->_bamboraLogger->addCheckoutInfo($order->getId(), $comment);
         } catch (\Exception $ex) {
-            $comment = __("The order could not be un-canceled - Reason:") .$ex->getMessage();
+            $comment = __(
+                    "The order could not be un-canceled - Reason:"
+                ) . $ex->getMessage();
             $order->addStatusHistoryComment($comment, false);
             $order->save();
             $this->_bamboraLogger->addCheckoutInfo($order->getId(), $comment);
@@ -366,15 +442,20 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     /**
      * Add Surcharge to the order
      *
-     * @param  \Magento\Sales\Model\Order                   $order
-     * @param  mixed                                        $feeAmountInMinorunits
-     * @param  mixed                                        $minorunits
-     * @param  mixed                                        $ccType
-     * @param  \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
+     * @param \Magento\Sales\Model\Order $order
+     * @param mixed $feeAmountInMinorunits
+     * @param mixed $minorunits
+     * @param mixed $ccType
+     * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
      * @return void
      */
-    public function addSurchargeToOrder($order, $feeAmountInMinorunits, $minorunits, $ccType, $paymentMethodInstance)
-    {
+    public function addSurchargeToOrder(
+        $order,
+        $feeAmountInMinorunits,
+        $minorunits,
+        $ccType,
+        $paymentMethodInstance
+    ) {
         try {
             foreach ($order->getAllItems() as $item) {
                 if ($item->getSku() === BamboraConstants::BAMBORA_SURCHARGE) {
@@ -382,30 +463,55 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
                 }
             }
 
-            $baseFeeAmount = $this->_bamboraHelper->convertPriceFromMinorunits($feeAmountInMinorunits, $minorunits);
-            $feeAmount = $order->getStore()->getBaseCurrency()->convert($baseFeeAmount, $order->getOrderCurrencyCode());
+            $baseFeeAmount = $this->_bamboraHelper->convertPriceFromMinorunits(
+                $feeAmountInMinorunits,
+                $minorunits
+            );
+            $feeAmount = $order->getStore()->getBaseCurrency()->convert(
+                $baseFeeAmount,
+                $order->getOrderCurrencyCode()
+            );
             $text = $ccType . ' - ' . __("Surcharge fee");
             $storeId = $order->getStoreId();
 
-            if ($paymentMethodInstance->getConfigData(BamboraConstants::SURCHARGE_MODE, $storeId) === BamboraConstants::SURCHARGE_ORDER_LINE) {
-                $feeItem = $this->_bamboraHelper->createSurchargeItem($baseFeeAmount, $feeAmount, $storeId, $order->getId(), $text);
+            if ($paymentMethodInstance->getConfigData(
+                    BamboraConstants::SURCHARGE_MODE,
+                    $storeId
+                ) === BamboraConstants::SURCHARGE_ORDER_LINE) {
+                $feeItem = $this->_bamboraHelper->createSurchargeItem(
+                    $baseFeeAmount,
+                    $feeAmount,
+                    $storeId,
+                    $order->getId(),
+                    $text
+                );
                 $order->addItem($feeItem);
                 $order->setBaseSubtotal($order->getBaseSubtotal() + $baseFeeAmount);
-                $order->setBaseSubtotalInclTax($order->getBaseSubtotalInclTax() + $baseFeeAmount);
+                $order->setBaseSubtotalInclTax(
+                    $order->getBaseSubtotalInclTax() + $baseFeeAmount
+                );
                 $order->setSubtotal($order->getSubtotal() + $feeAmount);
-                $order->setSubtotalInclTax($order->getSubtotalInclTax() + $feeAmount);
+                $order->setSubtotalInclTax(
+                    $order->getSubtotalInclTax() + $feeAmount
+                );
             } else {
                 //Add fee to shipment
-                $order->setBaseShippingAmount($order->getBaseShippingAmount() + $baseFeeAmount);
-                $order->setBaseShippingInclTax($order->getBaseShippingInclTax() + $baseFeeAmount);
+                $order->setBaseShippingAmount(
+                    $order->getBaseShippingAmount() + $baseFeeAmount
+                );
+                $order->setBaseShippingInclTax(
+                    $order->getBaseShippingInclTax() + $baseFeeAmount
+                );
                 $order->setShippingAmount($order->getShippingAmount() + $feeAmount);
-                $order->setShippingInclTax($order->getShippingInclTax() + $feeAmount);
+                $order->setShippingInclTax(
+                    $order->getShippingInclTax() + $feeAmount
+                );
             }
 
             $order->setBaseGrandTotal($order->getBaseGrandTotal() + $baseFeeAmount);
             $order->setGrandTotal($order->getGrandTotal() + $feeAmount);
 
-            $feeMessage = $text . ' ' .__("added to order");
+            $feeMessage = $text . ' ' . __("added to order");
             $order->addStatusHistoryComment($feeMessage);
             $order->save();
         } catch (\Exception $ex) {
@@ -416,18 +522,25 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     /**
      * Send the orderconfirmation mail to the customer
      *
-     * @param  \Magento\Sales\Model\Order $order
+     * @param \Magento\Sales\Model\Order $order
      * @return void
      */
     public function sendOrderEmail($order)
     {
         try {
             $this->_orderSender->send($order);
-            $order->addStatusHistoryComment(__("Notified customer about order #%1", $order->getIncrementId()))
+            $order->addStatusHistoryComment(
+                __("Notified customer about order #%1", $order->getIncrementId())
+            )
                 ->setIsCustomerNotified(1)
                 ->save();
         } catch (\Exception $ex) {
-            $order->addStatusHistoryComment(__("Could not send order confirmation for order #%1", $order->getIncrementId()))
+            $order->addStatusHistoryComment(
+                __(
+                    "Could not send order confirmation for order #%1",
+                    $order->getIncrementId()
+                )
+            )
                 ->setIsCustomerNotified(0)
                 ->save();
         }
@@ -436,40 +549,60 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     /**
      * Create an invoice
      *
-     * @param \Magento\Sales\Model\Order                   $order
+     * @param \Magento\Sales\Model\Order $order
      * @param \Bambora\Online\Model\Method\AbstractPayment $paymentMethodInstance
      * @param boolean
      */
-    public function createInvoice($order, $paymentMethodInstance, $isOnlineCapture = true)
-    {
+    public function createInvoice(
+        $order,
+        $paymentMethodInstance,
+        $isOnlineCapture = true
+    ) {
         try {
             if ($order->canInvoice()) {
                 $invoice = $order->prepareInvoice();
                 $storeId = $order->getStoreId();
 
                 if ($isOnlineCapture) {
-                    $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+                    $invoice->setRequestedCaptureCase(
+                        \Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE
+                    );
                 } else {
-                    $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
+                    $invoice->setRequestedCaptureCase(
+                        \Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE
+                    );
                 }
 
                 $invoice->register();
                 $invoice->save();
-                $transactionSave = $this->_objectManager->create('Magento\Framework\DB\Transaction')
+                $transactionSave = $this->_objectManager->create(
+                    'Magento\Framework\DB\Transaction'
+                )
                     ->addObject($invoice)
                     ->addObject($invoice->getOrder());
                 $transactionSave->save();
 
-                if ($paymentMethodInstance->getConfigData(BamboraConstants::INSTANT_INVOICE_MAIL, $order->getStoreId()) == 1) {
+                if ($paymentMethodInstance->getConfigData(
+                        BamboraConstants::INSTANT_INVOICE_MAIL,
+                        $order->getStoreId()
+                    ) == 1) {
                     $invoice->setEmailSent(1);
                     $this->_invoiceSender->send($invoice);
-                    $order->addStatusHistoryComment(__("Notified customer about invoice #%1", $invoice->getId()))
+                    $order->addStatusHistoryComment(
+                        __("Notified customer about invoice #%1", $invoice->getId())
+                    )
                         ->setIsCustomerNotified(1)
                         ->save();
                 }
             }
         } catch (\Exception $ex) {
-            $order->addStatusHistoryComment(__("Could not create or Capture the Invoice for order #%1 - Reason: %2", $order->getId(), $ex->getMessage()))
+            $order->addStatusHistoryComment(
+                __(
+                    "Could not create or Capture the Invoice for order #%1 - Reason: %2",
+                    $order->getId(),
+                    $ex->getMessage()
+                )
+            )
                 ->setIsCustomerNotified(0)
                 ->save();
         }
@@ -479,8 +612,8 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
      * Log Error
      *
      * @param string $paymentMethod
-     * @param mixed  $id
-     * @param mixed  $errorMessage
+     * @param mixed $id
+     * @param mixed $errorMessage
      */
     protected function _logError($paymentMethod, $id, $errorMessage)
     {
@@ -496,9 +629,9 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     /**
      * Get Callback Response
      *
-     * @param  mixed $statusCode
-     * @param  mixed $message
-     * @param  mixed $id
+     * @param mixed $statusCode
+     * @param mixed $message
+     * @param mixed $id
      * @return mixed
      */
     protected function _createCallbackResult($statusCode, $message, $id)
@@ -507,8 +640,10 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
         $result->setHttpResponseCode($statusCode);
 
         $result->setData(
-            ['id'=>$id,
-            'message'=>$message]
+            [
+                'id' => $id,
+                'message' => $message
+            ]
         );
 
         return $result;

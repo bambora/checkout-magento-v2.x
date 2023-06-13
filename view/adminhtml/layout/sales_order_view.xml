@@ -14,12 +14,16 @@
  *
  */
 -->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-  <body>
-    <referenceContainer name="left">
-      <referenceContainer name="payment_additional_info">
-        <block class="Bambora\Online\Block\Adminhtml\Sales\Order\View\PaymentInfo" name="sales_order_view_paymentinfo" template="sales/order/view/paymentinfo.phtml" />
-      </referenceContainer>
-    </referenceContainer>
-  </body>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      layout="admin-2columns-left"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="left">
+            <referenceContainer name="payment_additional_info">
+                <block class="Bambora\Online\Block\Adminhtml\Sales\Order\View\PaymentInfo"
+                       name="sales_order_view_paymentinfo"
+                       template="sales/order/view/paymentinfo.phtml"/>
+            </referenceContainer>
+        </referenceContainer>
+    </body>
 </page>
