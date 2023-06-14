@@ -2,7 +2,7 @@
   "name": "bambora/module-payment-magento2",
   "description": "Worldline / Bambora Checkout and Bambora ePay payment module for Magento 2  ",
   "type": "magento2-module",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "authors": [
     {
       "name": "Bambora Online A/S",
@@ -28,7 +28,9 @@
     "laminas/laminas-soap": "^2.9"
   },
   "autoload": {
-    "files": [ "registration.php" ],
+    "files": [
+      "registration.php"
+    ],
     "psr-4": {
       "Bambora\\Online\\": ""
     }
