@@ -286,6 +286,14 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 if ($wallet_name == "Vipps") {
                     $wallet_img_id = "14";
                 }
+	            if ( $wallet_name == "GooglePay" ) {
+		            $wallet_img_id = "22";
+		            $wallet_name = "Google Pay";
+	            }
+	            if ( $wallet_name == "ApplePay" ) {
+		            $wallet_img_id = "21";
+		            $wallet_name = "Apple Pay";
+                }
                 if (isset($wallet_img_id)) {
                     $res .= $this->getPaymentLogoUrl($wallet_img_id, $wallet_name);
                 }
