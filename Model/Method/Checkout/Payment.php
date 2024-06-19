@@ -335,13 +335,17 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements
             $bamboraOrderLines[] = $shipmentDiscountOrderLine;
         }
 
-	    $roundingOrderline = $this->createBamboraOrderlinesRoundingFee( $bamboraOrder->total, $bamboraOrderLines, $lineNumber);
-	    if ( $roundingOrderline ) {
-		    $bamboraOrderLines[] = $roundingOrderline;
-	    }
+            $roundingOrderline = $this->createBamboraOrderlinesRoundingFee(
+                $bamboraOrder->total,
+                $bamboraOrderLines,
+                $lineNumber
+            );
+            if ($roundingOrderline) {
+                $bamboraOrderLines[] = $roundingOrderline;
+            }
 
-		$bamboraOrder->lines = $bamboraOrderLines;
-        $checkoutRequest->order = $bamboraOrder;
+            $bamboraOrder->lines    = $bamboraOrderLines;
+            $checkoutRequest->order = $bamboraOrder;
 
         if ($this->_bamboraHelper->getBamboraCheckoutConfigData(
             BamboraConstants::ALLOW_LOW_VALUE_EXEMPTION
@@ -361,38 +365,43 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements
         return $checkoutRequest;
     }
 
-	/**
-	 * @param $orderTotal
-	 * @param $bamboraOrderLines
-	 * @param $lineNumber
-	 * @return void
-	 */
-	public function createBamboraOrderlinesRoundingFee($orderTotal, $bamboraOrderLines, $lineNumber){
-		$bamboraTotal = 0;
-		foreach ( $bamboraOrderLines as $orderLine ) {
-			$bamboraTotal += $orderLine->quantity * $orderLine->unitpriceinclvat;
-		}
-		if ( $orderTotal != $bamboraTotal ) {
-			$roundingOrderLine = $this->_bamboraHelper->getCheckoutApiModel(
-				CheckoutApiModels::REQUEST_MODEL_LINE
-			);
-			$roundingOrderLine->id                  = __('adjustment');
-			$roundingOrderLine->totalprice          = $orderTotal - $bamboraTotal;
-			$roundingOrderLine->totalpriceinclvat   = $orderTotal - $bamboraTotal;
-			$roundingOrderLine->totalpricevatamount = 0;
-			$roundingOrderLine->text                = __('Rounding adjustment');
-			$roundingOrderLine->unitprice           = $orderTotal - $bamboraTotal;
-			$roundingOrderLine->unitpriceinclvat    = $orderTotal - $bamboraTotal;
-			$roundingOrderLine->unitpricevatamount  = 0;
-			$roundingOrderLine->quantity            = 1;
-			$roundingOrderLine->description         = __('Rounding adjustment');
-			$roundingOrderLine->linenumber          = $lineNumber++;
-			$roundingOrderLine->unit                = __('pcs.');
-			$roundingOrderLine->vat                 = 0.0;
-            return $roundingOrderLine;
-		}
+        /**
+         * @param $orderTotal
+         * @param $bamboraOrderLines
+         * @param $lineNumber
+         *
+         * @return void
+         */
+        public function createBamboraOrderlinesRoundingFee(
+            $orderTotal,
+            $bamboraOrderLines,
+            $lineNumber
+        ) {
+            $bamboraTotal = 0;
+            foreach ($bamboraOrderLines as $orderLine) {
+                $bamboraTotal += $orderLine->quantity * $orderLine->unitpriceinclvat;
+            }
+            if ($orderTotal != $bamboraTotal) {
+                $roundingOrderLine                      = $this->_bamboraHelper->getCheckoutApiModel(
+                    CheckoutApiModels::REQUEST_MODEL_LINE
+                );
+                $roundingOrderLine->id                  = __('adjustment');
+                $roundingOrderLine->totalprice          = $orderTotal - $bamboraTotal;
+                $roundingOrderLine->totalpriceinclvat   = $orderTotal - $bamboraTotal;
+                $roundingOrderLine->totalpricevatamount = 0;
+                $roundingOrderLine->text                = __('Rounding adjustment');
+                $roundingOrderLine->unitprice           = $orderTotal - $bamboraTotal;
+                $roundingOrderLine->unitpriceinclvat    = $orderTotal - $bamboraTotal;
+                $roundingOrderLine->unitpricevatamount  = 0;
+                $roundingOrderLine->quantity            = 1;
+                $roundingOrderLine->description         = __('Rounding adjustment');
+                $roundingOrderLine->linenumber          = $lineNumber++;
+                $roundingOrderLine->unit                = __('pcs.');
+                $roundingOrderLine->vat                 = 0.0;
 
-	}
+                return $roundingOrderLine;
+            }
+        }
 
 
     /**
