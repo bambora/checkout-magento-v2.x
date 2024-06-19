@@ -11,10 +11,6 @@ define(
             {
                 type: 'bambora_checkout',
                 component: 'Bambora_Online/js/view/payment/method-renderer/bambora-checkout-method'
-            },
-            {
-                type: 'bambora_epay',
-                component: 'Bambora_Online/js/view/payment/method-renderer/bambora-epay-method'
             }
         );
         /**

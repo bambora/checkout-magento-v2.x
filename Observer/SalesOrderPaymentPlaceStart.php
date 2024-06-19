@@ -15,7 +15,6 @@
 namespace Bambora\Online\Observer;
 
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
 class SalesOrderPaymentPlaceStart implements
     \Magento\Framework\Event\ObserverInterface
@@ -28,9 +27,7 @@ class SalesOrderPaymentPlaceStart implements
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $payment = $observer['payment'];
-        if ($payment->getMethod(
-            ) == CheckoutPayment::METHOD_CODE || $payment->getMethod(
-            ) == EpayPayment::METHOD_CODE) {
+        if ($payment->getMethod() == CheckoutPayment::METHOD_CODE ){
             $order = $payment->getOrder();
             $order->setCanSendNewEmailFlag(false);
             $order->setIsCustomerNotified(false);

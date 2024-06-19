@@ -61,21 +61,10 @@
     background-size: 127px 35px;
     line-height: 35px;
 }
-
-.bambora-epay-method > .entry-edit-head > .config-heading .heading strong {
-    padding-left: 134px;
-    background: url(https://d3r1pwhfz7unl9.cloudfront.net/bambora/worldline-logo.svg) no-repeat 0 0;
-    -ms-background-size: 127px 35px;
-    background-size: 127px 35px;
-    line-height: 35px;
-}
-
-.bambora-epay-method .heading,
 .bambora-checkout-method .heading {
     display: inline-block !important;
 }
 
-.bambora-checkout-method .button-container,
-.bambora-epay-method .button-container {
+.bambora-checkout-method .button-container{
     float: right;
 }

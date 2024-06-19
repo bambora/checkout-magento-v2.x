@@ -40,33 +40,7 @@ class BamboraLogger extends Logger
      */
     public function addCheckoutInfo($id, $reason)
     {
-        $errorMessage = 'Bambora Checkout Info - ID: ' . $id . ' - ' . $reason;
-        $this->addRecord(self::INFO, $errorMessage);
-    }
-
-    /**
-     * Add ePay error to log
-     *
-     * @param mixed $id
-     * @param mixed $reason
-     * @return void
-     */
-    public function addEpayError($id, $reason)
-    {
-        $errorMessage = 'Bambora ePay Error - ID: ' . $id . ' - ' . $reason;
-        $this->addRecord(self::ERROR, $errorMessage);
-    }
-
-    /**
-     * Add ePay info to log
-     *
-     * @param mixed $id
-     * @param mixed $reason
-     * @return void
-     */
-    public function addEpayInfo($id, $reason)
-    {
-        $errorMessage = 'Bambora ePay Info - ID: ' . $id . ' - ' . $reason;
+        $errorMessage = 'Worldline Checkout Info - ID: ' . $id . ' - ' . $reason;
         $this->addRecord(self::INFO, $errorMessage);
     }
 

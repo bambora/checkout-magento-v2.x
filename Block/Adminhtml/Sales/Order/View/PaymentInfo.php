@@ -15,7 +15,6 @@
 namespace Bambora\Online\Block\Adminhtml\Sales\Order\View;
 
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 use Bambora\Online\Helper\BamboraConstants;
 
 class PaymentInfo extends \Magento\Backend\Block\Template
@@ -71,8 +70,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     protected function _toHtml()
     {
         return ($this->getOrder()->getPayment()->getMethod(
-            ) === CheckoutPayment::METHOD_CODE || $this->getOrder()->getPayment(
-            )->getMethod() === EpayPayment::METHOD_CODE) ? parent::_toHtml() : '';
+            ) === CheckoutPayment::METHOD_CODE ) ;
     }
 
     /**
@@ -120,37 +118,6 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                                 $storeId
                             ) == 0) {
                             $result .= ' ' . __(
-                                    "Please enable remote payment processing from the module configuration"
-                                );
-                        } else {
-                            $result .= ': ' . $message;
-                        }
-                    }
-                }
-            } elseif ($paymentMethod === EpayPayment::METHOD_CODE) {
-                $ePayMethod = $payment->getMethodInstance();
-                if (isset($ePayMethod)) {
-                    $transactionId = $payment->getAdditionalInformation(
-                        $ePayMethod::METHOD_REFERENCE
-                    );
-                    if (!empty($transactionId)) {
-                        $message = "";
-                        $transaction = $ePayMethod->getTransaction(
-                            $transactionId,
-                            $storeId,
-                            $message
-                        );
-
-                        if (isset($transaction)) {
-                            $result = $this->createEpayTransactionHtml(
-                                $transaction,
-                                $order
-                            );
-                        } elseif ($ePayMethod->getConfigData(
-                                BamboraConstants::REMOTE_INTERFACE,
-                                $storeId
-                            ) == 0) {
-                            $result .= ' - ' . __(
                                     "Please enable remote payment processing from the module configuration"
                                 );
                         } else {

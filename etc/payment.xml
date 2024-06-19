@@ -25,8 +25,5 @@
     <method name="bambora_checkout">
 	<allow_multiple_address>0</allow_multiple_address>
     </method>
-    <method name="bambora_epay">
-            <allow_multiple_address>0</allow_multiple_address>
-    </method>
   </methods>
 </payment>

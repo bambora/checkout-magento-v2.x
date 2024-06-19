@@ -15,8 +15,6 @@
 namespace Bambora\Online\Helper;
 
 use Bambora\Online\Helper\BamboraConstants;
-use Bambora\Online\Model\Api\EpayApi;
-use Bambora\Online\Model\Api\EpayApiModels;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -55,17 +53,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_moduleList = $moduleList;
     }
 
-    /**
-     * Gives back bambora_checkout configuration values
-     *
-     * @param  $field
-     * @param null|int $storeId
-     * @return mixed
-     */
-    public function getBamboraEpayConfigData($field, $storeId = null)
-    {
-        return $this->getConfigData($field, 'bambora_epay', $storeId);
-    }
+
 
     /**
      * Gives back bambora_checkout configuration values
@@ -153,36 +141,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $model;
     }
-
-    /**
-     * Retrieve a Checkout Api class
-     *
-     * @param  $apiName
-     * @return object
-     */
-    public function getEpayApi($apiName)
-    {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $api = $objectManager->create('Bambora\Online\Model\Api\Epay\\' . $apiName);
-
-        return $api;
-    }
-
-    /**
-     * @desc Retrieve a Checkout Api Model class
-     * @param $modelName
-     * @return Object
-     */
-    public function getEpayApiModel($modelName)
-    {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $model = $objectManager->create(
-            'Bambora\Online\Model\Api\Epay\\' . $modelName
-        );
-
-        return $model;
-    }
-
+    
     /**
      * Decrypt data
      *
@@ -342,28 +301,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $apiKey;
     }
 
-    /**
-     * Generate Epay Auth object
-     *
-     * @param int $storeId
-     * @return \Bambora\Online\Model\Api\Epay\Request\Models\Auth
-     */
-    public function generateEpayAuth($storeId)
-    {
-        $auth = $this->getEpayApiModel(EpayApiModels::REQUEST_MODEL_AUTH);
-        $auth->merchantNumber = $this->getBamboraEpayConfigData(
-            BamboraConstants::MERCHANT_NUMBER,
-            $storeId
-        );
-        $auth->pwd = $this->decryptData(
-            $this->getBamboraEpayConfigData(
-                BamboraConstants::REMOTE_INTERFACE_PASSWORD,
-                $storeId
-            )
-        );
-
-        return $auth;
-    }
 
     /**
      * Returns the version of the module
@@ -393,41 +330,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $result;
     }
 
-    /**
-     * Calculate Md5key hash
-     *
-     * @param \Magento\Sales\Model\Order $order
-     * @param \Bambora\Online\Model\Api\Epay\Request\Payment $paymentRequest
-     * @return string
-     */
-    public function calcEpayMd5Key($order, $paymentRequest)
-    {
-        $shopMd5 = $this->getBamboraEpayConfigData(
-            BamboraConstants::MD5_KEY,
-            $order->getStoreId()
-        );
-        $md5stampsValueString = $paymentRequest->encoding .
-            $paymentRequest->cms .
-            $paymentRequest->windowstate .
-            $paymentRequest->mobile .
-            $paymentRequest->merchantnumber .
-            $paymentRequest->windowid .
-            $paymentRequest->amount .
-            $paymentRequest->currency .
-            $paymentRequest->orderid .
-            $paymentRequest->accepturl .
-            $paymentRequest->cancelurl .
-            $paymentRequest->callbackurl .
-            $paymentRequest->instantcapture .
-            $paymentRequest->language .
-            $paymentRequest->ownreceipt .
-            $paymentRequest->timeout .
-            $paymentRequest->invoice .
-            $shopMd5;
-        $md5stamp = $this->getHashFromString($md5stampsValueString);
-
-        return $md5stamp;
-    }
 
     /**
      * Generate the Hash string for callback
@@ -496,47 +398,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Return if Epay Api Result is valid
-     *
-     * @param \Bambora\Online\Model\Api\Epay\Response\Base $response
-     * @param mixed $id
-     * @param \Bambora\Online\Model\Api\Epay\Request\Models\Auth $auth
-     * @param string                                             &$message
-     * @return bool
-     */
-    public function validateEpayApiResult($response, $id, $auth, &$message)
-    {
-        if (!isset($response) || $response === false) {
-            //Error without description
-            $message = "No answer from ePay";
-            $this->_bamboraLogger->addEpayError($id, $message);
-            return false;
-        } elseif (!$response->result) {
-            $errorProvicer = $this->getEpayApi(EpayApi::API_ERROR);
 
-            if (isset($response->epayResponse) && $response->epayResponse != -1) {
-                if ($response->epayResponse == -1019) {
-                    $message = __("Invalid password used for webservice access!");
-                } else {
-                    $message = "({$response->epayResponse}) " . $errorProvicer->getEpayErrorText(
-                            $response->epayResponse,
-                            $this->calcLanguage($this->getShopLocalCode()),
-                            $auth
-                        );
-                }
-                $this->_bamboraLogger->addEpayError($id, "Epay Error: {$message}");
-            } elseif (isset($response->pbsResponse) && $response->pbsResponse != -1) {
-                $message .= "({$response->pbsResponse}): " . $errorProvicer->getPbsErrorText(
-                        $response->pbsResponse,
-                        $this->calcLanguage($this->getShopLocalCode()),
-                        $auth
-                    );
-                $this->_bamboraLogger->addEpayError($id, "PBS Error: {$message}");
-            }
-            return false;
-        }
-        return true;
-    }
 
     /**
      * Format the shop local code by replacing '_' with '-'

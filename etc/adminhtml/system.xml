@@ -23,7 +23,6 @@
         <fieldset_css>complex</fieldset_css>
         <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Fieldset\Group</frontend_model>
         <include path="Bambora_Online::system/bambora_checkout.xml" />
-        <include path="Bambora_Online::system/bambora_epay.xml" />
       </group>
     </section>
   </system>

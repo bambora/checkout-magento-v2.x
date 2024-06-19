@@ -19,7 +19,6 @@
     <arguments>
       <argument name="configProviders" xsi:type="array">
         <item name="bambora_checkout_config_provider" xsi:type="object">Bambora\Online\Model\Method\Checkout\ConfigProvider</item>
-        <item name="bambora_epay_config_provicer" xsi:type="object">Bambora\Online\Model\Method\Epay\ConfigProvider</item>
       </argument>
     </arguments>
   </type>

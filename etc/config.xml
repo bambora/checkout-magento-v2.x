@@ -40,30 +40,6 @@
         <limitlowvalueexemption>0</limitlowvalueexemption>
         <group>bambora</group>
       </bambora_checkout>
-      <bambora_epay>
-        <active>0</active>
-        <model>Bambora\Online\Model\Method\Epay\Payment</model>
-        <title>Bambora Online ePay</title>
-        <paymentwindowid>1</paymentwindowid>
-        <instantcapture>0</instantcapture>
-        <instantinvoice>0</instantinvoice>
-        <instantinvoicemail>0</instantinvoicemail>
-        <paymentgroup>0</paymentgroup>
-        <ownreceipt>0</ownreceipt>
-        <addsurchargetopayment>0</addsurchargetopayment>
-        <surchargemode>surcharge_order_line</surchargemode>
-        <remoteinterface>1</remoteinterface>
-        <enableinvoicedata>0</enableinvoicedata>
-        <enablemobilepaymentwindow>1</enablemobilepaymentwindow>
-        <sendmailorderconfirmation>1</sendmailorderconfirmation>
-        <sort_order>1</sort_order>
-        <timeout>60</timeout>
-        <order_status>processing</order_status>
-        <masscaptureinvoicemail>1</masscaptureinvoicemail>
-        <roundingmode>round_default</roundingmode>
-        <uncancelorderlines>0</uncancelorderlines>
-        <group>bambora</group>
-      </bambora_epay>
     </payment>
   </default>
 </config>
