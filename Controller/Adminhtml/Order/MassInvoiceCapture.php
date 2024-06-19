@@ -16,7 +16,6 @@ namespace Bambora\Online\Controller\Adminhtml\Order;
 
 use Bambora\Online\Helper\BamboraConstants;
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
 class MassInvoiceCapture extends
     \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
@@ -100,7 +99,7 @@ class MassInvoiceCapture extends
 
                 $payment = $order->getPayment();
                 $paymentMethod = $payment->getMethod();
-                if ($paymentMethod === CheckoutPayment::METHOD_CODE || $paymentMethod === EpayPayment::METHOD_CODE) {
+                if ($paymentMethod === CheckoutPayment::METHOD_CODE ) {
                     $methodInstance = $this->_paymentHelper->getMethodInstance(
                         $paymentMethod
                     );

@@ -16,7 +16,6 @@ namespace Bambora\Online\Controller;
 
 use Bambora\Online\Helper\BamboraConstants;
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment\Transaction;
 
@@ -185,18 +184,15 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             ) != Order::STATE_CANCELED) {
             $payment = $order->getPayment();
             if (isset($payment)) {
-                $epayReference = $payment->getAdditionalInformation(
-                    EpayPayment::METHOD_REFERENCE
-                );
                 $checkoutReference = $payment->getAdditionalInformation(
                     CheckoutPayment::METHOD_REFERENCE
                 );
                 $paymentStatusAccepted = $payment->getAdditionalInformation(
                     BamboraConstants::PAYMENT_STATUS_ACCEPTED
                 );
-                if (empty($epayReference) && empty($checkoutReference) && $paymentStatusAccepted != true) {
+                if ( empty($checkoutReference) && $paymentStatusAccepted != true) {
                     $comment = __(
-                        "The order was canceled through the payment window"
+                        "The order was cancelled through the payment window"
                     );
                     $orderIncrementId = $order->getIncrementId();
                     $this->_bamboraLogger->addCheckoutInfo(
@@ -363,12 +359,6 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
                 $transaction,
                 $transactionComment
             );
-
-            if ($order->getPayment()->getMethod(
-                ) === \Bambora\Online\Model\Method\Epay\Payment::METHOD_CODE) {
-                $ccType = $this->_bamboraHelper->calcCardtype($ccType);
-            }
-
             $payment->setCcType($ccType);
             $payment->setCcNumberEnc($ccNumber);
 
@@ -619,8 +609,6 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
     {
         if ($paymentMethod === CheckoutPayment::METHOD_CODE) {
             $this->_bamboraLogger->addCheckoutError($id, $errorMessage);
-        } elseif ($paymentMethod === EpayPayment::METHOD_CODE) {
-            $this->_bamboraLogger->addEpayError($id, $errorMessage);
         } else {
             $this->_bamboraLogger->addError($errorMessage);
         }

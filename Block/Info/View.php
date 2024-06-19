@@ -15,7 +15,6 @@
 namespace Bambora\Online\Block\Info;
 
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use Bambora\Online\Model\Method\Epay\Payment as EpayPayment;
 
 class View extends \Magento\Payment\Block\Info
 {
@@ -56,12 +55,7 @@ class View extends \Magento\Payment\Block\Info
                 $txnId = $payment->getAdditionalInformation(
                     CheckoutPayment::METHOD_REFERENCE
                 );
-            } elseif ($payment->getMethod() === EpayPayment::METHOD_CODE) {
-                $txnId = $payment->getAdditionalInformation(
-                    EpayPayment::METHOD_REFERENCE
-                );
             }
-
             if (!empty($txnId)) {
                 $data[(string)__("Transaction Id")] = $txnId;
             }
