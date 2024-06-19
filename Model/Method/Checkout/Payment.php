@@ -144,7 +144,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements
                 __("The payment window could not be retrieved") . ": {$message}"
             );
             $this->_messageManager->addError(
-                __("Bambora Checkout error") . ': ' . $message
+                __("Worldline Checkout error") . ': ' . $message
             );
             $checkoutResponse = null;
         }
@@ -319,13 +319,13 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements
         // Fix for bug in Magento 2 shipment discount calculation
         $baseShipmentDiscountAmount = $order->getBaseShippingDiscountAmount();
         if ($baseShipmentDiscountAmount > 0) {
-            $shippingDiscuntText = __("Shipping discount");
+            $shippingDiscountText = __("Shipping discount");
             $shipmentDiscountOrderLine = $this->createInvoiceLine(
-                $shippingDiscuntText,
+	            $shippingDiscountText,
                 "shipping_discount",
                 $lineNumber,
                 1,
-                $shippingDiscuntText,
+	            $shippingDiscountText,
                 $baseShipmentDiscountAmount * -1,
                 0,
                 $order->getBaseCurrencyCode(),
@@ -1128,7 +1128,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements
     }
 
     /**
-     * Retrieve an url for the Bambora Checkout Paymentwindow Js
+     * Retrieve an url for the Worldline Checkout Payment window Js
      *
      * @return string
      */

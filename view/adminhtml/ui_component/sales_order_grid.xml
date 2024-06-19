@@ -22,7 +22,7 @@
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="type" xsi:type="string">order_capture</item>
-                        <item name="label" xsi:type="string" translate="true">Bambora
+                        <item name="label" xsi:type="string" translate="true">Worldline
                             Invoice and Capture
                         </item>
                         <item name="url" xsi:type="url"
@@ -43,7 +43,7 @@
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="type" xsi:type="string">cancel</item>
-                        <item name="label" xsi:type="string" translate="true">Bambora
+                        <item name="label" xsi:type="string" translate="true">Worldline
                             Cancel and Void
                         </item>
                         <item name="url" xsi:type="url"

@@ -16,10 +16,10 @@
 -->
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
   <group id="bambora_checkout" translate="label comment" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
-    <label>Bambora Online Checkout</label>
+    <label>Worldline Checkout</label>
     <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
     <fieldset_css>bambora-checkout-method</fieldset_css>
-    <comment><![CDATA[Accept online payments in Magento 2 using the Bambora Checkout payment window.<br /> Go to <a href='https://developer.bambora.com/europe/shopping-carts/shopping-carts/magento2' target='_blank'>Bambora Docs</a> for more information.]]></comment>
+    <comment><![CDATA[Accept online payments in Magento 2 using the Worldline Checkout payment window.<br /> Go to <a href='https://developer.bambora.com/europe/shopping-carts/shopping-carts/magento2' target='_blank'>Worldline Docs</a> for more information.]]></comment>
     <field id="version" type="label" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Module version:</b>]]></label>
       <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Field\Version</frontend_model>
@@ -27,7 +27,7 @@
     <field id="active" type="select" translate="label comment" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Enabled:</b>]]></label>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <comment><![CDATA[Set to Yes to allow your customers to use Bambora Checkout as a payment option.]]></comment>
+      <comment><![CDATA[Set to Yes to allow your customers to use Worldline Checkout as a payment option.]]></comment>
       <config_path>payment/bambora_checkout/active</config_path>
     </field>
     <field id="title" type="text" translate="label comment" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -37,23 +37,23 @@
     </field>
     <field id="merchantnumber" type="text" translate="label comment" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Merchant number:</b>]]></label>
-      <comment><![CDATA[The number identifying your Bambora merchant account.]]></comment>
+      <comment><![CDATA[The number identifying your Worldline merchant account.]]></comment>
       <config_path>payment/bambora_checkout/merchantnumber</config_path>
     </field>
     <field id="accesstoken" type="text" translate="label comment" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Access token:</b>]]></label>
-      <comment><![CDATA[The Access token for the API user received from the Bambora administration.]]></comment>
+      <comment><![CDATA[The Access token for the API user received from the Worldline administration.]]></comment>
       <config_path>payment/bambora_checkout/accesstoken</config_path>
     </field>
     <field id="secrettoken" type="obscure" translate="label comment" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Secret token:</b>]]></label>
-      <comment><![CDATA[The Secret token for the API user received from the Bambora administration.]]></comment>
+      <comment><![CDATA[The Secret token for the API user received from the Worldline administration.]]></comment>
       <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
       <config_path>payment/bambora_checkout/secrettoken</config_path>
     </field>
     <field id="md5key" type="text" translate="label comment" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>MD5 Key:</b>]]></label>
-      <comment><![CDATA[The MD5 key is used to stamp data sent between Magento and Bambora to prevent it from being tampered with. The MD5 key is optional but if used here, must be the same as in the Bambora administration.]]></comment>
+      <comment><![CDATA[The MD5 key is used to stamp data sent between Magento and Worldline to prevent it from being tampered with. The MD5 key is optional but if used here, must be the same as in the Worldline administration.]]></comment>
       <config_path>payment/bambora_checkout/md5key</config_path>
     </field>
     <field id="paymentwindowid" type="text" translate="label comment" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -106,7 +106,7 @@
     </field>
     <field id="instantinvoice" type="select" translate="label comment" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Instant invoice:</b>]]></label>
-      <comment><![CDATA[Enable this to automatic create an invoice once the payment is completed. Notice that this will also capture the payment]]></comment>
+      <comment><![CDATA[Enable this to automatically create an invoice once the payment is completed. Notice that this will also capture the payment]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/instantinvoice</config_path>
     </field>
@@ -124,7 +124,7 @@
     </field>
     <field id="roundingmode" type="select" translate="label comment" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Rounding mode:</b>]]></label>
-      <comment><![CDATA[Please select how you want the rounding of the amount sendt to the payment system]]></comment>
+      <comment><![CDATA[Please select how you want the rounding of the amount sent to the payment system]]></comment>
       <source_model>Bambora\Online\Model\Config\Source\Roundingmode</source_model>
       <config_path>payment/bambora_checkout/roundingmode</config_path>
     </field>
@@ -142,7 +142,7 @@
     </field>
     <field id="uncancelorderlines" translate="label comment" type="select" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
       <label><![CDATA[<b>Un-Cancel order lines:</b>]]></label>
-      <comment><![CDATA[When this is enabled, the module will try to restore the canceled order lines if the order gets paid after the order is canceled. This feature is against normal Magento behavior and we cannot guarantee that there will not be any side effects. ]]></comment>
+      <comment><![CDATA[When this is enabled, the module will try to restore the canceled order lines if the order gets paid after the order is canceled. This feature is against normal Magento behavior, and we cannot guarantee that there will not be any side effects. ]]></comment>
       <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
       <config_path>payment/bambora_checkout/uncancelorderlines</config_path>
     </field>

@@ -27,7 +27,7 @@ class BamboraLogger extends Logger
      */
     public function addCheckoutError($id, $reason)
     {
-        $errorMessage = 'Bambora Checkout Error - ID: ' . $id . ' - ' . $reason;
+        $errorMessage = 'Worldline Checkout Error - ID: ' . $id . ' - ' . $reason;
         $this->addRecord(self::ERROR, $errorMessage);
     }
 

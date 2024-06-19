@@ -414,7 +414,7 @@ abstract class AbstractActionController extends \Magento\Framework\App\Action\Ac
             $order->setTotalCanceled(0);
             $order->setBaseTotalCanceled(0);
             $comment = __(
-                "The order was un-canceled by the Bambora Checkout Callback"
+                "The order was un-canceled by the Worldline Checkout Callback"
             );
             $order->addStatusHistoryComment($comment, false);
             $order->save();

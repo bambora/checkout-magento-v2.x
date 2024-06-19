@@ -18,7 +18,7 @@
   <system>
     <section id="payment" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1">
       <group id="bambora_online" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-        <label>Bambora Online</label>
+        <label>Worldline Checkout</label>
         <attribute type="expanded">1</attribute>
         <fieldset_css>complex</fieldset_css>
         <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Fieldset\Group</frontend_model>

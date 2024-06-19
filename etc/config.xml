@@ -20,7 +20,7 @@
       <bambora_checkout>
         <active>0</active>
         <model>Bambora\Online\Model\Method\Checkout\Payment</model>
-        <title>Bambora Checkout</title>
+        <title>Worldline Checkout</title>
         <paymentwindowid>1</paymentwindowid>
         <instantcapture>0</instantcapture>
         <instantinvoice>0</instantinvoice>

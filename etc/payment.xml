@@ -18,7 +18,7 @@
          xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Payment:etc/payment.xsd">
   <groups>
     <group id="bambora">
-      <label>Bambora Online Payment Methods</label>
+      <label>Worldline Checkout Payment Method</label>
     </group>
   </groups>
   <methods>

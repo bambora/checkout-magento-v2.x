@@ -23,14 +23,14 @@
                     <item name="config" xsi:type="array">
                         <item name="type" xsi:type="string">order_invoice_refund
                         </item>
-                        <item name="label" xsi:type="string" translate="true">Bambora
+                        <item name="label" xsi:type="string" translate="true">Worldline
                             Refund Invoice
                         </item>
                         <item name="url" xsi:type="url"
                               path="bambora/order/massinvoicerefund"/>
                         <item name="confirm" xsi:type="array">
                             <item name="title" xsi:type="string" translate="true">
-                                Bambora refund invoice(s)
+                                Worldline refund invoice(s)
                             </item>
                             <item name="message" xsi:type="string" translate="true">
                                 Are you sure you want to refund selected items?
