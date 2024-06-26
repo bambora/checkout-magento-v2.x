@@ -73,10 +73,15 @@ class TransactionOperation
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\PaymentType[]
      */
     public $paymenttypes;
+
+    /**
+     * @var \Bambora\Online\Model\Api\Checkout\Response\Models\Eci
+     */
+    public $eci;
     /**
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\Eci[]
      */
-    public $eci;
+    public $ecis;
     /**
      * @var \Bambora\Online\Model\Api\Checkout\Response\Models\Exemption[]
      */
