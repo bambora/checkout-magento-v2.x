@@ -18,7 +18,7 @@
          xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <listingToolbar name="listing_top">
         <massaction name="listing_massaction">
-            <action name="order_capture">
+            <action name="bambora_order_capture">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="type" xsi:type="string">order_capture</item>
@@ -39,7 +39,7 @@
                     </item>
                 </argument>
             </action>
-            <action name="cancel">
+            <action name="bambora_cancel">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="type" xsi:type="string">cancel</item>

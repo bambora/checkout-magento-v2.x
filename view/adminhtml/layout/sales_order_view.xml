@@ -21,7 +21,7 @@
         <referenceContainer name="left">
             <referenceContainer name="payment_additional_info">
                 <block class="Bambora\Online\Block\Adminhtml\Sales\Order\View\PaymentInfo"
-                       name="sales_order_view_paymentinfo"
+                       name="bambora_sales_order_view_paymentinfo"
                        template="sales/order/view/paymentinfo.phtml"/>
             </referenceContainer>
         </referenceContainer>

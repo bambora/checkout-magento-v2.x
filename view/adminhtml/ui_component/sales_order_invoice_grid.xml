@@ -18,7 +18,7 @@
          xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <listingToolbar name="listing_top">
         <massaction name="listing_massaction">
-            <action name="order_invoice_refund">
+            <action name="bambora_order_invoice_refund">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="type" xsi:type="string">order_invoice_refund

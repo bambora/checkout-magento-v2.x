@@ -69,8 +69,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     protected function _toHtml()
     {
-        return ($this->getOrder()->getPayment()->getMethod(
-            ) === CheckoutPayment::METHOD_CODE ) ;
+        return ($this->getOrder()->getPayment()->getMethod() === CheckoutPayment::METHOD_CODE ? parent::_toHtml() : '') ;
     }
 
     /**
