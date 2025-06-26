@@ -1,21 +1,7 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Controller\Adminhtml\Order;
 
-class MassCancelVoid extends
-    \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
+class MassCancelVoid extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
 {
     /**
      * @param \Magento\Backend\App\Action\Context $context
@@ -43,14 +29,12 @@ class MassCancelVoid extends
         $countCanceledOrder = 0;
         $canceled = [];
         $notCanceled = [];
-
         $collectionItems = $collection->getItems();
         foreach ($collectionItems as $order) {
             try {
                 if (!$order->canCancel()) {
-                    $notCanceled[] = $order->getIncrementId() . '(' . __(
-                            "Cancel not available"
-                        ) . ')';
+                    $notCanceled[] = $order->getIncrementId() . '(' .
+                    __('Cancel not available') . ')';
                     continue;
                 }
 
@@ -60,7 +44,7 @@ class MassCancelVoid extends
                 $canceled[] = $order->getIncrementId();
             } catch (\Exception $ex) {
                 $notCanceled[] = $order->getIncrementId() . '(' . $ex->getMessage(
-                    ) . ')';
+                ) . ')';
                 continue;
             }
         }

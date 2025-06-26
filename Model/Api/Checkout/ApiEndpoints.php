@@ -1,25 +1,12 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Model\Api\Checkout;
 
 class ApiEndpoints
 {
-    const ENDPOINT_MERCHANT = 'merchant';
-    const ENDPOINT_CHECKOUT = 'checkout';
-    const ENDPOINT_DATA = 'data';
-    const ENDPOINT_TRANSACTION = 'transaction';
-    const ENDPOINT_CHECKOUT_CDN = 'checkoutCDN';
-    const ENDPOINT_GLOBAL_ASSETS = 'globalAssets';
+    public const string ENDPOINT_MERCHANT = 'merchant';
+    public const string ENDPOINT_CHECKOUT = 'checkout';
+    public const string ENDPOINT_DATA = 'data';
+    public const string ENDPOINT_TRANSACTION = 'transaction';
+    public const string ENDPOINT_CHECKOUT_CDN = 'checkoutCDN';
+    public const string ENDPOINT_GLOBAL_ASSETS = 'globalAssets';
 }

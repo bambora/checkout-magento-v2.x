@@ -1,17 +1,4 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Model\Api\Checkout;
 
 use Bambora\Online\Model\Api\CheckoutApiModels;
@@ -19,12 +6,11 @@ use Magento\Framework\DataObject;
 
 abstract class Base extends DataObject
 {
-    const GET = 'GET';
-    const POST = 'POST';
+    protected const string GET = 'GET';
+    protected const string POST = 'POST';
+
     /**
-     * List of Checkout endpoints
-     *
-     * @return array
+     * @var array
      */
     protected $endpoints = [
         'merchant' => 'https://merchant-v1.api-eu.bambora.com',
@@ -32,7 +18,7 @@ abstract class Base extends DataObject
         'data' => 'https://data-v1.api-eu.bambora.com',
         'transaction' => 'https://transaction-v1.api-eu.bambora.com',
         'checkoutCDN' => 'https://static.bambora.com',
-        'globalAssets' => 'https://d3r1pwhfz7unl9.cloudfront.net/bambora'
+        'globalAssets' => 'https://static.bambora.com/assets/bambora'
     ];
 
     /**
@@ -92,19 +78,14 @@ abstract class Base extends DataObject
      */
     protected function _callRestService($serviceUrl, $jsonData, $method, $apiKey)
     {
-        $contentLength = isset($jsonData) ? strlen($jsonData) : 0;
         $headers = [
             'Content-Type' => 'application/json',
-            'Content-Length' => $contentLength,
             'Accept' => 'application/json',
             'Authorization' => $apiKey,
             'X-EPay-System' => $this->_bamboraHelper->getModuleHeaderInfo()
         ];
 
         $this->_curl->setHeaders($headers);
-        $this->_curl->setOption(CURLOPT_HEADER, false);
-        $this->_curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
-        $this->_curl->setOption(CURLOPT_FAILONERROR, false);
 
         if ($method === Base::GET) {
             $this->_curl->get($serviceUrl);
@@ -130,12 +111,12 @@ abstract class Base extends DataObject
         if (!isset($response)) {
             return null;
         }
-        $message = $this->_bamboraHelper->getCheckoutApiModel(
+        $message = $this->_bamboraHelper->getCheckoutModel(
             CheckoutApiModels::RESPONSE_MODEL_MESSAGE
         );
         $message->enduser = $response['meta']['message']['enduser'];
         $message->merchant = $response['meta']['message']['merchant'];
-        $meta = $this->_bamboraHelper->getCheckoutApiModel(
+        $meta = $this->_bamboraHelper->getCheckoutModel(
             CheckoutApiModels::RESPONSE_MODEL_META
         );
         $meta->message = $message;

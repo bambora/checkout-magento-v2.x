@@ -1,62 +1,50 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Model\Api;
 
 class CheckoutApiModels
 {
     // Request
-    const REQUEST_CHECKOUT = 'Request\Checkout';
-    const REQUEST_CAPTURE = 'Request\Capture';
-    const REQUEST_CREDIT = 'Request\Credit';
+    public const string REQUEST_CHECKOUT = Checkout\Request\Checkout::class;
+    public const string REQUEST_CAPTURE = Checkout\Request\Capture::class;
+    public const string REQUEST_CREDIT = Checkout\Request\Credit::class;
 
     // Request Models
-    const REQUEST_MODEL_ADDRESS = 'Request\Models\Address';
-    const REQUEST_MODEL_CALLBACK = 'Request\Models\Callback';
-    const REQUEST_MODEL_CUSTOMER = 'Request\Models\Customer';
-    const REQUEST_MODEL_ORDER = 'Request\Models\Order';
-    const REQUEST_MODEL_LINE = 'Request\Models\Line';
-    const REQUEST_MODEL_URL = 'Request\Models\Url';
+    public const string REQUEST_MODEL_ADDRESS = Checkout\Request\Models\Address::class;
+    public const string REQUEST_MODEL_CALLBACK = Checkout\Request\Models\Callback::class;
+    public const string REQUEST_MODEL_CUSTOMER = Checkout\Request\Models\Customer::class;
+    public const string REQUEST_MODEL_ORDER = Checkout\Request\Models\Order::class;
+    public const string REQUEST_MODEL_LINE = Checkout\Request\Models\Line::class;
+    public const string REQUEST_MODEL_URL = Checkout\Request\Models\Url::class;
 
     //Response
-    const RESPONSE_CHECKOUT = 'Response\Checkout';
-    const RESPONSE_LISTPAYMENTTYPES = 'Response\ListPaymentTypes';
-    const RESPONSE_LISTTRANSACTIONOPERATIONS = 'Response\ListTransactionOperations';
-    const RESPONSE_TRANSACTION = 'Response\Transaction';
-    const RESPONSE_CAPTURE = 'Response\Capture';
-    const RESPONSE_CREDIT = 'Response\Credit';
-    const RESPONSE_DELETE = 'Response\Delete';
+    public const string RESPONSE_CHECKOUT = Checkout\Response\Checkout::class;
+    public const string RESPONSE_LISTPAYMENTTYPES = Checkout\Response\ListPaymentTypes::class;
+    public const string RESPONSE_LISTTRANSACTIONOPERATIONS = Checkout\Response\ListTransactionOperations::class;
+    public const string RESPONSE_TRANSACTION = Checkout\Response\Transaction::class;
+    public const string RESPONSE_CAPTURE = Checkout\Response\Capture::class;
+    public const string RESPONSE_CREDIT = Checkout\Response\Credit::class;
+    public const string RESPONSE_DELETE = Checkout\Response\Delete::class;
 
     //Response Models
-    const RESPONSE_MODEL_META = 'Response\Models\Meta';
-    const RESPONSE_MODEL_MESSAGE = 'Response\Models\Message';
-    const RESPONSE_MODEL_PAYMENTCOLLECTION = 'Response\Models\PaymentCollection';
-    const RESPONSE_MODEL_PAYMENTGROUP = 'Response\Models\PaymentGroup';
-    const RESPONSE_MODEL_PAYMENTYPE = 'Response\Models\PaymentType';
-    const RESPONSE_MODEL_FEE = 'Response\Models\Fee';
-    const RESPONSE_MODEL_AVAILABLE = 'Response\Models\Available';
-    const RESPONSE_MODEL_CURRENCY = 'Response\Models\Currency';
-    const RESPONSE_MODEL_INFORMATION = 'Response\Models\Information';
-    const RESPONSE_MODEL_ACQUIRER = 'Response\Models\Acquirer';
-    const RESPONSE_MODEL_ACQUIRERREFERENCE = 'Response\Models\AcquirerReference';
-    const RESPONSE_MODEL_PRIMARYACCOUNTNUMBER = 'Response\Models\PrimaryAccountnumber';
-    const RESPONSE_MODEL_ECI = 'Response\Models\Eci';
-    const RESPONSE_MODEL_EXEMPTION = 'Response\Models\Exemption';
-    const RESPONSE_MODEL_LINKS = 'Response\Models\Links';
-    const RESPONSE_MODEL_SUBSCRIPTION = 'Response\Models\Subscription';
-    const RESPONSE_MODEL_TOTAL = 'Response\Models\Total';
-    const RESPONSE_MODEL_TRANSACTION = 'Response\Models\Transaction';
-    const RESPONSE_MODEL_TRANSACTIONOPERATION = 'Response\Models\TransactionOperation';
-    const RESPONSE_MODEL_RESPONSE_CODE = 'Response\Models\ResponseCode';
+    public const string RESPONSE_MODEL_META = Checkout\Response\Models\Meta::class;
+    public const string RESPONSE_MODEL_MESSAGE = Checkout\Response\Models\Message::class;
+    public const string RESPONSE_MODEL_PAYMENTCOLLECTION = Checkout\Response\Models\PaymentCollection::class;
+    public const string RESPONSE_MODEL_PAYMENTGROUP = Checkout\Response\Models\PaymentGroup::class;
+    public const string RESPONSE_MODEL_PAYMENTYPE = Checkout\Response\Models\PaymentType::class;
+    public const string RESPONSE_MODEL_FEE = Checkout\Response\Models\Fee::class;
+    public const string RESPONSE_MODEL_AVAILABLE = Checkout\Response\Models\Available::class;
+    public const string RESPONSE_MODEL_CURRENCY = Checkout\Response\Models\Currency::class;
+    public const string RESPONSE_MODEL_INFORMATION = Checkout\Response\Models\Information::class;
+    public const string RESPONSE_MODEL_ACQUIRER = Checkout\Response\Models\Acquirer::class;
+    public const string RESPONSE_MODEL_WALLET = Checkout\Response\Models\Wallet::class;
+    public const string RESPONSE_MODEL_ACQUIRERREFERENCE = Checkout\Response\Models\AcquirerReference::class;
+    public const string RESPONSE_MODEL_PRIMARYACCOUNTNUMBER = Checkout\Response\Models\PrimaryAccountnumber::class;
+    public const string RESPONSE_MODEL_ECI = Checkout\Response\Models\Eci::class;
+    public const string RESPONSE_MODEL_EXEMPTION = Checkout\Response\Models\Exemption::class;
+    public const string RESPONSE_MODEL_LINKS = Checkout\Response\Models\Links::class;
+    public const string RESPONSE_MODEL_SUBSCRIPTION = Checkout\Response\Models\Subscription::class;
+    public const string RESPONSE_MODEL_TOTAL = Checkout\Response\Models\Total::class;
+    public const string RESPONSE_MODEL_TRANSACTION = Checkout\Response\Models\Transaction::class;
+    public const string RESPONSE_MODEL_TRANSACTIONOPERATION = Checkout\Response\Models\TransactionOperation::class;
+    public const string RESPONSE_MODEL_RESPONSE_CODE = Checkout\Response\Models\ResponseCode::class;
 }

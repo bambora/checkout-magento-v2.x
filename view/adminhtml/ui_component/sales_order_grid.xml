@@ -1,21 +1,6 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- *
- */
--->
 <listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <listingToolbar name="listing_top">
         <massaction name="listing_massaction">
             <action name="bambora_order_capture">
@@ -26,7 +11,7 @@
                             Invoice and Capture
                         </item>
                         <item name="url" xsi:type="url"
-                              path="bambora/order/massinvoicecapture"/>
+                            path="bambora/order/massinvoicecapture" />
                         <item name="confirm" xsi:type="array">
                             <item name="title" xsi:type="string" translate="true">
                                 Invoice and Capture Order(s)
@@ -47,7 +32,7 @@
                             Cancel and Void
                         </item>
                         <item name="url" xsi:type="url"
-                              path="bambora/order/masscancelvoid"/>
+                            path="bambora/order/masscancelvoid" />
                         <item name="confirm" xsi:type="array">
                             <item name="title" xsi:type="string" translate="true">
                                 Cancel and Void Order(s)

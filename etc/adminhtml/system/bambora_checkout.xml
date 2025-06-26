@@ -1,162 +1,173 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- *
- */
--->
-<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-  <group id="bambora_checkout" translate="label comment" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
-    <label>Worldline Checkout</label>
-    <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
-    <fieldset_css>bambora-checkout-method</fieldset_css>
-    <comment><![CDATA[Accept online payments in Magento 2 using the Worldline Checkout payment window.<br /> Go to <a href='https://developer.bambora.com/europe/shopping-carts/shopping-carts/magento2' target='_blank'>Worldline Docs</a> for more information.]]></comment>
-    <field id="version" type="label" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Module version:</b>]]></label>
-      <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Field\Version</frontend_model>
-    </field>
-    <field id="active" type="select" translate="label comment" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Enabled:</b>]]></label>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <comment><![CDATA[Set to Yes to allow your customers to use Worldline Checkout as a payment option.]]></comment>
-      <config_path>payment/bambora_checkout/active</config_path>
-    </field>
-    <field id="title" type="text" translate="label comment" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Title:</b>]]></label>
-      <comment><![CDATA[The title of the payment method displayed to the customers.]]></comment>
-      <config_path>payment/bambora_checkout/title</config_path>
-    </field>
-    <field id="merchantnumber" type="text" translate="label comment" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Merchant number:</b>]]></label>
-      <comment><![CDATA[The number identifying your Worldline merchant account.]]></comment>
-      <config_path>payment/bambora_checkout/merchantnumber</config_path>
-    </field>
-    <field id="accesstoken" type="text" translate="label comment" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Access token:</b>]]></label>
-      <comment><![CDATA[The Access token for the API user received from the Worldline administration.]]></comment>
-      <config_path>payment/bambora_checkout/accesstoken</config_path>
-    </field>
-    <field id="secrettoken" type="obscure" translate="label comment" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Secret token:</b>]]></label>
-      <comment><![CDATA[The Secret token for the API user received from the Worldline administration.]]></comment>
-      <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-      <config_path>payment/bambora_checkout/secrettoken</config_path>
-    </field>
-    <field id="md5key" type="text" translate="label comment" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>MD5 Key:</b>]]></label>
-      <comment><![CDATA[The MD5 key is used to stamp data sent between Magento and Worldline to prevent it from being tampered with. The MD5 key is optional but if used here, must be the same as in the Worldline administration.]]></comment>
-      <config_path>payment/bambora_checkout/md5key</config_path>
-    </field>
-    <field id="paymentwindowid" type="text" translate="label comment" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Payment Window ID:</b>]]></label>
-      <comment><![CDATA[The ID of the payment window to use.]]></comment>
-      <config_path>payment/bambora_checkout/paymentwindowid</config_path>
-        <validate>validate-digits validate-not-negative-number</validate>
-    </field>
-    <field id="instantcapture" type="select" translate="label comment" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Instant capture:</b>]]></label>
-      <comment><![CDATA[Capture the payments at the same time they are authorized. In some countries, this is only permitted if the consumer receives the products right away Ex. digital products.]]></comment>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/bambora_checkout/instantcapture</config_path>
-    </field>
-    <field id="windowstate" type="select" translate="label comment" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Window state:</b>]]></label>
-      <comment><![CDATA[Set to <b>Overlay</b> for the Payment Window to open as a overlayed window on top of the store. The store will be visible behind the payment window. Set to <b>Full Screen</b> to open the payment window in the same window but in full-screen. The store will not be visible in this setting.]]></comment>
-      <source_model>Bambora\Online\Model\Config\Source\CheckoutWindowstate</source_model>
-      <config_path>payment/bambora_checkout/windowstate</config_path>
-    </field>
-    <field id="immediateredirecttoaccept" type="select" translate="label comment" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Immediate Redirect</b>]]></label>
-      <comment><![CDATA[Immediately redirect your customer back to you shop after the payment completed.]]></comment>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/bambora_checkout/immediateredirecttoaccept</config_path>
-    </field>
-    <field id="addsurchargetopayment" type="select" translate="label comment" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Enable Surcharge fee:</b>]]></label>
-      <comment><![CDATA[Enable to add surcharge to the order]]></comment>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/bambora_checkout/addsurchargetopayment</config_path>
-    </field>
-    <field id="surchargemode" type="select" translate="label comment" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Surcharge mode:</b>]]></label>
-      <comment><![CDATA[Select if the surcharge should be added as an order line or if it should be added to the shipping & handling fee]]></comment>
-      <source_model>Bambora\Online\Model\Config\Source\Surchargemode</source_model>
-      <config_path>payment/bambora_checkout/surchargemode</config_path>
-    </field>
-    <field id="sendmailorderconfirmation" type="select" translate="label comment" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Send Email Order Confirmation:</b>]]></label>
-      <comment><![CDATA[Send an email order confirmation to the customer when the payment is completed.]]></comment>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/bambora_checkout/sendmailorderconfirmation</config_path>
-    </field>
-    <field id="remoteinterface" type="select" translate="label comment" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Enable remote payment proccessing from within Magento</b>]]></label>
-      <comment><![CDATA[Enable this option in order to capture, credit, delete and display payments directly from the Magento backoffice]]></comment>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/bambora_checkout/remoteinterface</config_path>
-    </field>
-    <field id="instantinvoice" type="select" translate="label comment" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Instant invoice:</b>]]></label>
-      <comment><![CDATA[Enable this to automatically create an invoice once the payment is completed. Notice that this will also capture the payment]]></comment>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/bambora_checkout/instantinvoice</config_path>
-    </field>
-    <field id="instantinvoicemail" type="select" translate="label comment" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Instant invoice mail:</b>]]></label>
-      <comment><![CDATA[If instant invoice then send invoice to customer.]]></comment>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/bambora_checkout/instantinvoicemail</config_path>
-    </field>
-    <field id="masscaptureinvoicemail" type="select" translate="label comment" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Mass Invoice and Capture mail:</b>]]></label>
-      <comment><![CDATA[Send invoice mail to the customers when bulk invoice and capture.]]></comment>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/bambora_checkout/masscaptureinvoicemail</config_path>
-    </field>
-    <field id="roundingmode" type="select" translate="label comment" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Rounding mode:</b>]]></label>
-      <comment><![CDATA[Please select how you want the rounding of the amount sent to the payment system]]></comment>
-      <source_model>Bambora\Online\Model\Config\Source\Roundingmode</source_model>
-      <config_path>payment/bambora_checkout/roundingmode</config_path>
-    </field>
-    <field id="order_status" type="select" translate="label comment" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Order status (After the payment is completed):</b>]]></label>
-      <comment><![CDATA[Set the status of the order <b>after</b> the payment is completed.]]></comment>
-      <source_model>Magento\Sales\Model\Config\Source\Order\Status\Processing</source_model>
-      <config_path>payment/bambora_checkout/order_status</config_path>
-    </field>
-    <field id="sort_order" type="text" translate="label comment" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Sort order:</b>]]></label>
-      <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
-      <config_path>payment/bambora_checkout/sort_order</config_path>
-        <validate>validate-digits validate-not-negative-number</validate>
-    </field>
-    <field id="uncancelorderlines" translate="label comment" type="select" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
-      <label><![CDATA[<b>Un-Cancel order lines:</b>]]></label>
-      <comment><![CDATA[When this is enabled, the module will try to restore the canceled order lines if the order gets paid after the order is canceled. This feature is against normal Magento behavior, and we cannot guarantee that there will not be any side effects. ]]></comment>
-      <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-      <config_path>payment/bambora_checkout/uncancelorderlines</config_path>
-    </field>
-      <field id="allowlowvalueexemption" type="select" translate="label comment" sortOrder="23" showInDefault="1" showInWebsite="1" showInStore="1">
-          <label><![CDATA[<b>Enable Low Value Exemption:</b>]]></label>
-          <comment><![CDATA[Allow you as a merchant to let the customer attempt to skip Strong Customer Authentication(SCA) when the value of the order is below your defined limit. Note: the liability will be on you as a merchant.]]></comment>
-          <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-          <config_path>payment/bambora_checkout/allowlowvalueexemption</config_path>
-      </field>
-      <field id="limitlowvalueexemption" type="text" translate="label comment" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1">
-          <label><![CDATA[<b>Max Amount for Low Value Exemption:</b>]]></label>
-          <comment><![CDATA[Any amount below this max amount might skip SCA if the issuer would allow it. Recommended amount is about €30 in your local currency. <a href='https://developer.bambora.com/europe/checkout/psd2/lowvalueexemption'  target='_blank'>See more information here.</a>]]></comment>
-          <config_path>payment/bambora_checkout/limitlowvalueexemption</config_path>
-          <validate>validate-digits validate-not-negative-number</validate>
-      </field>
-  </group>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="bambora_checkout" translate="label comment" type="text" sortOrder="2"
+        showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Worldline Online Checkout</label>
+        <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
+        <fieldset_css>bambora-checkout-method</fieldset_css>
+        <comment><![CDATA[Accept online payments in Magento 2 using the Worldline Checkout payment window.<br /> Go to <a href='https://developer.bambora.com/europe/shopping-carts/shopping-carts/magento2' target='_blank'>Worldline Docs</a> for more information.]]></comment>
+        <field id="version" type="label" translate="label" sortOrder="1" showInDefault="1"
+            showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Module version:</b>]]></label>
+            <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Field\Version</frontend_model>
+        </field>
+        <field id="active" type="select" translate="label comment" sortOrder="2" showInDefault="1"
+            showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Enabled:</b>]]></label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <comment><![CDATA[Set to Yes to allow your customers to use Worldline Checkout as a payment option.]]></comment>
+            <config_path>payment/bambora_checkout/active</config_path>
+        </field>
+        <field id="title" type="text" translate="label comment" sortOrder="3" showInDefault="1"
+            showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Title:</b>]]></label>
+            <comment><![CDATA[The title of the payment method displayed to the customers.]]></comment>
+            <config_path>payment/bambora_checkout/title</config_path>
+        </field>
+        <field id="merchantnumber" type="text" translate="label comment" sortOrder="4"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Merchant number:</b>]]></label>
+            <comment><![CDATA[The number identifying your Worldline merchant account.]]></comment>
+            <config_path>payment/bambora_checkout/merchantnumber</config_path>
+        </field>
+        <field id="accesstoken" type="text" translate="label comment" sortOrder="5"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Access token:</b>]]></label>
+            <comment><![CDATA[The Access token for the API user received from the Worldline administration.]]></comment>
+            <config_path>payment/bambora_checkout/accesstoken</config_path>
+        </field>
+        <field id="secrettoken" type="obscure" translate="label comment" sortOrder="6"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Secret token:</b>]]></label>
+            <comment><![CDATA[The Secret token for the API user received from the Worldline administration.]]></comment>
+            <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+            <config_path>payment/bambora_checkout/secrettoken</config_path>
+        </field>
+        <field id="md5key" type="text" translate="label comment" sortOrder="7" showInDefault="1"
+            showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>MD5 Key:</b>]]></label>
+            <comment><![CDATA[The MD5 key is used to stamp data sent between Magento and Worldline to prevent it from being tampered with. The MD5 key is optional but if used here, must be the same as in the Worldline administration.]]></comment>
+            <config_path>payment/bambora_checkout/md5key</config_path>
+        </field>
+        <field id="paymentwindowid" type="text" translate="label comment" sortOrder="8"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Payment Window ID:</b>]]></label>
+            <comment><![CDATA[The ID of the payment window to use.]]></comment>
+            <config_path>payment/bambora_checkout/paymentwindowid</config_path>
+            <validate>validate-digits validate-not-negative-number</validate>
+        </field>
+        <field id="instantcapture" type="select" translate="label comment" sortOrder="9"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Instant capture:</b>]]></label>
+            <comment><![CDATA[Capture the payments at the same time they are authorized. In some countries, this is only permitted if the consumer receives the products right away Ex. digital products.]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/bambora_checkout/instantcapture</config_path>
+        </field>
+        <field id="windowstate" type="select" translate="label comment" sortOrder="10"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Window state:</b>]]></label>
+            <comment><![CDATA[Set to <b>Overlay</b> for the Payment Window to open as a overlayed window on top of the store. The store will be visible behind the payment window. Set to <b>Full Screen</b> to open the payment window in the same window but in full-screen. The store will not be visible in this setting.]]></comment>
+            <source_model>Bambora\Online\Model\Config\Source\CheckoutWindowstate</source_model>
+            <config_path>payment/bambora_checkout/windowstate</config_path>
+        </field>
+        <field id="immediateredirecttoaccept" type="select" translate="label comment" sortOrder="11"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Immediate Redirect</b>]]></label>
+            <comment><![CDATA[Immediately redirect your customer back to you shop after the payment completed.]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/bambora_checkout/immediateredirecttoaccept</config_path>
+        </field>
+        <field id="addsurchargetopayment" type="select" translate="label comment" sortOrder="12"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Enable Surcharge fee:</b>]]></label>
+            <comment><![CDATA[Enable to add surcharge to the order]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/bambora_checkout/addsurchargetopayment</config_path>
+        </field>
+        <field id="surchargemode" type="select" translate="label comment" sortOrder="13"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Surcharge mode:</b>]]></label>
+            <comment><![CDATA[Select if the surcharge should be added as an order line or if it should be added to the shipping & handling fee]]></comment>
+            <source_model>Bambora\Online\Model\Config\Source\Surchargemode</source_model>
+            <config_path>payment/bambora_checkout/surchargemode</config_path>
+        </field>
+        <field id="sendmailorderconfirmation" type="select" translate="label comment" sortOrder="14"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Send Email Order Confirmation:</b>]]></label>
+            <comment><![CDATA[Send an email order confirmation to the customer when the payment is completed.]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/bambora_checkout/sendmailorderconfirmation</config_path>
+        </field>
+        <field id="remoteinterface" type="select" translate="label comment" sortOrder="15"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Enable remote payment proccessing from within Magento</b>]]></label>
+            <comment><![CDATA[Enable this option in order to capture, credit, delete and display payments directly from the Magento backoffice]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/bambora_checkout/remoteinterface</config_path>
+        </field>
+        <field id="instantinvoice" type="select" translate="label comment" sortOrder="16"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Instant invoice:</b>]]></label>
+            <comment><![CDATA[Enable this to automatically create an invoice once the payment is completed. Notice that this will also capture the payment]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/bambora_checkout/instantinvoice</config_path>
+        </field>
+        <field id="instantinvoicemail" type="select" translate="label comment" sortOrder="17"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Instant invoice mail:</b>]]></label>
+            <comment><![CDATA[If instant invoice then send invoice to customer.]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/bambora_checkout/instantinvoicemail</config_path>
+        </field>
+        <field id="masscaptureinvoicemail" type="select" translate="label comment" sortOrder="18"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Mass Invoice and Capture mail:</b>]]></label>
+            <comment><![CDATA[Send invoice mail to the customers when bulk invoice and capture.]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/bambora_checkout/masscaptureinvoicemail</config_path>
+        </field>
+        <field id="roundingmode" type="select" translate="label comment" sortOrder="19"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Rounding mode:</b>]]></label>
+            <comment><![CDATA[Please select how you want the rounding of the amount sent to the payment system]]></comment>
+            <source_model>Bambora\Online\Model\Config\Source\Roundingmode</source_model>
+            <config_path>payment/bambora_checkout/roundingmode</config_path>
+        </field>
+        <field id="order_status" type="select" translate="label comment" sortOrder="20"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Order status (After the payment is completed):</b>]]></label>
+            <comment><![CDATA[Set the status of the order <b>after</b> the payment is completed.]]></comment>
+            <source_model>Magento\Sales\Model\Config\Source\Order\Status\Processing</source_model>
+            <config_path>payment/bambora_checkout/order_status</config_path>
+        </field>
+        <field id="sort_order" type="text" translate="label comment" sortOrder="21"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Sort order:</b>]]></label>
+            <comment><![CDATA[In which order this payment method is displayed to the customer.]]></comment>
+            <config_path>payment/bambora_checkout/sort_order</config_path>
+            <validate>validate-digits validate-not-negative-number</validate>
+        </field>
+        <field id="uncancelorderlines" translate="label comment" type="select" sortOrder="22"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Un-Cancel order lines:</b>]]></label>
+            <comment><![CDATA[When this is enabled, the module will try to restore the canceled order lines if the order gets paid after the order is canceled. This feature is against normal Magento behavior, and we cannot guarantee that there will not be any side effects. ]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/bambora_checkout/uncancelorderlines</config_path>
+        </field>
+        <field id="allowlowvalueexemption" type="select" translate="label comment" sortOrder="23"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Enable Low Value Exemption:</b>]]></label>
+            <comment><![CDATA[Allow you as a merchant to let the customer attempt to skip Strong Customer Authentication(SCA) when the value of the order is below your defined limit. Note: the liability will be on you as a merchant.]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/bambora_checkout/allowlowvalueexemption</config_path>
+        </field>
+        <field id="limitlowvalueexemption" type="text" translate="label comment" sortOrder="24"
+            showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[<b>Max Amount for Low Value Exemption:</b>]]></label>
+            <comment><![CDATA[Any amount below this max amount might skip SCA if the issuer would allow it. Recommended amount is about €30 in your local currency. <a href='https://developer.bambora.com/europe/checkout/psd2/lowvalueexemption'  target='_blank'>See more information here.</a>]]></comment>
+            <config_path>payment/bambora_checkout/limitlowvalueexemption</config_path>
+            <validate>validate-digits validate-not-negative-number</validate>
+        </field>
+    </group>
 </include>

@@ -1,17 +1,4 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Observer;
 
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
@@ -26,8 +13,8 @@ class SalesOrderPaymentPlaceStart implements
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $payment = $observer['payment'];
-        if ($payment->getMethod() == CheckoutPayment::METHOD_CODE ){
+        $payment = $observer->getEvent()->getPayment();
+        if (isset($payment) && $payment->getMethod() === CheckoutPayment::METHOD_CODE) {
             $order = $payment->getOrder();
             $order->setCanSendNewEmailFlag(false);
             $order->setIsCustomerNotified(false);

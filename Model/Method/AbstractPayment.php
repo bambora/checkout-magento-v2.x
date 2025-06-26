@@ -1,17 +1,4 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Model\Method;
 
 use Bambora\Online\Helper\BamboraConstants;
@@ -73,7 +60,6 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger $logger
      * @param \Magento\Framework\App\RequestInterface $request
-     * @param \Magento\Framework\App\Response\Http $response
      * @param \Magento\Checkout\Model\Cart $cart
      * @param \Magento\Framework\Message\ManagerInterface $messageManager
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
@@ -95,8 +81,8 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
         \Magento\Framework\App\RequestInterface $request,
         \Magento\Checkout\Model\Cart $cart,
         \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection = null,
         array $data = []
     ) {
         parent::__construct(
@@ -160,7 +146,6 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
      * Can be edit order (renew order)
      *
      * @return bool
-     * @api
      */
     public function canEdit()
     {
@@ -171,23 +156,18 @@ abstract class AbstractPayment extends \Magento\Payment\Model\Method\AbstractMet
      * Can do online action
      *
      * @param \Magento\Payment\Model\InfoInterface $payment
-     * @return boolean
+     * @return bool
      */
     protected function canOnlineAction($payment)
     {
         $storeId = $payment->getOrder()->getStoreId();
-        if (intval(
-                $this->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId)
-            ) === 1) {
-            return true;
-        }
-
-        return false;
+        return (int)$this->getConfigData(BamboraConstants::REMOTE_INTERFACE, $storeId) === 1;
     }
 
     /**
      * Can do action
      *
+     * @param mixed $reference
      * @return boolean
      */
     protected function canAction($reference)

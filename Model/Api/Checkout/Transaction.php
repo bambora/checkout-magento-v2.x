@@ -1,17 +1,4 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Model\Api\Checkout;
 
 use Bambora\Online\Model\Api\Checkout\ApiEndpoints;
@@ -25,7 +12,7 @@ class Transaction extends Base
      * @param string $transactionId
      * @param \Bambora\Online\Model\Api\Checkout\Request\Capture $captureRequest
      * @param string $apikey
-     * @return \Bambora\Online\Model\Api\Checkout\Response\Capture
+     * @return \Bambora\Online\Model\Api\Checkout\Response\Capture | null
      */
     public function capture($transactionId, $captureRequest, $apikey)
     {
@@ -42,14 +29,14 @@ class Transaction extends Base
                 $apikey
             );
             $result = json_decode($resultJson, true);
-            $captureResponse = $this->_bamboraHelper->getCheckoutApiModel(
+            $captureResponse = $this->_bamboraHelper->getCheckoutModel(
                 CheckoutApiModels::RESPONSE_CAPTURE
             );
             $captureResponse->meta = $this->_mapMeta($result);
             if ($captureResponse->meta->result) {
                 $captureResponse->transactionOperations = [];
                 foreach ($result['transactionoperations'] as $operation) {
-                    $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(
+                    $transactionOperation = $this->_bamboraHelper->getCheckoutModel(
                         CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION
                     );
                     $transactionOperation->id = $operation['id'];
@@ -69,7 +56,7 @@ class Transaction extends Base
      * @param string $transactionId
      * @param \Bambora\Online\Model\Api\Checkout\Request\Credit $creditRequest
      * @param string $apikey
-     * @return \Bambora\Online\Model\Api\Checkout\Response\Credit
+     * @return \Bambora\Online\Model\Api\Checkout\Response\Credit | null
      */
     public function credit($transactionId, $creditRequest, $apikey)
     {
@@ -87,14 +74,14 @@ class Transaction extends Base
                 $apikey
             );
             $result = json_decode($resultJson, true);
-            $creditResponse = $this->_bamboraHelper->getCheckoutApiModel(
+            $creditResponse = $this->_bamboraHelper->getCheckoutModel(
                 CheckoutApiModels::RESPONSE_CREDIT
             );
             $creditResponse->meta = $this->_mapMeta($result);
             if ($creditResponse->meta->result) {
                 $creditResponse->transactionOperations = [];
                 foreach ($result['transactionoperations'] as $operation) {
-                    $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(
+                    $transactionOperation = $this->_bamboraHelper->getCheckoutModel(
                         CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION
                     );
                     $transactionOperation->id = $operation['id'];
@@ -113,7 +100,7 @@ class Transaction extends Base
      *
      * @param string $transactionId
      * @param string $apikey
-     * @return \Bambora\Online\Model\Api\Checkout\Response\Delete
+     * @return \Bambora\Online\Model\Api\Checkout\Response\Delete | null
      */
     public function delete($transactionId, $apikey)
     {
@@ -129,14 +116,14 @@ class Transaction extends Base
                 $apikey
             );
             $result = json_decode($resultJson, true);
-            $deleteResponse = $this->_bamboraHelper->getCheckoutApiModel(
+            $deleteResponse = $this->_bamboraHelper->getCheckoutModel(
                 CheckoutApiModels::RESPONSE_DELETE
             );
             $deleteResponse->meta = $this->_mapMeta($result);
             if ($deleteResponse->meta->result) {
                 $deleteResponse->transactionOperations = [];
                 foreach ($result['transactionoperations'] as $operation) {
-                    $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(
+                    $transactionOperation = $this->_bamboraHelper->getCheckoutModel(
                         CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION
                     );
                     $transactionOperation->id = $operation['id'];

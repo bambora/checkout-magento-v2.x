@@ -1,17 +1,4 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Block\Adminhtml\Sales\Order\View;
 
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
@@ -65,14 +52,18 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     }
 
     /**
+     * Prepare HTML output
+     *
      * @return string
      */
     protected function _toHtml()
     {
-        return ($this->getOrder()->getPayment()->getMethod() === CheckoutPayment::METHOD_CODE ? parent::_toHtml() : '') ;
+        return $this->getOrder()->getPayment()->getMethod() === CheckoutPayment::METHOD_CODE ? parent::_toHtml() : '';
     }
 
     /**
+     * Get Current Order
+     *
      * @return \Magento\Sales\Model\Order
      */
     public function getOrder()
@@ -88,7 +79,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     public function getTransactionData()
     {
         try {
-            $result = __("Can not display transaction information");
+            $result = __('Can not display transaction information');
             $order = $this->getOrder();
             $storeId = $order->getStoreId();
             $payment = $order->getPayment();
@@ -113,23 +104,21 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                                 $transaction
                             );
                         } elseif ($checkoutMethod->getConfigData(
-                                BamboraConstants::REMOTE_INTERFACE,
-                                $storeId
-                            ) == 0) {
-                            $result .= ' ' . __(
-                                    "Please enable remote payment processing from the module configuration"
-                                );
+                            BamboraConstants::REMOTE_INTERFACE,
+                            $storeId
+                        ) == 0) {
+                            $result .= ' ' .
+                            __('Please enable remote payment processing from the module configuration');
                         } else {
-                            $result .= ': ' . $message;
+                            $result .= ": {$message}";
                         }
                     }
                 }
             }
         } catch (\Exception $ex) {
             $errorMessage = $ex->getMessage();
-            $result = __(
-                "An error occurred while fetching the transaction information. Please see the Bambora log file for more information."
-            );
+            $result = __('An error occurred while fetching the transaction information. 
+                            Please see the Bambora log file for more information.');
             $this->_bamboraLogger->addCommonError(
                 $transactionId,
                 "An error occurred while fetching the transaction information. Error: {$errorMessage}"
@@ -147,52 +136,48 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     public function getTransactionLogData()
     {
         try {
-            $result = __("Can not display transaction history.");
             $order = $this->getOrder();
             $storeId = $order->getStoreId();
             $payment = $order->getPayment();
             $paymentMethod = $payment->getMethod();
 
-            if ($paymentMethod === CheckoutPayment::METHOD_CODE) {
-                $checkoutMethod = $payment->getMethodInstance();
-                if (isset($checkoutMethod)) {
-                    $transactionId = $payment->getAdditionalInformation(
-                        $checkoutMethod::METHOD_REFERENCE
+            if ($paymentMethod !== CheckoutPayment::METHOD_CODE) {
+                return "";
+            }
+            $checkoutMethod = $payment->getMethodInstance();
+            if (isset($checkoutMethod)) {
+                $transactionId = $payment->getAdditionalInformation(
+                    $checkoutMethod::METHOD_REFERENCE
+                );
+                if (!empty($transactionId)) {
+                    $message = "";
+                    $transactionOperations = $checkoutMethod->getTransactionOperations(
+                        $transactionId,
+                        $storeId,
+                        $message
                     );
-                    if (!empty($transactionId)) {
-                        $message = "";
-                        $transactionOperations = $checkoutMethod->getTransactionOperations(
-                            $transactionId,
+                    if (!empty($transactionOperations)) {
+                        $result = '<tr><td colspan="4" class="bambora_table_title">' .
+                        __('Transaction History') . '</td></tr>';
+                        $result .= $this->createCheckoutTransactionOperationsHtml(
+                            $transactionOperations,
                             $storeId,
-                            $message
+                            $checkoutMethod
                         );
-                        if (isset($transactionOperations)) {
-                            $result = '<tr><td colspan="4" class="bambora_table_title">' . __(
-                                    "Transaction History"
-                                ) . '</td></tr>';
-                            $result .= $this->createCheckoutTransactionOperationsHtml(
-                                $transactionOperations,
-                                $storeId,
-                                $checkoutMethod
-                            );
-                        }
+                        return $result;
                     }
                 }
-            } else {
-                $result = "";
             }
         } catch (\Exception $ex) {
             $errorMessage = $ex->getMessage();
-            $result = __(
-                "An error occurred while fetching the transaction history. Please see the Bambora log file for more information."
-            );
+            $result = __('An error occurred while fetching the transaction history. 
+                            Please see the Bambora log file for more information.');
             $this->_bamboraLogger->addCommonError(
                 $transactionId,
                 "An error occurred while fetching the transaction history. Error: {$errorMessage}"
             );
         }
-
-        return $result;
+            return "";
     }
 
     /**
@@ -203,62 +188,61 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     public function createCheckoutTransactionHtml($transaction)
     {
-        $res = '<tr><td colspan="2" class="bambora_table_title">' . __(
-                "Worldline Checkout - Transaction information"
-            ) . '</td></tr>';
+        $res = '<tr><td colspan="2" class="bambora_table_title">' .
+        __('Worldline Checkout - Transaction information') . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Transaction ID") . ':</td>';
-        $res .= '<td>' . $transaction->id . '</td></tr>';
+        $res .= '<tr><td>' . __('Transaction ID') . ':</td>';
+        $res .= "<td>{$transaction->id}</td></tr>";
 
         if (is_array($transaction->information->acquirerReferences) && count(
-                $transaction->information->acquirerReferences
-            ) > 0) {
-            $res .= '<tr><td>' . __("Acquirer Reference") . ':</td>';
-            $res .= '<td>' . $transaction->information->acquirerReferences[0]->reference . '</td></tr>';
+            $transaction->information->acquirerReferences
+        ) > 0) {
+            $res .= '<tr><td>' . __('Acquirer Reference') . ':</td>';
+            $res .= "<td>{$transaction->information->acquirerReferences[0]->reference}</td></tr>";
         }
-        $res .= '<tr><td>' . __("Authorized amount") . ':</td>';
+        $res .= '<tr><td>' . __('Authorized amount') . ':</td>';
         $authAmount = $this->_bamboraHelper->convertPriceFromMinorunits(
             $transaction->total->authorized,
             $transaction->currency->minorunits
         );
         $res .= '<td>' . $this->_priceHelper->currency(
-                $authAmount,
-                true,
-                false
-            ) . '</td></tr>';
+            $authAmount,
+            true,
+            false
+        ) . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Transaction date") . ':</td>';
+        $res .= '<tr><td>' . __('Transaction date') . ':</td>';
         $res .= '<td>' . $this->formatDate(
-                $transaction->createdDate,
-                \IntlDateFormatter::SHORT,
-                true
-            ) . '</td></tr>';
+            $transaction->createdDate,
+            \IntlDateFormatter::SHORT,
+            true
+        ) . '</td></tr>';
 
         if (is_array($transaction->information->paymenttypes) && count(
-                $transaction->information->paymenttypes
-            ) > 0) {
-            $res .= '<tr><td>' . __("Card type") . ':</td>';
+            $transaction->information->paymenttypes
+        ) > 0) {
+            $res .= '<tr><td>' . __('Card type') . ':</td>';
             $res .= '<td>' . $transaction->information->paymenttypes[0]->displayName . $this->getPaymentLogoUrl(
-                    $transaction->information->paymenttypes[0]->groupid,
-                    $transaction->information->paymenttypes[0]->displayName
-                );
+                $transaction->information->paymenttypes[0]->groupid,
+                $transaction->information->paymenttypes[0]->displayName
+            );
             if (is_array($transaction->information->wallets) && count(
-                    $transaction->information->wallets
-                ) > 0) {
+                $transaction->information->wallets
+            ) > 0) {
                 $wallet_name = $transaction->information->wallets[0]->name;
-                if ($wallet_name == "MobilePay") {
-                    $wallet_img_id = "13";
+                if ($wallet_name == 'MobilePay') {
+                    $wallet_img_id = '13';
                 }
-                if ($wallet_name == "Vipps") {
-                    $wallet_img_id = "14";
+                if ($wallet_name == 'Vipps') {
+                    $wallet_img_id = '14';
                 }
-                if ($wallet_name == "GooglePay") {
-                    $wallet_img_id = "22";
-                    $wallet_name   = "Google Pay";
+                if ($wallet_name == 'GooglePay') {
+                    $wallet_img_id = '22';
+                    $wallet_name   = 'Google Pay';
                 }
-                if ($wallet_name == "ApplePay") {
-                    $wallet_img_id = "21";
-                    $wallet_name   = "Apple Pay";
+                if ($wallet_name == 'ApplePay') {
+                    $wallet_img_id = '21';
+                    $wallet_name   = 'Apple Pay';
                 }
                 if (isset($wallet_img_id)) {
                     $res .= $this->getPaymentLogoUrl($wallet_img_id, $wallet_name);
@@ -268,68 +252,68 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         }
 
         if (is_array($transaction->information->primaryAccountnumbers) && count(
-                $transaction->information->primaryAccountnumbers
-            ) > 0) {
-            $res .= '<tr><td>' . __("Card number") . ':</td>';
-            $res .= '<td>' . $transaction->information->primaryAccountnumbers[0]->number . '</td></tr>';
+            $transaction->information->primaryAccountnumbers
+        ) > 0) {
+            $res .= '<tr><td>' . __('Card number') . ':</td>';
+            $res .= "<td>{$transaction->information->primaryAccountnumbers[0]->number}</td></tr>";
         }
 
-        $res .= '<tr><td>' . __("Surcharge fee") . ':</td>';
+        $res .= '<tr><td>' . __('Surcharge fee') . ':</td>';
         $surchargeFee = $this->_bamboraHelper->convertPriceFromMinorunits(
             $transaction->total->feeamount,
             $transaction->currency->minorunits
         );
         $res .= '<td>' . $this->_priceHelper->currency(
-                $surchargeFee,
-                true,
-                false
-            ) . '</td></tr>';
+            $surchargeFee,
+            true,
+            false
+        ) . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Captured") . ':</td>';
+        $res .= '<tr><td>' . __('Captured') . ':</td>';
         $capturedAmount = $this->_bamboraHelper->convertPriceFromMinorunits(
             $transaction->total->captured,
             $transaction->currency->minorunits
         );
         $res .= '<td>' . $this->_priceHelper->currency(
-                $capturedAmount,
-                true,
-                false
-            ) . '</td></tr>';
+            $capturedAmount,
+            true,
+            false
+        ) . '</td></tr>';
 
-        $res .= '<tr><td>' . __("Refunded") . ':</td>';
+        $res .= '<tr><td>' . __('Refunded') . ':</td>';
         $creditedAmount = $this->_bamboraHelper->convertPriceFromMinorunits(
             $transaction->total->credited,
             $transaction->currency->minorunits
         );
         $res .= '<td>' . $this->_priceHelper->currency(
-                $creditedAmount,
-                true,
-                false
-            ) . '</td></tr>';
+            $creditedAmount,
+            true,
+            false
+        ) . '</td></tr>';
 
         if (is_array($transaction->information->acquirers) && count(
-                $transaction->information->acquirers
-            ) > 0) {
-            $res .= '<tr><td>' . __("Acquirer") . ':</td>';
-            $res .= '<td>' . $transaction->information->acquirers[0]->name . '</td></tr>';
+            $transaction->information->acquirers
+        ) > 0) {
+            $res .= '<tr><td>' . __('Acquirer') . ':</td>';
+            $res .= "<td>{$transaction->information->acquirers[0]->name}</td></tr>";
         }
         if (is_array($transaction->information->ecis) && count(
-                $transaction->information->ecis
-            ) > 0) {
-            $res .= '<tr><td>' . __("ECI") . ':</td>';
+            $transaction->information->ecis
+        ) > 0) {
+            $res .= '<tr><td>' . __('ECI') . ':</td>';
             $res .= '<td>' . $this->getLowestECI(
-                    $transaction->information->ecis
-                ) . '</td></tr>';
+                $transaction->information->ecis
+            ) . '</td></tr>';
         }
         if (is_array($transaction->information->exemptions) && count(
-                $transaction->information->exemptions
-            ) > 0) {
-            $res .= '<tr><td>' . __("Exemption") . ':</td>';
+            $transaction->information->exemptions
+        ) > 0) {
+            $res .= '<tr><td>' . __('Exemption') . ':</td>';
             $res .= '<td>' . $this->getDistinctExemptions(
-                    $transaction->information->exemptions
-                ) . '</td></tr>';
+                $transaction->information->exemptions
+            ) . '</td></tr>';
         }
-        $res .= '<tr><td>' . __("Status") . ':</td>';
+        $res .= '<tr><td>' . __('Status') . ':</td>';
         $res .= '<td>' . $this->checkoutStatus($transaction->status) . '</td></tr>';
 
         return $res;
@@ -350,15 +334,15 @@ class PaymentInfo extends \Magento\Backend\Block\Template
     ) {
         $html = "";
         foreach ($transactionOperations as $operation) {
-            $eventInfo = $this::getEventText($operation);
+            $eventInfo = $this->getEventText($operation);
 
             if ($eventInfo['description'] != "") {
                 $html .= '<tr class="bambora_transaction_row_header">';
                 $html .= '<td>' . $this->formatDate(
-                        $operation->createddate,
-                        \IntlDateFormatter::SHORT,
-                        true
-                    ) . '</td>';
+                    $operation->createddate,
+                    \IntlDateFormatter::SHORT,
+                    true
+                ) . '</td>';
                 $html .= '<td colspan="2"><strong>' . $eventInfo['title'] . '</strong></td>';
                 $amount = $this->_bamboraHelper->convertPriceFromMinorunits(
                     $operation->amount,
@@ -366,10 +350,10 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 );
                 if ($amount > 0) {
                     $html .= '<td>' . $this->_priceHelper->currency(
-                            $amount,
-                            true,
-                            false
-                        ) . '</td>';
+                        $amount,
+                        true,
+                        false
+                    ) . '</td>';
                 } else {
                     $html .= '<td>-</td>';
                 }
@@ -387,8 +371,8 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 $html .= '<td colspan="4"><i>' . $eventInfo['description'] . $eventInfoExtra . '</i></td>';
                 $html .= '</tr>';
                 if (isset($operation->transactionoperations) && count(
-                        $operation->transactionoperations
-                    ) > 0) {
+                    $operation->transactionoperations
+                ) > 0) {
                     $html .= $this->createCheckoutTransactionOperationsHtml(
                         $operation->transactionoperations,
                         $storeId,
@@ -397,8 +381,8 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 }
             } else {
                 if (isset($operation->transactionoperations) && count(
-                        $operation->transactionoperations
-                    ) > 0) {
+                    $operation->transactionoperations
+                ) > 0) {
                     $html .= $this->createCheckoutTransactionOperationsHtml(
                         $operation->transactionoperations,
                         $storeId,
@@ -407,38 +391,55 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 }
             }
         }
-        $html = str_replace("CollectorBank", "Walley", $html);
+        $html = str_replace('CollectorBank', 'Walley', $html);
         return $html;
     }
 
+    /**
+     * Get Card Authentication Brand Name
+     *
+     * @param mixed $paymentGroupId
+     * @return string
+     */
     private function getCardAuthenticationBrandName($paymentGroupId)
     {
         switch ($paymentGroupId) {
             case 1:
-                return "Dankort Secured by Nets";
+                return 'Dankort Secured by Nets';
             case 2:
-                return "Verified by Visa";
+                return 'Verified by Visa';
             case 3:
             case 4:
-                return "MasterCard SecureCode";
+                return 'MasterCard SecureCode';
             case 5:
-                return "J/Secure";
+                return 'J/Secure';
             case 6:
-                return "American Express SafeKey";
+                return 'American Express SafeKey';
             default:
-                return "3D Secure";
+                return '3D Secure';
         }
     }
 
+    /**
+     * Get Distinct Exemptions
+     *
+     * @param mixed $exemptions
+     * @return string
+     */
     private function getDistinctExemptions($exemptions)
     {
         $exemptionValues = null;
         foreach ($exemptions as $exemption) {
             $exemptionValues[] = $exemption->value;
         }
-        return implode(",", array_unique($exemptionValues));
+        return implode(',', array_unique($exemptionValues));
     }
 
+    /**
+     * Get Lowerst ECI
+     *
+     * @param mixed $ecis
+     */
     private function getLowestECI($ecis)
     {
         foreach ($ecis as $eci) {
@@ -447,7 +448,14 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         return min($eciValues);
     }
 
-
+    /**
+     * Get Event Extra
+     *
+     * @param mixed $operation
+     * @param mixed $storeId
+     * @param mixed $checkoutMethod
+     * @return string
+     */
     private function getEventExtra($operation, $storeId, &$checkoutMethod)
     {
         $source = $operation->actionsource;
@@ -462,12 +470,11 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                 $message
             );
             if (isset($responseCode)) {
-                $merchantLabel = $responseCode->merchantlabel . " - " . $source . " " . $actionCode;
+                $merchantLabel = "{$responseCode->merchantlabel} - {$source} {$actionCode}";
             }
         }
         return $merchantLabel;
     }
-
 
     /**
      *  Get event Log text.
@@ -482,56 +489,59 @@ class PaymentInfo extends \Magento\Backend\Block\Template
         $subAction = strtolower($operation->subaction);
         $approved = $operation->status == 'approved';
         $threeDSecureBrandName = "";
-        $eventInfo = array();
+        $eventInfo = [];
 
-        if ($action === "authorize") {
+        if ($action === 'authorize') {
             if (is_array($operation->paymenttypes) && count(
-                    $operation->paymenttypes
-                ) > 0) {
+                $operation->paymenttypes
+            ) > 0) {
                 $threeDSecureBrandName = $this->getCardAuthenticationBrandName(
                     $operation->paymenttypes[0]->id
                 );
             }
-            // Temporary renaming for Lindorff & Collector Bank to Walley required until implemented in Acquire
+
             $thirdPartyName = $operation->acquirername;
             $thirdPartyName = strtolower(
                 $thirdPartyName
-            ) !== ("lindorff" || "collectorbank")
+            ) !== ('lindorff' || 'collectorbank')
                 ? $thirdPartyName
-                : "Walley";
+                : 'Walley';
 
             switch ($subAction) {
-                case "threed":
-                {
-                    $title = $approved ? 'Payment completed (' . $threeDSecureBrandName . ')' : 'Payment failed (' . $threeDSecureBrandName . ')';
+                case 'threed':
+                    $title = $approved ?
+                        "Payment completed ({$threeDSecureBrandName})" :
+                        "Payment failed ({$threeDSecureBrandName})";
                     if (isset($operation->ecis[0]->value)) {
                         $eci = $operation->ecis[0]->value;
                     }
                     $statusText = $approved
-                        ? "completed successfully."
-                        : "failed.";
+                        ? 'completed successfully.'
+                        : 'failed.';
                     $description = "";
-                    if ($eci === "7") {
-                        $description = 'Authentication was either not attempted or unsuccessful. Either the card does not support' .
-                            $threeDSecureBrandName . ' or the issuing bank does not handle it as a ' .
-                            $threeDSecureBrandName . ' payment. Payment ' . $statusText . ' at ECI level ' . $eci;
+                    if ($eci === '7') {
+                        $description = "Authentication was either not attempted or unsuccessful. 
+                            Either the card does not support {$threeDSecureBrandName} or 
+                            the issuing bank does not handle it as a {$threeDSecureBrandName} payment. 
+                            Payment {$statusText} at ECI level {$eci}";
                     }
-                    if ($eci === "6") {
-                        $description = 'Authentication was attempted but failed. Either cardholder or card issuing bank is not enrolled for ' .
-                            $threeDSecureBrandName . '. Payment ' . $statusText . ' at ECI level ' . $eci;
+                    if ($eci === '6') {
+                        $description = "Authentication was attempted but failed. 
+                        Either cardholder or card issuing bank is not enrolled for {$threeDSecureBrandName}. 
+                        Payment {$statusText} at ECI level {$eci}";
                     }
-                    if ($eci === "5") {
+                    if ($eci === '5') {
                         $description = $approved
-                            ? 'Payment was authenticated at ECI level ' . $eci . ' via ' . $threeDSecureBrandName . ' and ' . $statusText
-                            : 'Payment was did not authenticate via ' . $threeDSecureBrandName . ' and ' . $statusText;
+                            ? "Payment was authenticated at ECI level {$eci} 
+                                via {$threeDSecureBrandName} and {$statusText}"
+                            : "Payment was did not authenticate via 
+                                {$threeDSecureBrandName} and {$statusText}";
                     }
                     $eventInfo['title'] = $title;
                     $eventInfo['description'] = $description;
 
                     return $eventInfo;
-                }
-                case "ssl":
-                {
+                case 'ssl':
                     $title = $approved
                         ? 'Payment completed'
                         : 'Payment failed';
@@ -543,10 +553,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     $eventInfo['title'] = $title;
                     $eventInfo['description'] = $description;
                     return $eventInfo;
-                }
-
                 case "recurring":
-                {
                     $title = $approved
                         ? 'Subscription payment completed'
                         : 'Subscription payment failed';
@@ -559,10 +566,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     $eventInfo['description'] = $description;
 
                     return $eventInfo;
-                }
-
-                case "update":
-                {
+                case 'update':
                     $title = $approved
                         ? 'Payment updated'
                         : 'Payment update failed';
@@ -575,10 +579,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     $eventInfo['description'] = $description;
 
                     return $eventInfo;
-                }
-
-                case "return":
-                {
+                case 'return':
                     $title = $approved
                         ? 'Payment completed'
                         : 'Payment failed';
@@ -586,33 +587,29 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                         ? 'successful'
                         : 'failed';
 
-                    $description = 'Returned from ' . $thirdPartyName . ' authentication with a ' . $statusText . ' authorization.';
+                    $description = "Returned from {$thirdPartyName} authentication with a {$statusText} authorization.";
                     $eventInfo['title'] = $title;
                     $eventInfo['description'] = $description;
 
                     return $eventInfo;
-                }
-
-                case "redirect":
-                {
+                case 'redirect':
                     $statusText = $approved
-                        ? "Successfully"
-                        : "Unsuccessfully";
-                    $eventInfo['title'] = 'Redirect to ' . $thirdPartyName;
-                    $eventInfo['description'] = $statusText . ' redirected to ' . $thirdPartyName . ' for authentication.';
+                        ? 'Successfully'
+                        : 'Unsuccessfully';
+                    $eventInfo['title'] = "Redirect to {$thirdPartyName}";
+                    $eventInfo['description'] = "{$statusText} redirected to {$thirdPartyName} for authentication.";
 
                     return $eventInfo;
-                }
             }
         }
-        if ($action === "capture") {
-            $captureMultiText = (($subAction === "multi" || $subAction === "multiinstant") && $operation->currentbalance > 0)
+        if ($action === 'capture') {
+            $captureMultiText = (($subAction === 'multi' || $subAction === 'multiinstant')
+                && $operation->currentbalance > 0)
                 ? 'Further captures are possible.'
                 : 'Further captures are no longer possible.';
 
             switch ($subAction) {
-                case "full":
-                {
+                case 'full':
                     $title = $approved
                         ? 'Captured full amount'
                         : 'Capture failed';
@@ -625,9 +622,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     $eventInfo['description'] = $description;
 
                     return $eventInfo;
-                }
-                case "fullinstant":
-                {
+                case 'fullinstant':
                     $title = $approved
                         ? 'Instantly captured full amount'
                         : 'Instant capture failed';
@@ -640,43 +635,37 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     $eventInfo['description'] = $description;
 
                     return $eventInfo;
-                }
-                case "partly":
-                case "multi":
-                {
+                case 'partly':
+                case 'multi':
                     $title = $approved
                         ? 'Captured partial amount'
                         : 'Capture failed';
 
                     $description = $approved
-                        ? 'The partial amount was successfully captured. ' . $captureMultiText
+                        ? "The partial amount was successfully captured. {$captureMultiText}"
                         : 'The partial capture attempt failed.';
 
                     $eventInfo['title'] = $title;
                     $eventInfo['description'] = $description;
                     return $eventInfo;
-                }
-                case "partlyinstant":
-                case "multiinstant":
-                {
+                case 'partlyinstant':
+                case 'multiinstant':
                     $title = $approved
                         ? 'Instantly captured partial amount'
                         : 'Instant capture failed';
                     $description = $approved
-                        ? 'The partial amount was successfully captured. ' . $captureMultiText
+                        ? "The partial amount was successfully captured. {$captureMultiText}"
                         : 'The instant partial capture attempt failed.';
 
                     $eventInfo['title'] = $title;
                     $eventInfo['description'] = $description;
                     return $eventInfo;
-                }
             }
         }
 
-        if ($action === "credit") {
+        if ($action === 'credit') {
             switch ($subAction) {
-                case "full":
-                {
+                case 'full':
                     $title = $approved
                         ? 'Refunded full amount'
                         : 'Refund failed';
@@ -687,34 +676,28 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     $eventInfo['title'] = $title;
                     $eventInfo['description'] = $description;
                     return $eventInfo;
-                }
-                case "partly":
-                case "multi":
-                {
+                case 'partly':
+                case 'multi':
                     $title = $approved
                         ? 'Refunded partial amount'
                         : 'Refund failed';
 
-
-                    $refundMultiText = $subAction === "multi"
+                    $refundMultiText = $subAction === 'multi'
                         ? "Further refunds are possible."
                         : "Further refunds are no longer possible.";
 
-
                     $description = $approved
-                        ? 'The amount was successfully refunded. ' . $refundMultiText
+                        ? "The amount was successfully refunded. {$refundMultiText}"
                         : 'The partial refund attempt failed.';
 
                     $eventInfo['title'] = $title;
                     $eventInfo['description'] = $description;
                     return $eventInfo;
-                }
             }
         }
-        if ($action === "delete") {
+        if ($action === 'delete') {
             switch ($subAction) {
-                case "instant":
-                {
+                case 'instant':
                     $title = $approved
                         ? 'Canceled'
                         : 'Cancellation failed';
@@ -726,9 +709,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     $eventInfo['title'] = $title;
                     $eventInfo['description'] = $description;
                     return $eventInfo;
-                }
-                case "delay":
-                {
+                case 'delay':
                     $title = $approved
                         ? 'Cancellation scheduled'
                         : 'Cancellation scheduling failed';
@@ -741,10 +722,9 @@ class PaymentInfo extends \Magento\Backend\Block\Template
                     $eventInfo['description'] = $description;
 
                     return $eventInfo;
-                }
             }
         }
-        $eventInfo['title'] = $action . ":" . $subAction;
+        $eventInfo['title'] = "{$action}:{$subAction}";
         $eventInfo['description'] = null;
 
         return $eventInfo;
@@ -777,8 +757,7 @@ class PaymentInfo extends \Magento\Backend\Block\Template
      */
     public function getPaymentLogoUrl($paymentId, $name)
     {
-        return '<img class="bambora_paymentcard" src="https://d3r1pwhfz7unl9.cloudfront.net/paymentlogos/' . $paymentId . '.svg" alt ="' . $name . '">';
+        return '<img class="bambora_paymentcard" src="https://static.bambora.com/assets/paymentlogos/'.
+            $paymentId . '.svg"' . 'alt ="$name">';
     }
-
-
 }
