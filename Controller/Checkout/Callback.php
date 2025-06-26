@@ -1,22 +1,8 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Controller\Checkout;
 
 use Bambora\Online\Model\Api\CheckoutApi;
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
-use Bambora\Online\Model\Api\CheckoutApiModels;
 use Bambora\Online\Helper\BamboraConstants;
 use Magento\Framework\Webapi\Exception;
 use Magento\Framework\Webapi\Response;
@@ -125,7 +111,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
         $apiKey = $this->_bamboraHelper->generateCheckoutApiKey(
             $order->getStoreId()
         );
-        $merchantApi = $this->_bamboraHelper->getCheckoutApi(
+        $merchantApi = $this->_bamboraHelper->getCheckoutModel(
             CheckoutApi::API_MERCHANT
         );
         $transactionResponse = $merchantApi->getTransaction($transactionId, $apiKey);
@@ -155,7 +141,7 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
      * @param \Bambora\Online\Model\Api\Checkout\Response\Transaction $transactionResponse
      * @param \Magento\Sales\Model\Order $order
      * @param int $responseCode
-     * @return void
+     * @return string
      */
     protected function processCallback($transactionResponse, $order, &$responseCode)
     {
@@ -178,15 +164,15 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                 $paymentTypeDisplayName = "N/A";
                 $paymentTypeAccountNumber = "";
                 if (is_array($transaction->information->paymenttypes) && count(
-                        $transaction->information->paymenttypes
-                    ) > 0) {
+                    $transaction->information->paymenttypes
+                ) > 0) {
                     $paymentTypeDisplayName = $transaction->information->paymenttypes[0]->displayName;
                 }
                 if (is_array(
-                        $transaction->information->primaryAccountnumbers
-                    ) && count(
-                        $transaction->information->primaryAccountnumbers
-                    ) > 0) {
+                    $transaction->information->primaryAccountnumbers
+                ) && count(
+                    $transaction->information->primaryAccountnumbers
+                ) > 0) {
                     $paymentTypeAccountNumber = $transaction->information->primaryAccountnumbers[0]->number;
                 }
 
@@ -206,16 +192,17 @@ class Callback extends \Bambora\Online\Controller\AbstractActionController
                     $payment
                 );
 
-                $message = "Callback Success - Order created";
+                $message = 'Callback Success - Order created';
             } else {
-                $message = "Callback Success - Order already created";
+                $message = 'Callback Success - Order already created';
             }
             $responseCode = Response::HTTP_OK;
         } catch (\Exception $ex) {
             $order->setState(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
             $order->setStatus(\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT);
             $payment->setAdditionalInformation(
-                [CheckoutPayment::METHOD_REFERENCE => ""]
+                CheckoutPayment::METHOD_REFERENCE,
+                ''
             );
             $payment->save();
             $order->save();

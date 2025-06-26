@@ -1,21 +1,7 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Controller\Adminhtml\Order;
 
-class MassInvoiceRefund extends
-    \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
+class MassInvoiceRefund extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
 {
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\Invoice\CollectionFactory
@@ -37,19 +23,19 @@ class MassInvoiceRefund extends
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Ui\Component\MassAction\Filter $filter
-     * @param \Magento\Sales\Model\ResourceModel\Order\Invoice\CollectionFactory $invoiceCollectionFactory
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
      * @param \Magento\Sales\Model\Service\CreditmemoService $creditmemoService
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Magento\Ui\Component\MassAction\Filter $filter,
-        \Magento\Sales\Model\ResourceModel\Order\Invoice\CollectionFactory $invoiceCollectionFactory,
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory,
         \Magento\Sales\Model\Service\CreditmemoService $creditmemoService
     ) {
         parent::__construct($context, $filter);
-        $this->collectionFactory = $invoiceCollectionFactory;
+        $this->collectionFactory = $collectionFactory;
         $this->_creditmemoFactory = $creditmemoFactory;
         $this->_creditmemoService = $creditmemoService;
     }
@@ -71,9 +57,8 @@ class MassInvoiceRefund extends
         foreach ($collectionItems as $invoice) {
             try {
                 if (!$invoice->canRefund()) {
-                    $notRefunded[] = $invoice->getIncrementId() . '(' . __(
-                            "Creditmemo not available"
-                        ) . ')';
+                    $notRefunded[] = $invoice->getIncrementId() . '(' .
+                    __('Creditmemo not available') . ')';
                     continue;
                 }
 
@@ -88,7 +73,7 @@ class MassInvoiceRefund extends
                 $refunded[] = $invoice->getIncrementId();
             } catch (\Exception $ex) {
                 $notRefunded[] = $invoice->getIncrementId() . '(' . $ex->getMessage(
-                    ) . ')';
+                ) . ')';
                 continue;
             }
         }

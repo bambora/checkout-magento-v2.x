@@ -1,17 +1,4 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Model\Api\Checkout;
 
 use Bambora\Online\Model\Api\Checkout\ApiEndpoints;
@@ -23,9 +10,9 @@ class Merchant extends Base
      * Get the allowed payment types
      *
      * @param string $currency
-     * @param int|long $amount
+     * @param int $amount
      * @param string $apiKey
-     * @return \Bambora\Online\Model\Api\Checkout\Response\ListPaymentTypes
+     * @return \Bambora\Online\Model\Api\Checkout\Response\ListPaymentTypes | null
      */
     public function getPaymentTypes($currency, $amount, $apiKey)
     {
@@ -39,7 +26,7 @@ class Merchant extends Base
                 $apiKey
             );
             $result = json_decode($resultJson, true);
-            $listPaymentTypesResponse = $this->_bamboraHelper->getCheckoutApiModel(
+            $listPaymentTypesResponse = $this->_bamboraHelper->getCheckoutModel(
                 CheckoutApiModels::RESPONSE_LISTPAYMENTTYPES
             );
             $listPaymentTypesResponse->meta = $this->_mapMeta($result);
@@ -48,7 +35,7 @@ class Merchant extends Base
                 $listPaymentTypesResponse->paymentCollections = [];
 
                 foreach ($result['paymentcollections'] as $payment) {
-                    $paymentCollection = $this->_bamboraHelper->getCheckoutApiModel(
+                    $paymentCollection = $this->_bamboraHelper->getCheckoutModel(
                         CheckoutApiModels::RESPONSE_MODEL_PAYMENTCOLLECTION
                     );
                     $paymentCollection->displayName = $payment['displayname'];
@@ -57,7 +44,7 @@ class Merchant extends Base
                     $paymentCollection->paymentGroups = [];
 
                     foreach ($payment['paymentgroups'] as $group) {
-                        $paymentGroup = $this->_bamboraHelper->getCheckoutApiModel(
+                        $paymentGroup = $this->_bamboraHelper->getCheckoutModel(
                             CheckoutApiModels::RESPONSE_MODEL_PAYMENTGROUP
                         );
                         $paymentGroup->displayName = $group['displayname'];
@@ -66,14 +53,14 @@ class Merchant extends Base
                         $paymentGroup->paymenttypes = [];
 
                         foreach ($group['paymenttypes'] as $type) {
-                            $paymentType = $this->_bamboraHelper->getCheckoutApiModel(
+                            $paymentType = $this->_bamboraHelper->getCheckoutModel(
                                 CheckoutApiModels::RESPONSE_MODEL_PAYMENTYPE
                             );
                             $paymentType->displayName = $type['displayname'];
                             $paymentType->groupid = $type['groupid'];
                             $paymentType->id = $type['id'];
                             $paymentType->name = $type['name'];
-                            $fee = $this->_bamboraHelper->getCheckoutApiModel(
+                            $fee = $this->_bamboraHelper->getCheckoutModel(
                                 CheckoutApiModels::RESPONSE_MODEL_FEE
                             );
                             $fee->amount = $type['fee']['amount'];
@@ -98,7 +85,7 @@ class Merchant extends Base
      *
      * @param string $transactionId
      * @param string $apiKey
-     * @return \Bambora\Online\Model\Api\Checkout\Response\Transaction
+     * @return \Bambora\Online\Model\Api\Checkout\Response\Transaction | null
      */
     public function getTransaction($transactionId, $apiKey)
     {
@@ -112,17 +99,17 @@ class Merchant extends Base
                 $apiKey
             );
             $result = json_decode($resultJson, true);
-            $transactionResponse = $this->_bamboraHelper->getCheckoutApiModel(
+            $transactionResponse = $this->_bamboraHelper->getCheckoutModel(
                 CheckoutApiModels::RESPONSE_TRANSACTION
             );
             $transactionResponse->meta = $this->_mapMeta($result);
 
             if ($transactionResponse->meta->result) {
                 $result = $result['transaction'];
-                $transaction = $this->_bamboraHelper->getCheckoutApiModel(
+                $transaction = $this->_bamboraHelper->getCheckoutModel(
                     CheckoutApiModels::RESPONSE_MODEL_TRANSACTION
                 );
-                $available = $this->_bamboraHelper->getCheckoutApiModel(
+                $available = $this->_bamboraHelper->getCheckoutModel(
                     CheckoutApiModels::RESPONSE_MODEL_AVAILABLE
                 );
                 $available->capture = $result['available']['capture'];
@@ -130,7 +117,7 @@ class Merchant extends Base
                 $transaction->available = $available;
                 $transaction->canDelete = $result['candelete'];
                 $transaction->createdDate = $result['createddate'];
-                $currency = $this->_bamboraHelper->getCheckoutApiModel(
+                $currency = $this->_bamboraHelper->getCheckoutModel(
                     CheckoutApiModels::RESPONSE_MODEL_CURRENCY
                 );
                 $currency->code = $result['currency']['code'];
@@ -139,28 +126,48 @@ class Merchant extends Base
                 $currency->number = $result['currency']['number'];
                 $transaction->currency = $currency;
                 $transaction->id = $result['id'];
-                $information = $this->_bamboraHelper->getCheckoutApiModel(
+                $information = $this->_bamboraHelper->getCheckoutModel(
                     CheckoutApiModels::RESPONSE_MODEL_INFORMATION
                 );
-                $information->acquirers = [];
-                foreach ($result['information']['acquirers'] as $acq) {
-                    $acquirer = $this->_bamboraHelper->getCheckoutApiModel(
-                        CheckoutApiModels::RESPONSE_MODEL_ACQUIRER
-                    );
-                    $acquirer->name = $acq['name'];
-                    $information->acquirers[] = $acquirer;
-                }
                 $information->acquirerReferences = [];
                 foreach ($result['information']['acquirerreferences'] as $acqref) {
-                    $acquirerReference = $this->_bamboraHelper->getCheckoutApiModel(
+                    $acquirerReference = $this->_bamboraHelper->getCheckoutModel(
                         CheckoutApiModels::RESPONSE_MODEL_ACQUIRERREFERENCE
                     );
                     $acquirerReference->reference = $acqref['reference'];
                     $information->acquirerReferences[] = $acquirerReference;
                 }
+                $information->acquirers = [];
+                foreach ($result['information']['acquirers'] as $acq) {
+                    $acquirer = $this->_bamboraHelper->getCheckoutModel(
+                        CheckoutApiModels::RESPONSE_MODEL_ACQUIRER
+                    );
+                    $acquirer->name = $acq['name'];
+                    $information->acquirers[] = $acquirer;
+                }
+                $information->ecis = [];
+                if (isset($result['information']['ecis'])) {
+                    foreach ($result['information']['ecis'] as $ecival) {
+                        $eci = $this->_bamboraHelper->getCheckoutModel(
+                            CheckoutApiModels::RESPONSE_MODEL_ECI
+                        );
+                        $eci->value = $ecival['value'];
+                        $information->ecis[] = $eci;
+                    }
+                }
+                $information->exemptions = [];
+                if (isset($result['information']['exemptions'])) {
+                    foreach ($result['information']['exemptions'] as $exemp) {
+                        $exemption = $this->_bamboraHelper->getCheckoutModel(
+                            CheckoutApiModels::RESPONSE_MODEL_ECI
+                        );
+                        $exemption->value = $exemp['value'];
+                        $information->exemptions[] = $exemption;
+                    }
+                }
                 $information->paymenttypes = [];
                 foreach ($result['information']['paymenttypes'] as $type) {
-                    $paymentType = $this->_bamboraHelper->getCheckoutApiModel(
+                    $paymentType = $this->_bamboraHelper->getCheckoutModel(
                         CheckoutApiModels::RESPONSE_MODEL_PAYMENTYPE
                     );
                     $paymentType->displayName = $type['displayname'];
@@ -171,36 +178,24 @@ class Merchant extends Base
                 $information->primaryAccountnumbers = [];
                 if (isset($result['information']['primaryaccountnumbers'])) {
                     foreach ($result['information']['primaryaccountnumbers'] as $accountNumber) {
-                        $primaryAccountnumber = $this->_bamboraHelper->getCheckoutApiModel(
+                        $primaryAccountnumber = $this->_bamboraHelper->getCheckoutModel(
                             CheckoutApiModels::RESPONSE_MODEL_PRIMARYACCOUNTNUMBER
                         );
                         $primaryAccountnumber->number = $accountNumber['number'];
                         $information->primaryAccountnumbers[] = $primaryAccountnumber;
                     }
                 }
-                $information->ecis = [];
-                if (isset($result['information']['ecis'])) {
-                    foreach ($result['information']['ecis'] as $ecival) {
-                        $eci = $this->_bamboraHelper->getCheckoutApiModel(
-                            CheckoutApiModels::RESPONSE_MODEL_ECI
-                        );
-                        $eci->value = $ecival['value'];
-                        $information->ecis[] = $eci;
-                    }
+                $information->wallets = [];
+                foreach ($result['information']['wallets'] as $wal) {
+                    $wallet = $this->_bamboraHelper->getCheckoutModel(
+                        CheckoutApiModels::RESPONSE_MODEL_WALLET
+                    );
+                    $wallet->name = $wal['name'];
+                    $information->wallets[] = $wallet;
                 }
-                $information->exemptions = [];
-                if (isset($result['information']['exemptions'])) {
-                    foreach ($result['information']['exemptions'] as $exemp) {
-                        $exemption = $this->_bamboraHelper->getCheckoutApiModel(
-                            CheckoutApiModels::RESPONSE_MODEL_ECI
-                        );
-                        $exemption->value = $exemp['value'];
-                        $information->exemptions[] = $exemption;
-                    }
-                }
-
                 $transaction->information = $information;
-                $links = $this->_bamboraHelper->getCheckoutApiModel(
+
+                $links = $this->_bamboraHelper->getCheckoutModel(
                     CheckoutApiModels::RESPONSE_MODEL_LINKS
                 );
                 $links->transactionoperations = $result['links']['transactionoperations'];
@@ -209,14 +204,14 @@ class Merchant extends Base
                 $transaction->orderid = $result['orderid'];
                 $transaction->reference = $result['reference'];
                 $transaction->status = $result['status'];
-                $subscription = $this->_bamboraHelper->getCheckoutApiModel(
+                $subscription = $this->_bamboraHelper->getCheckoutModel(
                     CheckoutApiModels::RESPONSE_MODEL_SUBSCRIPTION
                 );
                 if (isset($result['subscription'])) {
                     $subscription->id = $result['subscription']['id'];
                 }
                 $transaction->subscription = $subscription;
-                $total = $this->_bamboraHelper->getCheckoutApiModel(
+                $total = $this->_bamboraHelper->getCheckoutModel(
                     CheckoutApiModels::RESPONSE_MODEL_TOTAL
                 );
                 $total->authorized = $result['total']['authorized'];
@@ -241,7 +236,7 @@ class Merchant extends Base
      *
      * @param string $transactionId
      * @param string $apiKey
-     * @return \Bambora\Online\Model\Api\Checkout\Response\ListTransactionOperations
+     * @return \Bambora\Online\Model\Api\Checkout\Response\ListTransactionOperations | null
      */
     public function getTransactionOperations($transactionId, $apiKey)
     {
@@ -255,7 +250,7 @@ class Merchant extends Base
                 $apiKey
             );
             $result = json_decode($resultJson, true);
-            $transactionOperationsResponse = $this->_bamboraHelper->getCheckoutApiModel(
+            $transactionOperationsResponse = $this->_bamboraHelper->getCheckoutModel(
                 CheckoutApiModels::RESPONSE_LISTTRANSACTIONOPERATIONS
             );
             $transactionOperationsResponse->meta = $this->_mapMeta($result);
@@ -263,7 +258,7 @@ class Merchant extends Base
             if ($transactionOperationsResponse->meta->result) {
                 $operations = $result['transactionoperations'];
                 $transactionOperations = $this->mapTransactionOperation($operations);
-                $transactionOperationsResponse->transactionoperations = $transactionOperations;
+                $transactionOperationsResponse->transactionOperations = $transactionOperations;
             }
 
             return $transactionOperationsResponse;
@@ -277,14 +272,14 @@ class Merchant extends Base
      * Summary of mapTransactionOperation
      *
      * @param mixed $operations
-     * @return \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation[]
+     * @return \Bambora\Online\Model\Api\Checkout\Response\Models\TransactionOperation[]  | null
      */
     private function mapTransactionOperation($operations)
     {
-        $transactionOperations = array();
+        $transactionOperations = [];
 
         foreach ($operations as $operation) {
-            $transactionOperation = $this->_bamboraHelper->getCheckoutApiModel(
+            $transactionOperation = $this->_bamboraHelper->getCheckoutModel(
                 CheckoutApiModels::RESPONSE_MODEL_TRANSACTIONOPERATION
             );
             $transactionOperation->acquirername = $operation['acquirername'];
@@ -295,7 +290,7 @@ class Merchant extends Base
             $transactionOperation->amount = $operation['amount'];
             $transactionOperation->createddate = $operation['createddate'];
 
-            $currency = $this->_bamboraHelper->getCheckoutApiModel(
+            $currency = $this->_bamboraHelper->getCheckoutModel(
                 CheckoutApiModels::RESPONSE_MODEL_CURRENCY
             );
             if (isset($operation['currency'])) {
@@ -308,11 +303,11 @@ class Merchant extends Base
             $transactionOperation->acquirername = $operation['acquirername'];
             $transactionOperation->currentbalance = $operation['currentbalance'];
             $transactionOperation->eci = $operation['eci'];
-            $transactionOperation->ecis = array();
+            $transactionOperation->ecis = [];
             if (isset($operation['ecis'])) {
                 $ecis = $operation['ecis'];
                 foreach ($ecis as $ec) {
-                    $eci = $this->_bamboraHelper->getCheckoutApiModel(
+                    $eci = $this->_bamboraHelper->getCheckoutModel(
                         CheckoutApiModels::RESPONSE_MODEL_ECI
                     );
                     $eci->value = $ec['value'];
@@ -321,11 +316,11 @@ class Merchant extends Base
             }
             $transactionOperation->id = $operation['id'];
             $transactionOperation->parenttransactionoperationid = $operation['parenttransactionoperationid'];
-            $transactionOperation->paymenttypes = array();
-            if (isset ($operation['paymenttypes'])) {
+            $transactionOperation->paymenttypes = [];
+            if (isset($operation['paymenttypes'])) {
                 $paymenttypes = $operation['paymenttypes'];
                 foreach ($paymenttypes as $type) {
-                    $paymentType = $this->_bamboraHelper->getCheckoutApiModel(
+                    $paymentType = $this->_bamboraHelper->getCheckoutModel(
                         CheckoutApiModels::RESPONSE_MODEL_PAYMENTYPE
                     );
                     $paymentType->id = $type['id'];
@@ -342,6 +337,4 @@ class Merchant extends Base
         }
         return $transactionOperations;
     }
-
-
 }

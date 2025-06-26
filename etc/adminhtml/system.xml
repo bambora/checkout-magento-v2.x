@@ -1,29 +1,17 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- *
- */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
-  <system>
-    <section id="payment" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1">
-      <group id="bambora_online" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-        <label>Worldline Checkout</label>
-        <attribute type="expanded">1</attribute>
-        <fieldset_css>complex</fieldset_css>
-        <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Fieldset\Group</frontend_model>
-        <include path="Bambora_Online::system/bambora_checkout.xml" />
-      </group>
-    </section>
-  </system>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment" translate="label" type="text" sortOrder="400" showInDefault="1"
+            showInWebsite="1" showInStore="1">
+            <group id="bambora_online" translate="label" type="text" sortOrder="10"
+                showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Worldline Online Checkout</label>
+                <attribute type="expanded">1</attribute>
+                <fieldset_css>complex</fieldset_css>
+                <frontend_model>\Bambora\Online\Block\Adminhtml\System\Config\Fieldset\Group</frontend_model>
+                <include path="Bambora_Online::system/bambora_checkout.xml" />
+            </group>
+        </section>
+    </system>
 </config>

@@ -1,4 +1,4 @@
-# Worldline Checkout for Magento 2
+# Worldline Online Checkout for Magento 2
 
 ## Supported Magento 2 versions
 
@@ -9,10 +9,9 @@
     * view\adminhtml\ui_component\sales_order_invoice_grid.xml
     * **NB** When these are removed Mass actions functionality is no longer available,
       and we can no longer guaranty that the module work as intended.
-* The ePay Payment gateway is from now it's own module and not part of this. Please visit contact ePay.dk for any questions regarding their new module. 
 
 ## Included Payment Gateway
 
-* Worldline Checkout
+* Worldline Online Checkout
 
 Documentation: https://developer.bambora.com/europe/shopping-carts/shopping-carts/magento2

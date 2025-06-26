@@ -1,5 +1,4 @@
 <?php
-
 namespace Bambora\Online\Block\Adminhtml\System\Config\Fieldset;
 
 /**
@@ -51,9 +50,6 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
     protected function _getHeaderTitleHtml($element)
     {
         $html = '<div class="config-heading" >';
-
-        $groupConfig = $element->getGroup();
-
         $htmlId = $element->getHtmlId();
         $html .= '<div class="button-container"><button type="button"' .
             ' class="button action-configure' .
@@ -72,11 +68,11 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
 
         $html .= '</div>';
         $html .= '<div class="heading"><strong>' . $element->getLegend(
-            ) . '</strong>';
+        ) . '</strong>';
 
         if ($element->getComment()) {
             $html .= '<span class="heading-intro">' . $element->getComment(
-                ) . '</span>';
+            ) . '</span>';
         }
         $html .= '<div class="config-alt"></div>';
         $html .= '</div></div>';
@@ -109,6 +105,8 @@ class Payment extends \Magento\Config\Block\System\Config\Form\Fieldset
     }
 
     /**
+     * Get Extra JS
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)

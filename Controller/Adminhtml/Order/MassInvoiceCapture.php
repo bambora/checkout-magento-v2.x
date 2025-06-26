@@ -1,24 +1,10 @@
 <?php
-/**
- * Copyright (c) 2019. All rights reserved Bambora Online.
- *
- * This program is free software. You are allowed to use the software but NOT allowed to modify the software.
- * It is also not legal to do any changes to the software and distribute it in your own name / brand.
- *
- * All use of the payment modules happens at your own risk. We offer a free test account that you can use to test the module.
- *
- * @author    Bambora Online
- * @copyright Bambora Online (https://bambora.com)
- * @license   Bambora Online
- */
-
 namespace Bambora\Online\Controller\Adminhtml\Order;
 
 use Bambora\Online\Helper\BamboraConstants;
 use Bambora\Online\Model\Method\Checkout\Payment as CheckoutPayment;
 
-class MassInvoiceCapture extends
-    \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
+class MassInvoiceCapture extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
 {
     /**
      * @var \Magento\Sales\Model\Order\Email\Sender\InvoiceSender
@@ -41,11 +27,7 @@ class MassInvoiceCapture extends
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Magento\Sales\Model\Order\Email\Sender\InvoiceSender $invoiceSender
      * @param \Magento\Payment\Helper\Data $paymentHelper
-     * @param \Bambora\Online\Logger\BamboraLogger $bamboraLogger
      * @param \Bambora\Online\Helper\Data $bamboraHelper
-     * @param \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
-     * @param \Magento\Sales\Model\Service\CreditmemoService $creditmemoService
-     * @param \Magento\Sales\Model\ResourceModel\Order\Invoice\CollectionFactory $invoiceCollectionFactory
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
@@ -78,9 +60,8 @@ class MassInvoiceCapture extends
         foreach ($collectionItems as $order) {
             try {
                 if (!$order->canInvoice()) {
-                    $notInvoiced[] = $order->getIncrementId() . '(' . __(
-                            "Invoice not available"
-                        ) . ')';
+                    $notInvoiced[] = $order->getIncrementId() . '(' .
+                    __('Invoice not available') . ')';
                     continue;
                 }
                 $invoice = $order->prepareInvoice();
@@ -90,23 +71,21 @@ class MassInvoiceCapture extends
                 $invoice->register();
                 $invoice->save();
 
-                $transactionSave = $this->_objectManager->create(
-                    'Magento\Framework\DB\Transaction'
-                )
+                $transactionSave = $this->_objectManager->create(\Magento\Framework\DB\Transaction::class)
                     ->addObject($invoice)
                     ->addObject($invoice->getOrder());
                 $transactionSave->save();
 
                 $payment = $order->getPayment();
                 $paymentMethod = $payment->getMethod();
-                if ($paymentMethod === CheckoutPayment::METHOD_CODE ) {
+                if ($paymentMethod === CheckoutPayment::METHOD_CODE) {
                     $methodInstance = $this->_paymentHelper->getMethodInstance(
                         $paymentMethod
                     );
                     if ($methodInstance->getConfigData(
-                            BamboraConstants::MASS_CAPTURE_INVOICE_MAIL,
-                            $order->getStoreId()
-                        ) == 1) {
+                        BamboraConstants::MASS_CAPTURE_INVOICE_MAIL,
+                        $order->getStoreId()
+                    ) == 1) {
                         $invoice->setEmailSent(1);
                         $this->_invoiceSender->send($invoice);
                         $order->addStatusHistoryComment(
@@ -115,8 +94,8 @@ class MassInvoiceCapture extends
                                 $invoice->getIncrementId()
                             )
                         )
-                            ->setIsCustomerNotified(1)
-                            ->save();
+                        ->setIsCustomerNotified(1)
+                        ->save();
                     }
                 }
 
@@ -124,7 +103,7 @@ class MassInvoiceCapture extends
                 $invoiced[] = $order->getIncrementId();
             } catch (\Exception $ex) {
                 $notInvoiced[] = $order->getIncrementId() . '(' . $ex->getMessage(
-                    ) . ')';
+                ) . ')';
                 continue;
             }
         }
