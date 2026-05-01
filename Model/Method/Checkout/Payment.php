@@ -8,8 +8,8 @@ use Bambora\Online\Model\Api\CheckoutApiModels;
 class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements
     \Bambora\Online\Model\Method\PaymentInterface
 {
-    public const string METHOD_CODE = 'bambora_checkout';
-    public const string METHOD_REFERENCE = 'bamboraCheckoutReference';
+    public const METHOD_CODE = 'bambora_checkout';
+    public const METHOD_REFERENCE = 'bamboraCheckoutReference';
 
     /**
      * @var string
@@ -570,7 +570,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements
                 $message
             )) {
                 throw new \Magento\Framework\Exception\LocalizedException(
-                    __('The capture action failed.') . ' - ' . $message
+                    __('The capture action failed. - %1', $message)
                 );
             }
             $transactinOperationId = "";
@@ -651,7 +651,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements
                 $message
             )) {
                 throw new \Magento\Framework\Exception\LocalizedException(
-                    __('The refund action failed.') . ' - ' . $message
+                    __('The refund action failed. - %1', $message)
                 );
             }
             $transactionoperationId = "";
@@ -730,7 +730,7 @@ class Payment extends \Bambora\Online\Model\Method\AbstractPayment implements
                 $message
             )) {
                 throw new \Magento\Framework\Exception\LocalizedException(
-                    __("The void action failed.") . ' - ' . $message
+                    __("The void action failed. - %1", $message)
                 );
             }
             $transactionoperationId = "";

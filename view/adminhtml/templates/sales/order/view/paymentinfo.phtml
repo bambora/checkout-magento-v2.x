@@ -1,10 +1,8 @@
 <div>
     <table class="bambora_action_container" width="100%">
-        <?php
-        echo $block->getTransactionData(); ?>
+        <?= /* @noEscape */ $block->getTransactionData() ?>
     </table>
     <table class="bambora_transaction_history_container" width="100%">
-        <?php
-        echo $block->getTransactionLogData(); ?>
+        <?= /* @noEscape */ $block->getTransactionLogData() ?>
     </table>
 </div>

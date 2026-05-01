@@ -6,8 +6,8 @@ use Magento\Framework\DataObject;
 
 abstract class Base extends DataObject
 {
-    protected const string GET = 'GET';
-    protected const string POST = 'POST';
+    protected const GET = 'GET';
+    protected const POST = 'POST';
 
     /**
      * @var array

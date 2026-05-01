@@ -3,7 +3,7 @@ namespace Bambora\Online\Model\Method;
 
 class BamboraAdvanced extends \Magento\Payment\Model\Method\AbstractMethod
 {
-    public const string METHOD_CODE = 'bambora_advanced';
+    public const METHOD_CODE = 'bambora_advanced';
 
     /**
      * @var string

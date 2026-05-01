@@ -2,29 +2,24 @@
 
 <?php
 $specificInfo = $block->getSpecificInformation();
-if ($specificInfo) : ?>
+if ($specificInfo): ?>
     <table class="data-table admin__table-secondary">
         <?php
-        foreach ($specificInfo as $label => $value) : ?>
+        foreach ($specificInfo as $label => $value): ?>
             <tr>
-                <th><?php
-                    echo $block->escapeHtml($label) ?>:
-                </th>
+                <th><?= $escaper->escapeHtml($label) ?>:</th>
                 <td>
-                    <?php
-                    /* @noEscape */
-                    echo nl2br(
-                        $block->escapeHtml(
+                    <?= /* @noEscape */ nl2br(
+                        $escaper->escapeHtml(
                             implode("\n", $block->getValueAsArray($value, true))
                         )
-                    ); ?>
+                    ) ?>
                 </td>
             </tr>
-        <?php
-        endforeach; ?>
+            <?php
+            endforeach; ?>
     </table>
-<?php
-endif; ?>
+    <?php
+    endif; ?>
 
-<?php
-echo $block->getChildHtml() ?>
+<?= /* @noEscape */ $block->getChildHtml() ?>

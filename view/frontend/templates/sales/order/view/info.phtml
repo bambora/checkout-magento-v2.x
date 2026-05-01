@@ -5,34 +5,27 @@ $paymentInformationTitle = $block->getPaymentInformationTitle();
 ?>
 <dl class="payment-method bambora_checkout">
     <dt class="title">
-        <?php
-        /* @noEscape */
-        echo $paymentMethodTitle; ?>
+        <?= /* @noEscape */ $paymentMethodTitle ?>
     </dt>
     <?php
-    if ($specificInfo) : ?>
+    if ($specificInfo): ?>
     <dt>
         <div style="margin-top:10px; margin-bottom:10px;">
-            <h3><?php
-                /* @noEscape */
-                echo $paymentInformationTitle; ?></h3>
+            <h3><?= /* @noEscape */ $paymentInformationTitle ?></h3>
             <table>
                 <?php
-                foreach ($specificInfo as $label => $value) : ?>
+                foreach ($specificInfo as $label => $value): ?>
                     <tr>
-                        <td><b><?php
-                                echo $escaper->escapeHtml($label) ?>:</b></td>
+                        <td><b><?= $escaper->escapeHtml($label) ?>:</b></td>
                         <td style="padding-left:10px">
-                            <?php
-                            /* @noEscape */
-                            echo nl2br(
+                            <?= /* @noEscape */ nl2br(
                                 $escaper->escapeHtml(
                                     implode(
                                         "\n",
                                         $block->getValueAsArray($value, true)
                                     )
                                 )
-                            ); ?>
+                            ) ?>
                         </td>
                     </tr>
                     <?php
