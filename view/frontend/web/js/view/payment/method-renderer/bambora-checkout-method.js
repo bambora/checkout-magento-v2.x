@@ -16,7 +16,9 @@ define(
             {
                 initialize: function () {
                     this._super();
-                    this.loadBamboraCheckoutWebSdk();
+                    this._sdkDeferred = this.loadBamboraCheckoutWebSdk();
+
+                    return this;
                 },
                 defaults: {
                     template: 'Bambora_Online/payment/checkout-form',
@@ -37,8 +39,17 @@ define(
                     return window.checkoutConfig.payment.bambora_checkout.paymentIconSrc;
                 },
                 afterPlaceOrder: function () {
+                    var self = this;
+
                     fullScreenLoader.startLoader();
-                    this.setCheckoutSession();
+                    this.loadBamboraCheckoutWebSdk()
+                        .done(function () {
+                            self.setCheckoutSession();
+                        })
+                        .fail(function () {
+                            fullScreenLoader.stopLoader();
+                            self.showError($t('Could not load payment SDK. Please try again.'));
+                        });
                 },
                 setCheckoutSession: function () {
                     var self = this;
@@ -46,51 +57,87 @@ define(
                     $.get(url)
                         .done(
                             function (response) {
-                                response = JSON.parse(response);
-                                if (!response || !response.meta.result) {
-                                    if (!response) {
+                                try {
+                                    response = typeof response === 'string' ? JSON.parse(response) : response;
+                                } catch (e) {
+                                    fullScreenLoader.stopLoader();
+                                    self.showError($t('Error opening payment window'));
+                                    $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
+
+                                    return;
+                                }
+
+                                if (!response || !response.meta || !response.meta.result) {
+                                    fullScreenLoader.stopLoader();
+                                    if (!response || !response.meta || !response.meta.message) {
                                         self.showError($t("Error opening payment window"));
                                     } else {
                                         self.showError($t("Error opening payment window") + ': ' + response.meta.message.enduser);
                                     }
 
                                     $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
+
+                                    return;
                                 }
                                 self.openCheckoutPaymentWindow(response.token);
                             }
                         ).fail(
                         function (error) {
+                            fullScreenLoader.stopLoader();
                             self.showError($t("Error opening payment window") + ': ' + error.statusText);
                             $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
                         }
                     );
                 },
                 openCheckoutPaymentWindow: function (checkoutToken) {
-                    var windowState = parseInt(window.checkoutConfig.payment.bambora_checkout.windowState);
+                    if (typeof Bambora === 'undefined') {
+                        fullScreenLoader.stopLoader();
+                        this.showError($t('Could not load payment SDK. Please try again.'));
+                        $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
+
+                        return;
+                    }
+
+                    var windowState = parseInt(window.checkoutConfig.payment.bambora_checkout.windowState, 10);
                     if (windowState === 1) {
                         new Bambora.RedirectCheckout(checkoutToken);
                     } else {
                         var checkout = new Bambora.ModalCheckout(null);
                         checkout.on(
                             Bambora.Event.Cancel, function (payload) {
+                                fullScreenLoader.stopLoader();
                                 var declineUrl = payload.declineUrl;
                                 $.mage.redirect(declineUrl);
                             }
                         );
                         checkout.on(
                             Bambora.Event.Close, function (payload) {
+                                fullScreenLoader.stopLoader();
                                 $.mage.redirect(payload.acceptUrl);
                             }
                         );
                         checkout.initialize(checkoutToken).then(
                             function () {
+                                fullScreenLoader.stopLoader();
                                 checkout.show();
+                            },
+                            function () {
+                                fullScreenLoader.stopLoader();
+                                $.mage.redirect(window.checkoutConfig.payment.bambora_checkout.cancelUrl);
                             }
                         );
                     }
                 },
                 loadBamboraCheckoutWebSdk: function () {
-                    $.getScript(window.checkoutConfig.payment.bambora_checkout.checkoutWebSdkUrl);
+                    if (window.Bambora) {
+                        return $.Deferred().resolve().promise();
+                    }
+
+                    if (!this._sdkDeferred) {
+                        this._sdkDeferred = $.getScript(window.checkoutConfig.payment.bambora_checkout.checkoutWebSdkUrl);
+                    }
+
+                    return this._sdkDeferred;
                 },
                 showError: function (errorMessage) {
                     globalMessageList.addErrorMessage(
