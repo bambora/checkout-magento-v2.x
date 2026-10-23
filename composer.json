@@ -2,7 +2,7 @@
     "name": "bambora/module-payment-magento2",
     "description": "Worldline Online Checkout payment module for Magento 2  (previously named Bambora Online Checkout) ",
     "type": "magento2-module",
-    "version": "4.0.0",
+    "version": "4.1.0",
     "authors": [
         {
             "name": "Bambora Online A/S",
@@ -14,7 +14,7 @@
         "AFL-3.0"
     ],
     "require": {
-        "php": "~8.2.0 || ~8.3.0 || ~8.4.0",
+        "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
         "magento/framework": ">=103.0.6 <104.0.0",
         "magento/module-backend": ">=102.0.6 <103.0.0",
         "magento/module-catalog": ">=104.0.6 <105.0.0",
